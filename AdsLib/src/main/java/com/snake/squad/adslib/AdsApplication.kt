@@ -1,0 +1,32 @@
+package com.snake.squad.adslib
+
+import android.app.Activity
+import android.app.Application
+import android.os.Bundle
+import com.adjust.sdk.Adjust
+import com.orhanobut.hawk.Hawk
+import com.snake.squad.adslib.adjust.AdjustUtils
+
+open class AdsApplication(private val adjustKey: String, private val isProduction: Boolean) : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+        Hawk.init(this).build()
+        AdjustUtils.initAdjust(this,adjustKey, isProduction)
+        registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())
+    }
+
+    private class AdjustLifecycleCallbacks : ActivityLifecycleCallbacks {
+        override fun onActivityCreated(activity: Activity, bundle: Bundle?) {}
+        override fun onActivityStarted(activity: Activity) {}
+        override fun onActivityResumed(activity: Activity) {
+            Adjust.onResume()
+        }
+        override fun onActivityPaused(activity: Activity) {
+            Adjust.onPause()
+        }
+        override fun onActivityStopped(activity: Activity) {}
+        override fun onActivitySaveInstanceState(activity: Activity, bundle: Bundle) {}
+        override fun onActivityDestroyed(activity: Activity) {}
+    }
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AdsLib</string>
+    <string name="loading_ads">Loading Ads…</string>
+
+    <string name="app_id_test">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="banner_id_test">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_collapsible_id_test">ca-app-pub-3940256099942544/2014213617</string>
+    <string name="native_id_test">ca-app-pub-3940256099942544/2247696110</string>
+    <string name="inter_id_test">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="app_open_id_test">ca-app-pub-3940256099942544/9257395921</string>
+
+    <string name="select_5_star_rating">Please select a 5-star rating!</string>
+    <string name="dialog_five_star_title">Enjoying %s App?</string>
+    <string name="rate_tips">Tap a star to rate it on the \nPlay Store.</string>
+    <string name="send_mail">Send mail…</string>
+    <string name="status_bar_notification_info_overflow">999+</string>
+    <string name="subject_email">%s Feedback</string>
+    <string name="maybe_later">Maybe Later</string>
+    <string name="rate">Rate</string>
+
+</resources>
