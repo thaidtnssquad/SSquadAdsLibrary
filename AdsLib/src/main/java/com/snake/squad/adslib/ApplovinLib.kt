@@ -491,10 +491,12 @@ object ApplovinLib {
                 shimmerFrameLayout.stopShimmer()
                 viewGroup.removeAllViews()
                 viewGroup.addView(adView)
+                viewGroup.visibility = View.VISIBLE
             }
 
             override fun onNativeAdLoadFailed(adUnitId: String, error: MaxError) {
                 shimmerFrameLayout.stopShimmer()
+                viewGroup.visibility = View.GONE
             }
 
             override fun onNativeAdClicked(ad: MaxAd) {
