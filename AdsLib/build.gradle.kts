@@ -41,6 +41,9 @@ publishing {
         register<MavenPublication>("release") {
             afterEvaluate {
                 from(components["release"])
+                groupId = "com.snake.squad.adslib"
+                artifactId = "AdsLib"
+                version = "1.0.5"
             }
         }
     }
