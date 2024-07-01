@@ -39,9 +39,9 @@ android {
 publishing {
     publications {
         register<MavenPublication>("release") {
-            groupId = "com.snake.squad"
-            artifactId = "adsLib"
-            version = "1.0.3"
+            afterEvaluate {
+                from(components["release"])
+            }
         }
     }
 }
@@ -80,7 +80,7 @@ dependencies {
     implementation("com.facebook.android:facebook-android-sdk:16.0.0")
 
     //admob mediation
-    implementation("com.google.ads.mediation:pangle:6.0.0.5.0")
+    implementation("com.google.ads.mediation:pangle:6.0.0.7.0")
     implementation("com.google.ads.mediation:applovin:12.5.0.1")
     implementation("com.google.ads.mediation:facebook:6.17.0.0")
     implementation("com.google.ads.mediation:ironsource:8.1.0.0")

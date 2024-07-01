@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.snake.squad.adslib.AdmobLib
-import com.snake.squad.adslib.ApplovinLib
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
 import com.snake.squad.adslib.rates.RatingDialog
 import com.snake.squad.adslib.utils.AdsConstants
@@ -20,26 +19,25 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnLoadAndShowInter.setOnClickListener {
-            ApplovinLib.loadAndShowInterstitial(
+            AdmobLib.loadAndShowInterstitial(
                 this,
-                AdsConstants.maxInterModelTest,
-                10000
+                AdsConstants.admobInterModelTest
             ) {
 
             }
         }
 
         binding.btnLoadInter.setOnClickListener {
-            ApplovinLib.loadInterstitial(
+            AdmobLib.loadInterstitial(
                 this,
-                AdsConstants.maxInterModelTest
+                AdsConstants.admobInterModelTest
             )
         }
 
         binding.btnShowInter.setOnClickListener {
-            ApplovinLib.showInterstitial(
+            AdmobLib.showInterstitial(
                 this,
-                AdsConstants.maxInterModelTest
+                AdsConstants.admobInterModelTest
             ) {
 
             }
@@ -47,28 +45,28 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnLoadAndShowNative.setOnClickListener {
             setupViewBannerOrNative(false)
-            ApplovinLib.loadAndShowNative(
+            AdmobLib.loadAndShowNative(
                 this,
-                AdsConstants.maxNativeModelTest,
+                AdsConstants.admobNativeModelTest,
                 binding.frNative
             )
         }
 
         binding.btnLoadNative.setOnClickListener {
             setupViewBannerOrNative(false)
-            ApplovinLib.loadNative(this, AdsConstants.maxNativeModelTest)
+            AdmobLib.loadNative(this, AdsConstants.admobNativeModelTest)
         }
 
         binding.btnShowNative.setOnClickListener {
             setupViewBannerOrNative(false)
-            ApplovinLib.showNative(this, AdsConstants.maxNativeModelTest, binding.frNative, false)
+            AdmobLib.showNative(this, AdsConstants.admobNativeModelTest, binding.frNative, false)
         }
 
         binding.btnLoadAndShowBanner.setOnClickListener {
             setupViewBannerOrNative(true)
-            ApplovinLib.loadAndShowBanner(
+            AdmobLib.loadAndShowBanner(
                 this,
-                AdsConstants.MAX_BANNER_TEST,
+                AdsConstants.ADMOB_BANNER_TEST,
                 binding.frBanner,
                 binding.viewLine
             )
@@ -85,17 +83,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnLoadAndShowRewarded.setOnClickListener {
-            ApplovinLib.loadAndShowRewarded(this, AdsConstants.maxRewardedModelTest, 10000) {
+            AdmobLib.loadAndShowRewarded(this, AdsConstants.admobRewardedModelTest) {
                 Toast.makeText(this, if (it) "Earned" else "Not Earned", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.btnLoadRewarded.setOnClickListener {
-            ApplovinLib.loadRewarded(this, AdsConstants.maxRewardedModelTest)
+            AdmobLib.loadRewarded(this, AdsConstants.admobRewardedModelTest)
         }
 
         binding.btnShowRewarded.setOnClickListener {
-            ApplovinLib.showRewarded(this, AdsConstants.maxRewardedModelTest) {
+            AdmobLib.showRewarded(this, AdsConstants.admobRewardedModelTest) {
                 Toast.makeText(this, if (it) "Earned" else "Not Earned", Toast.LENGTH_SHORT).show()
             }
         }
