@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.0.5"
+                version = "1.0.6"
             }
         }
     }
@@ -62,9 +62,8 @@ dependencies {
     implementation("com.applovin:applovin-sdk:12.5.0")
     implementation("com.google.android.gms:play-services-ads:23.1.0")
 
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("androidx.lifecycle:lifecycle-process:2.8.2")
     implementation("androidx.lifecycle:lifecycle-runtime:2.8.2")
-    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.8.2")
 
     implementation("com.airbnb.android:lottie:6.4.1")
     implementation("com.facebook.shimmer:shimmer:0.5.0")

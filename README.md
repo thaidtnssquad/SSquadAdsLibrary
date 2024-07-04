@@ -34,6 +34,16 @@ In build.gradle :app
         android:name="com.google.android.gms.ads.APPLICATION_ID"
         android:value="@string/app_id"/>
 ```
+```sh
+    <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="${facebook_id}" />
+```
+```sh
+    <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="${facebook_client_token}" />
+```
 ### In Splash Screen:
 #### ADMOB
 ```sh
