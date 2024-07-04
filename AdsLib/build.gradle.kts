@@ -64,6 +64,8 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-process:2.8.2")
     implementation("androidx.lifecycle:lifecycle-runtime:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.2")
+    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.8.2")
 
     implementation("com.airbnb.android:lottie:6.4.1")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
@@ -101,7 +103,6 @@ dependencies {
     implementation("com.applovin.mediation:vungle-adapter:+")
 
     //rating
-    implementation("com.google.android.play:review:2.0.1")
     implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
 
 }
