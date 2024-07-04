@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.applovin.mediation.MaxAd
@@ -246,7 +245,6 @@ object ApplovinLib {
             it.setListener(object : MaxAdListener {
                 override fun onAdLoaded(ad: MaxAd) {
                     isShowInterAds = false
-                    Toast.makeText(activity, "Interstitial loaded", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onAdDisplayed(ad: MaxAd) {
@@ -263,8 +261,6 @@ object ApplovinLib {
                 override fun onAdLoadFailed(p0: String, p1: MaxError) {
                     isShowInterAds = false
                     maxInterModel.interstitialAd = null
-                    Toast.makeText(activity, "Interstitial failed to load", Toast.LENGTH_SHORT)
-                        .show()
                 }
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
@@ -525,11 +521,9 @@ object ApplovinLib {
             override fun onNativeAdLoaded(nativeAdView: MaxNativeAdView?, ad: MaxAd) {
                 nativeModel.maxAd?.let { nativeModel.nativeAdLoader?.destroy(it) }
                 nativeModel.maxAd = ad
-                Toast.makeText(activity, "Native loaded", Toast.LENGTH_SHORT).show()
             }
 
             override fun onNativeAdLoadFailed(adUnitId: String, error: MaxError) {
-                Toast.makeText(activity, "Native failed to load", Toast.LENGTH_SHORT).show()
             }
 
             override fun onNativeAdClicked(ad: MaxAd) {
@@ -688,7 +682,6 @@ object ApplovinLib {
             it.setListener(object : MaxRewardedAdListener {
                 override fun onAdLoaded(maxAd: MaxAd) {
                     isShowRewardAds = false
-                    Toast.makeText(activity, "Rewarded loaded", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onAdDisplayed(maxAd: MaxAd) {
@@ -707,7 +700,6 @@ object ApplovinLib {
                 override fun onAdLoadFailed(maxAd: String, maxError: MaxError) {
                     isShowRewardAds = false
                     rewardedModel.rewardAd = null
-                    Toast.makeText(activity, "Rewarded failed to load", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onAdDisplayFailed(maxAd: MaxAd, maxError: MaxError) {

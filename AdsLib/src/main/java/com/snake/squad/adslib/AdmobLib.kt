@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.LinearLayout
-import android.widget.Toast
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdError
@@ -155,8 +154,6 @@ object AdmobLib {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     isShowInterAds = false
                     admobInterModel.interstitialAd = null
-                    Toast.makeText(activity, "Interstitial failed to load", Toast.LENGTH_SHORT)
-                        .show()
                 }
 
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
@@ -165,7 +162,6 @@ object AdmobLib {
                     interstitialAd.setOnPaidEventListener {
                         AdjustUtils.postRevenueAdjustInter(interstitialAd, it, admobInterModel.adsID)
                     }
-                    Toast.makeText(activity, "Interstitial loaded", Toast.LENGTH_SHORT).show()
                 }
             })
     }
@@ -409,12 +405,10 @@ object AdmobLib {
         }.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 admobNativeModel.nativeAd = null
-                Toast.makeText(activity, "Native failed to load", Toast.LENGTH_SHORT).show()
             }
 
             override fun onAdLoaded() {
                 super.onAdLoaded()
-                Toast.makeText(activity, "Native loaded", Toast.LENGTH_SHORT).show()
             }
         }).withNativeAdOptions(NativeAdOptions.Builder().build()).build()
         adLoader.loadAd(nativeAdRequest)
@@ -532,7 +526,6 @@ object AdmobLib {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     isShowRewardAds = false
                     admobRewardedModel.rewardAd = null
-                    Toast.makeText(activity, "Rewarded failed to load", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onAdLoaded(rewardedAd: RewardedAd) {
@@ -541,7 +534,6 @@ object AdmobLib {
                     rewardedAd.setOnPaidEventListener {
                         AdjustUtils.postRevenueAdjustRewarded(rewardedAd, it, rewardedAd.adUnitId)
                     }
-                    Toast.makeText(activity, "Rewarded loaded", Toast.LENGTH_SHORT).show()
                 }
             })
     }
