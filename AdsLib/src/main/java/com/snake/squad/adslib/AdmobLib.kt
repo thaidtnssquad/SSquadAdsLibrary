@@ -187,6 +187,9 @@ object AdmobLib {
                         admobInterModel.interstitialAd = null
                         handle.removeCallbacksAndMessages(0)
                         AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                        if (isPreload) {
+                            loadInterstitial(activity, admobInterModel)
+                        }
                     }
 
                     override fun onAdFailedToShowFullScreenContent(adError: AdError) {

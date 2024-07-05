@@ -329,6 +329,9 @@ object ApplovinLib {
                     maxInterModel.interstitialAd = null
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    if (isPreload) {
+                        loadInterstitial(activity, maxInterModel)
+                    }
                 }
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
@@ -337,6 +340,10 @@ object ApplovinLib {
                     maxInterModel.interstitialAd = null
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    if (isPreload) {
+                        loadInterstitial(activity, maxInterModel)
+                    }
+
                 }
             })
             handle.postDelayed({
