@@ -54,7 +54,7 @@ In build.gradle :app
 #### MAX APPLOVIN
 ```sh
     ApplovinLib.initialize(application, "ADS_ID", isDebug = true, isShowAds = true) {
-        //Initialize completed
+        //Initialized
     }
 ```
 
@@ -72,7 +72,7 @@ In build.gradle :app
 #### Load And Show Interstitials Ads
 ```sh
     val admobInterModel = AdmobInterModel("ADS_ID")
-    AdmobLib.loadAndShowInterstitial(activity, admobInterModel, 10000) {
+    AdmobLib.loadAndShowInterstitial(activity, admobInterModel) {
         //Logic
     }
 ```
@@ -93,7 +93,7 @@ In build.gradle :app
 #### Load And Show Interstitials Ads
 ```sh
     val maxInterModel = MaxInterModel("ADS_ID")
-    ApplovinLib.loadAndShowInterstitial(activity, maxInterModel, 10000) {
+    ApplovinLib.loadAndShowInterstitial(activity, maxInterModel) {
         //Logic
     }
 ```

@@ -14,6 +14,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdError
@@ -44,6 +46,9 @@ import com.snake.squad.adslib.utils.AdsHelper.isNetworkConnected
 import com.snake.squad.adslib.utils.BannerCollapsibleType
 import com.snake.squad.adslib.utils.GoogleENative
 import com.snake.squad.adslib.utils.NativeUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 object AdmobLib {
 
@@ -77,8 +82,9 @@ object AdmobLib {
     }
 
     fun loadAndShowInterstitial(
-        activity: Activity,
+        activity: AppCompatActivity,
         admobInterModel: AdmobInterModel,
+        timeout: Long = 15000,
         onAdsCloseOrFailed: (Boolean) -> Unit
     ) {
         if (!isShowAds || isShowInterAds || !isNetworkConnected(activity)) {
@@ -139,6 +145,16 @@ object AdmobLib {
                     interstitialAd.show(activity)
                 }
             })
+        activity.lifecycleScope.launch(Dispatchers.Main) {
+            delay(timeout)
+            if ((admobInterModel.interstitialAd != null) && (!isShowInterAds)) {
+                isShowInterAds = false
+                dismissDialogFullScreen()
+                onAdsCloseOrFailed.invoke(false)
+                handle.removeCallbacksAndMessages(0)
+                AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+            }
+        }
     }
 
     fun loadInterstitial(activity: Activity, admobInterModel: AdmobInterModel) {
@@ -176,8 +192,9 @@ object AdmobLib {
             onAdsCloseOrFailed.invoke(false)
             return
         }
-        val handle = Handler(Looper.getMainLooper())
         showDialogFullScreen(activity)
+        val handle = Handler(Looper.getMainLooper())
+        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
         handle.postDelayed({
             admobInterModel.interstitialAd?.fullScreenContentCallback =
                 object : FullScreenContentCallback() {

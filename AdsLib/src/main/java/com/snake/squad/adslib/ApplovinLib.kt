@@ -156,7 +156,7 @@ object ApplovinLib {
     fun loadAndShowInterstitial(
         activity: AppCompatActivity,
         maxInterModel: MaxInterModel,
-        timeout: Long,
+        timeout: Long = 15000,
         onAdsCloseOrFailed: (Boolean) -> Unit
     ) {
         if (applovinSdk == null || applovinSdk?.isInitialized == false) {
