@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.0.9"
+                version = "1.1.0"
             }
         }
     }
@@ -59,37 +59,37 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     //Ads
-    implementation("com.applovin:applovin-sdk:12.5.0")
-    implementation("com.google.android.gms:play-services-ads:23.1.0")
+    implementation("com.applovin:applovin-sdk:12.6.0")
+    implementation("com.google.android.gms:play-services-ads:23.2.0")
 
-    implementation("androidx.lifecycle:lifecycle-process:2.8.2")
-    implementation("androidx.lifecycle:lifecycle-runtime:2.8.2")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.2")
-    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-process:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-runtime:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
+    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.8.4")
 
     implementation("com.airbnb.android:lottie:6.4.1")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("com.orhanobut:hawk:2.0.1")
 
     //Adjust
-    implementation("com.adjust.sdk:adjust-android:4.38.4")
+    implementation("com.adjust.sdk:adjust-android:4.38.5")
     implementation("com.android.installreferrer:installreferrer:2.2")
     implementation("com.google.android.gms:play-services-ads-identifier:18.1.0")
-    implementation("com.adjust.sdk:adjust-android-webbridge:4.38.4")
+    implementation("com.adjust.sdk:adjust-android-webbridge:4.38.5")
 
     //cmp
-    implementation("com.google.android.ump:user-messaging-platform:2.2.0")
+    implementation("com.google.android.ump:user-messaging-platform:3.0.0")
 
     //facebook sdk
-    implementation("com.facebook.android:facebook-android-sdk:16.0.0")
+    implementation("com.facebook.android:facebook-android-sdk:16.2.0")
 
     //admob mediation
-    implementation("com.google.ads.mediation:pangle:6.0.0.7.0")
-    implementation("com.google.ads.mediation:applovin:12.5.0.1")
+    implementation("com.google.ads.mediation:pangle:6.1.0.6.0")
+    implementation("com.google.ads.mediation:applovin:12.6.0.0")
     implementation("com.google.ads.mediation:facebook:6.17.0.0")
-    implementation("com.google.ads.mediation:ironsource:8.1.0.0")
-    implementation("com.google.ads.mediation:vungle:7.3.2.0")
-    implementation("com.google.ads.mediation:mintegral:16.7.61.0")
+    implementation("com.google.ads.mediation:ironsource:8.2.1.0")
+    implementation("com.google.ads.mediation:vungle:7.4.0.0")
+    implementation("com.google.ads.mediation:mintegral:16.7.81.0")
 
     //max mediation
     implementation("com.applovin.mediation:bidmachine-adapter:+")
