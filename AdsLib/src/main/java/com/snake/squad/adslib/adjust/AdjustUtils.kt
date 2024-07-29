@@ -16,11 +16,11 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 
 object AdjustUtils {
 
-    fun initAdjust(context: Context, key: String, debug: Boolean) {
-        val config = if (debug) {
-            AdjustConfig.ENVIRONMENT_SANDBOX
-        } else {
+    fun initAdjust(context: Context, key: String, isProduction: Boolean) {
+        val config = if (isProduction) {
             AdjustConfig.ENVIRONMENT_PRODUCTION
+        } else {
+            AdjustConfig.ENVIRONMENT_SANDBOX
         }
         val adjustConfig = AdjustConfig(
             context,
