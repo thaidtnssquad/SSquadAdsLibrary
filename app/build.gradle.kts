@@ -11,8 +11,8 @@ android {
         applicationId = "com.snake.squad.adslibrary"
         minSdk = 28
         targetSdk = 34
-        versionCode = 103
-        versionName = "1.0.3"
+        versionCode = 100
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

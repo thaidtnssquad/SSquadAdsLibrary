@@ -24,20 +24,22 @@ import com.snake.squad.adslib.R
 import com.snake.squad.adslib.adjust.AdjustUtils
 import com.snake.squad.adslib.utils.AdsConstants
 
-class AppOnResumeAdsManager private constructor(
-    private val application: Application,
-    private val adsID: String
-) : ActivityLifecycleCallbacks {
+class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
 
     companion object {
+
         private var instance: AppOnResumeAdsManager? = null
+        private var application: Application? = null
+        private var adsID: String? = null
 
         fun initialize(application: Application, adUnitId: String) {
-            instance = AppOnResumeAdsManager(application, adUnitId)
+            this.application = application
+            this.adsID = adUnitId
+            instance = AppOnResumeAdsManager()
         }
 
         fun getInstance(): AppOnResumeAdsManager {
-            return instance ?: throw IllegalStateException("AppOpenAdManager is not initialized")
+            return instance ?: AppOnResumeAdsManager()
         }
     }
 
@@ -54,7 +56,7 @@ class AppOnResumeAdsManager private constructor(
 
     init {
         initAdRequest()
-        application.registerActivityLifecycleCallbacks(this)
+        application?.registerActivityLifecycleCallbacks(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START && isAppResumeEnabled) {
                 currentActivity?.let {
@@ -90,36 +92,37 @@ class AppOnResumeAdsManager private constructor(
         if (isLoadingAd || isAdAvailable() || AdmobLib.getShowInterAds()) {
             return
         }
-        val appOnResumeID = if (AdmobLib.getDebugAds()){
+        val appOnResumeID = if (AdmobLib.getDebugAds()) {
             AdsConstants.APP_OPEN_TEST
         } else {
             adsID
         }
-        adRequest?.let {
-            isLoadingAd = true
-            AppOpenAd.load(
-                application,
-                appOnResumeID,
-                it,
-                object : AppOpenAdLoadCallback() {
-                    override fun onAdLoaded(ad: AppOpenAd) {
-                        Log.d(logTag, "Ad loaded successfully")
-                        appOpenAd = ad
-                        ad.setOnPaidEventListener { adValue ->
-                            AdjustUtils.postRevenueAdjust(adValue, ad.adUnitId)
+        if (application != null && appOnResumeID != null) {
+            adRequest?.let {
+                isLoadingAd = true
+                AppOpenAd.load(
+                    application!!,
+                    appOnResumeID,
+                    it,
+                    object : AppOpenAdLoadCallback() {
+                        override fun onAdLoaded(ad: AppOpenAd) {
+                            Log.d(logTag, "Ad loaded successfully")
+                            appOpenAd = ad
+                            ad.setOnPaidEventListener { adValue ->
+                                AdjustUtils.postRevenueAdjust(adValue, ad.adUnitId)
+                            }
+                            isLoadingAd = false
+                            loadTime = System.currentTimeMillis()
                         }
-                        isLoadingAd = false
-                        loadTime = System.currentTimeMillis()
-                    }
 
-                    override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                        Log.e(logTag, "Ad failed to load: ${loadAdError.message}")
-                        isLoadingAd = false
+                        override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                            Log.e(logTag, "Ad failed to load: ${loadAdError.message}")
+                            isLoadingAd = false
+                        }
                     }
-                }
-            )
+                )
+            }
         }
-
     }
 
     private fun isAdAvailable(): Boolean {
