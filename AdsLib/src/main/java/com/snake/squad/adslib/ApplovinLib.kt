@@ -287,11 +287,12 @@ object ApplovinLib {
             onAdsCloseOrFailed.invoke(false)
             return
         }
+        if (maxInterModel.interstitialAd == null || maxInterModel.interstitialAd?.isReady == false) {
+            loadInterstitial(activity, maxInterModel)
+            onAdsCloseOrFailed.invoke(false)
+            return
+        }
         maxInterModel.interstitialAd?.let {
-            if (!it.isReady) {
-                onAdsCloseOrFailed.invoke(false)
-                return
-            }
             showDialogFullScreen(activity)
             val handle = Handler(Looper.getMainLooper())
             AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)

@@ -189,6 +189,7 @@ object AdmobLib {
         onAdsCloseOrFailed: (Boolean) -> Unit
     ) {
         if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || admobInterModel.interstitialAd == null) {
+            if (admobInterModel.interstitialAd == null) loadInterstitial(activity, admobInterModel)
             onAdsCloseOrFailed.invoke(false)
             return
         }
