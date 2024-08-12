@@ -116,7 +116,9 @@ class AppOpenAdsManager(
                 showDialogFullScreen()
                 Handler(Looper.getMainLooper()).postDelayed({
                     if (!isShowingAd) {
-                        setOnPaidEventListener {  }
+                        setOnPaidEventListener { adValue ->
+                            AdjustUtils.postRevenueAdjust(adValue, adUnitId)
+                        }
                         show(activity)
                     } else {
                         onAdsCloseOrFailed.invoke(false)
