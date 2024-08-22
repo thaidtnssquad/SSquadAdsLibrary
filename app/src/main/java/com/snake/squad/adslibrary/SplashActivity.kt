@@ -47,6 +47,12 @@ class SplashActivity : AppCompatActivity() {
         }.loadAndShowAoA()
     }
 
+    private fun loadAndShowInter() {
+        AdmobLib.loadAndShowInterstitialSplash(this, AdsConstants.admobInterModelTest) {
+            replaceActivity()
+        }
+    }
+
     private fun replaceActivity() {
         val intent = Intent(this@SplashActivity, MainActivity::class.java)
         startActivity(intent)

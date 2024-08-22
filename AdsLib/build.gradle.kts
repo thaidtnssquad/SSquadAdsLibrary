@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.1.4"
+                version = "1.1.5"
             }
         }
     }
@@ -60,7 +60,7 @@ dependencies {
 
     //Ads
     implementation("com.applovin:applovin-sdk:12.6.0")
-    implementation("com.google.android.gms:play-services-ads:23.2.0")
+    implementation("com.google.android.gms:play-services-ads:23.3.0")
 
     implementation("androidx.lifecycle:lifecycle-process:2.8.4")
     implementation("androidx.lifecycle:lifecycle-runtime:2.8.4")
@@ -72,10 +72,10 @@ dependencies {
     implementation("com.orhanobut:hawk:2.0.1")
 
     //Adjust
-    implementation("com.adjust.sdk:adjust-android:4.38.5")
+    implementation("com.adjust.sdk:adjust-android:5.0.0")
     implementation("com.android.installreferrer:installreferrer:2.2")
     implementation("com.google.android.gms:play-services-ads-identifier:18.1.0")
-    implementation("com.adjust.sdk:adjust-android-webbridge:4.38.5")
+    implementation("com.adjust.sdk:adjust-android-webbridge:5.0.0")
 
     //cmp
     implementation("com.google.android.ump:user-messaging-platform:3.0.0")
@@ -84,19 +84,14 @@ dependencies {
     implementation("com.facebook.android:facebook-android-sdk:16.2.0")
 
     //admob mediation
-    implementation("com.google.ads.mediation:pangle:6.1.0.6.0")
+    implementation("com.google.ads.mediation:pangle:6.1.0.9.0")
     implementation("com.google.ads.mediation:applovin:12.6.0.0")
     implementation("com.google.ads.mediation:facebook:6.17.0.0")
-    implementation("com.google.ads.mediation:ironsource:8.2.1.0")
-    implementation("com.google.ads.mediation:vungle:7.4.0.0")
-    implementation("com.google.ads.mediation:mintegral:16.7.91.0")
+    implementation("com.google.ads.mediation:vungle:7.4.0.1")
+    implementation("com.google.ads.mediation:mintegral:16.8.31.0")
 
     //max mediation
-    implementation("com.applovin.mediation:bidmachine-adapter:+")
-    implementation("com.applovin.mediation:google-ad-manager-adapter:+")
     implementation("com.applovin.mediation:google-adapter:+")
-    implementation("com.applovin.mediation:inmobi-adapter:+")
-    implementation("com.applovin.mediation:ironsource-adapter:+")
     implementation("com.applovin.mediation:facebook-adapter:+")
     implementation("com.applovin.mediation:mintegral-adapter:+")
     implementation("com.applovin.mediation:bytedance-adapter:+")

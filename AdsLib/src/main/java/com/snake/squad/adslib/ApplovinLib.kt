@@ -216,7 +216,7 @@ object ApplovinLib {
             it.loadAd()
             activity.lifecycleScope.launch(Dispatchers.Main) {
                 delay(timeout)
-                if ((!it.isReady) && (!isShowInterAds)) {
+                if ((!it.isReady) || (!isShowInterAds)) {
                     isShowInterAds = false
                     dismissDialogFullScreen()
                     onAdsCloseOrFailed.invoke(false)
@@ -276,6 +276,7 @@ object ApplovinLib {
     fun showInterstitial(
         activity: AppCompatActivity,
         maxInterModel: MaxInterModel,
+        timeout: Long = 10000,
         isPreload: Boolean = true,
         onAdsCloseOrFailed: (Boolean) -> Unit
     ) {
@@ -350,6 +351,16 @@ object ApplovinLib {
             handle.postDelayed({
                 it.showAd(activity)
             }, 800)
+            activity.lifecycleScope.launch(Dispatchers.Main) {
+                delay(timeout)
+                if ((!it.isReady) || (!isShowInterAds)) {
+                    isShowInterAds = false
+                    dismissDialogFullScreen()
+                    onAdsCloseOrFailed.invoke(false)
+                    handle.removeCallbacksAndMessages(0)
+                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                }
+            }
         }
     }
 

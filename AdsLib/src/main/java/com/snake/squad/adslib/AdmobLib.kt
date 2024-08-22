@@ -81,6 +81,84 @@ object AdmobLib {
             .build()
     }
 
+    fun loadAndShowInterstitialSplash(
+        activity: AppCompatActivity,
+        admobInterModel: AdmobInterModel,
+        timeout: Long = 15000,
+        onAdsCloseOrFailed: (Boolean) -> Unit
+    ) {
+        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity)) {
+            onAdsCloseOrFailed.invoke(false)
+            return
+        }
+        val handle = Handler(Looper.getMainLooper())
+        val interAdRequest = adRequest ?: AdRequest.Builder().build()
+        InterstitialAd.load(
+            activity,
+            if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID,
+            interAdRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    dismissDialogFullScreen()
+                    onAdsCloseOrFailed.invoke(false)
+                    admobInterModel.interstitialAd = null
+                    AppOnResumeAdsManager.getInstance()
+                        .setAppResumeEnabled(true)
+                }
+
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    showDialogFullScreen(activity)
+                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+                    handle.postDelayed({
+                        interstitialAd.fullScreenContentCallback =
+                            object : FullScreenContentCallback() {
+                                override fun onAdDismissedFullScreenContent() {
+                                    isShowInterAds = false
+                                    onAdsCloseOrFailed.invoke(true)
+                                    admobInterModel.interstitialAd = null
+                                    handle.removeCallbacksAndMessages(0)
+                                    AppOnResumeAdsManager.getInstance()
+                                        .setAppResumeEnabled(true)
+                                }
+
+                                override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                                    isShowInterAds = false
+                                    dismissDialogFullScreen()
+                                    onAdsCloseOrFailed.invoke(false)
+                                    admobInterModel.interstitialAd = null
+                                    handle.removeCallbacksAndMessages(0)
+                                    AppOnResumeAdsManager.getInstance()
+                                        .setAppResumeEnabled(true)
+                                }
+
+                                override fun onAdClicked() {}
+                                override fun onAdImpression() {}
+                                override fun onAdShowedFullScreenContent() {
+                                    isShowInterAds = true
+                                    handle.postDelayed({
+                                        dismissDialogFullScreen()
+                                    }, 800)
+                                }
+                            }
+                        interstitialAd.setOnPaidEventListener {
+                            AdjustUtils.postRevenueAdjustInter(interstitialAd, it, admobInterModel.adsID)
+                        }
+                        interstitialAd.show(activity)
+                    }, 800)
+                }
+            })
+        activity.lifecycleScope.launch(Dispatchers.Main) {
+            delay(timeout)
+            if ((admobInterModel.interstitialAd == null) || (!isShowInterAds)) {
+                isShowInterAds = false
+                dismissDialogFullScreen()
+                onAdsCloseOrFailed.invoke(false)
+                handle.removeCallbacksAndMessages(0)
+                AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+            }
+        }
+    }
+
     fun loadAndShowInterstitial(
         activity: AppCompatActivity,
         admobInterModel: AdmobInterModel,
@@ -147,7 +225,7 @@ object AdmobLib {
             })
         activity.lifecycleScope.launch(Dispatchers.Main) {
             delay(timeout)
-            if ((admobInterModel.interstitialAd != null) && (!isShowInterAds)) {
+            if ((admobInterModel.interstitialAd == null) || (!isShowInterAds)) {
                 isShowInterAds = false
                 dismissDialogFullScreen()
                 onAdsCloseOrFailed.invoke(false)
@@ -183,8 +261,9 @@ object AdmobLib {
     }
 
     fun showInterstitial(
-        activity: Activity,
+        activity: AppCompatActivity,
         admobInterModel: AdmobInterModel,
+        timeout: Long = 10000,
         isPreload: Boolean = true,
         onAdsCloseOrFailed: (Boolean) -> Unit
     ) {
@@ -233,6 +312,16 @@ object AdmobLib {
                 }
             admobInterModel.interstitialAd?.show(activity)
         }, 800)
+        activity.lifecycleScope.launch(Dispatchers.Main) {
+            delay(timeout)
+            if ((admobInterModel.interstitialAd == null) || (!isShowInterAds)) {
+                isShowInterAds = false
+                dismissDialogFullScreen()
+                onAdsCloseOrFailed.invoke(false)
+                handle.removeCallbacksAndMessages(0)
+                AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+            }
+        }
     }
 
     fun loadAndShowBanner(
