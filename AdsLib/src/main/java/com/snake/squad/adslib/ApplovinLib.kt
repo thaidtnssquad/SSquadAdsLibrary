@@ -145,9 +145,11 @@ object ApplovinLib {
             it.loadAd()
             activity.lifecycleScope.launch(Dispatchers.Main) {
                 delay(timeout)
-                if ((!it.isReady) && (!isShowInterAds)) {
+                if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
+                    isShowInterAds = false
                     dismissDialogFullScreen()
-                    onAdsCloseOrFailed.invoke(false)
+                    handle.removeCallbacksAndMessages(0)
+                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                 }
             }
         }
@@ -216,10 +218,9 @@ object ApplovinLib {
             it.loadAd()
             activity.lifecycleScope.launch(Dispatchers.Main) {
                 delay(timeout)
-                if ((!it.isReady) || (!isShowInterAds)) {
+                if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                     isShowInterAds = false
                     dismissDialogFullScreen()
-                    onAdsCloseOrFailed.invoke(false)
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                 }
@@ -353,10 +354,9 @@ object ApplovinLib {
             }, 800)
             activity.lifecycleScope.launch(Dispatchers.Main) {
                 delay(timeout)
-                if ((!it.isReady) || (!isShowInterAds)) {
+                if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                     isShowInterAds = false
                     dismissDialogFullScreen()
-                    onAdsCloseOrFailed.invoke(false)
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                 }
@@ -609,7 +609,7 @@ object ApplovinLib {
     fun loadAndShowRewarded(
         activity: AppCompatActivity,
         rewardedModel: MaxRewardedModel,
-        timeout: Long,
+        timeout: Long = 15000L,
         onAdsCloseOrFailed: (Boolean) -> Unit
     ) {
         if (applovinSdk == null || applovinSdk?.isInitialized == false) {
@@ -675,10 +675,9 @@ object ApplovinLib {
             it.loadAd()
             activity.lifecycleScope.launch(Dispatchers.Main) {
                 delay(timeout)
-                if ((!it.isReady) && (!isShowRewardAds)) {
+                if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                     isShowRewardAds = false
                     dismissDialogFullScreen()
-                    onAdsCloseOrFailed.invoke(false)
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                 }
@@ -738,6 +737,7 @@ object ApplovinLib {
     fun showRewarded(
         activity: AppCompatActivity,
         rewardedModel: MaxRewardedModel,
+        timeout: Long = 10000L,
         isPreload: Boolean = true,
         onAdsCloseOrFailed: (Boolean) -> Unit
     ) {
@@ -749,6 +749,7 @@ object ApplovinLib {
             onAdsCloseOrFailed.invoke(false)
             return
         }
+        val handle = Handler(Looper.getMainLooper())
         rewardedModel.rewardAd?.let {
             if (!it.isReady) {
                 onAdsCloseOrFailed.invoke(false)
@@ -756,7 +757,6 @@ object ApplovinLib {
             }
             var isEarned = false
             showDialogFullScreen(activity)
-            val handle = Handler(Looper.getMainLooper())
             AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
             it.setRevenueListener { ad ->
                 AdjustUtils.postRevenueAdjustMax(ad)
@@ -812,6 +812,15 @@ object ApplovinLib {
             handle.postDelayed({
                 it.showAd(activity)
             }, 800)
+        }
+        activity.lifecycleScope.launch(Dispatchers.Main) {
+            delay(timeout)
+            if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
+                isShowRewardAds = false
+                dismissDialogFullScreen()
+                handle.removeCallbacksAndMessages(0)
+                AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+            }
         }
     }
 

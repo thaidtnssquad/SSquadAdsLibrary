@@ -149,10 +149,10 @@ object AdmobLib {
             })
         activity.lifecycleScope.launch(Dispatchers.Main) {
             delay(timeout)
-            if ((admobInterModel.interstitialAd == null) || (!isShowInterAds)) {
+            if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                 isShowInterAds = false
                 dismissDialogFullScreen()
-                onAdsCloseOrFailed.invoke(false)
+                admobInterModel.interstitialAd = null
                 handle.removeCallbacksAndMessages(0)
                 AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
             }
@@ -225,10 +225,10 @@ object AdmobLib {
             })
         activity.lifecycleScope.launch(Dispatchers.Main) {
             delay(timeout)
-            if ((admobInterModel.interstitialAd == null) || (!isShowInterAds)) {
+            if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                 isShowInterAds = false
                 dismissDialogFullScreen()
-                onAdsCloseOrFailed.invoke(false)
+                admobInterModel.interstitialAd = null
                 handle.removeCallbacksAndMessages(0)
                 AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
             }
@@ -314,10 +314,10 @@ object AdmobLib {
         }, 800)
         activity.lifecycleScope.launch(Dispatchers.Main) {
             delay(timeout)
-            if ((admobInterModel.interstitialAd == null) || (!isShowInterAds)) {
+            if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                 isShowInterAds = false
                 dismissDialogFullScreen()
-                onAdsCloseOrFailed.invoke(false)
+                admobInterModel.interstitialAd = null
                 handle.removeCallbacksAndMessages(0)
                 AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
             }
@@ -552,8 +552,9 @@ object AdmobLib {
     }
 
     fun loadAndShowRewarded(
-        activity: Activity,
+        activity: AppCompatActivity,
         admobRewardedModel: AdmobRewardedModel,
+        timeout: Long = 15000L,
         onAdsCloseOrFailed: (isEarned: Boolean) -> Unit
     ) {
         if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity)) {
@@ -621,6 +622,16 @@ object AdmobLib {
                     }
                 }
             })
+        activity.lifecycleScope.launch(Dispatchers.Main) {
+            delay(timeout)
+            if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
+                isShowRewardAds = false
+                dismissDialogFullScreen()
+                admobRewardedModel.rewardAd = null
+                handle.removeCallbacksAndMessages(0)
+                AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+            }
+        }
     }
 
     fun loadRewarded(activity: Activity, admobRewardedModel: AdmobRewardedModel) {
@@ -649,8 +660,9 @@ object AdmobLib {
     }
 
     fun showRewarded(
-        activity: Activity,
+        activity: AppCompatActivity,
         admobRewardedModel: AdmobRewardedModel,
+        timeout: Long = 10000L,
         isPreload: Boolean = true,
         onAdsCloseOrFailed: (isEarned: Boolean) -> Unit
     ) {
@@ -699,6 +711,16 @@ object AdmobLib {
                 isEarnedReward = true
             }
         }, 800)
+        activity.lifecycleScope.launch(Dispatchers.Main) {
+            delay(timeout)
+            if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
+                isShowRewardAds = false
+                dismissDialogFullScreen()
+                admobRewardedModel.rewardAd = null
+                handle.removeCallbacksAndMessages(0)
+                AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+            }
+        }
     }
 
     fun getDebugAds(): Boolean {

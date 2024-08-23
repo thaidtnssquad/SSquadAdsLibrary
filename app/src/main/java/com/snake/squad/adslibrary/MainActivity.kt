@@ -1,5 +1,6 @@
 package com.snake.squad.adslibrary
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
                 this,
                 AdsConstants.admobInterModelTest
             ) {
-
+                startActivity(Intent(this@MainActivity, SecondActivity::class.java))
             }
         }
 
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                 this,
                 AdsConstants.admobInterModelTest
             ) {
-
+                startActivity(Intent(this@MainActivity, SecondActivity::class.java))
             }
         }
 
