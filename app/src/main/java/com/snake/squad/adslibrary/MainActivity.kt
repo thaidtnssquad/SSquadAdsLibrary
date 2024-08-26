@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             setupViewBannerOrNative(true)
             AdmobLib.loadAndShowBannerCollapsible(
                 this,
-                AdsConstants.ADMOB_BANNER_COLLAPSE_TEST,
+                AdsConstants.admobBannerCollapsibleModel,
                 binding.frBanner,
                 binding.viewLine
             )

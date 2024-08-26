@@ -38,6 +38,7 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.snake.squad.adslib.adjust.AdjustUtils
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
+import com.snake.squad.adslib.models.AdmobBannerCollapsibleModel
 import com.snake.squad.adslib.models.AdmobInterModel
 import com.snake.squad.adslib.models.AdmobNativeModel
 import com.snake.squad.adslib.models.AdmobRewardedModel
@@ -380,7 +381,7 @@ object AdmobLib {
 
     fun loadAndShowBannerCollapsible(
         activity: Activity,
-        bannerID: String,
+        admobBannerCollapsibleModel: AdmobBannerCollapsibleModel,
         viewGroup: ViewGroup,
         viewLine: View,
         collapsibleType: BannerCollapsibleType? = null
@@ -390,17 +391,21 @@ object AdmobLib {
             viewLine.visibility = View.GONE
             return
         }
-        val adView = AdView(activity)
-        adView.adUnitId =
-            if (isDebug) AdsConstants.ADMOB_BANNER_COLLAPSE_TEST else bannerID
+        admobBannerCollapsibleModel.adView?.destroy()
+        admobBannerCollapsibleModel.adView?.let {
+            viewGroup.removeView(it)
+        }
+        admobBannerCollapsibleModel.adView = AdView(activity)
+        admobBannerCollapsibleModel.adView?.adUnitId =
+            if (isDebug) AdsConstants.admobBannerCollapsibleModel.adsID else admobBannerCollapsibleModel.adsID
         val adSize = getAdSize(activity)
-        adView.setAdSize(adSize)
+        admobBannerCollapsibleModel.adView?.setAdSize(adSize)
         val shimmerLoadingView =
             activity.layoutInflater.inflate(R.layout.banner_shimmer_layout, null, false)
         try {
             viewGroup.removeAllViews()
             viewGroup.addView(shimmerLoadingView, 0)
-            viewGroup.addView(adView, 1)
+            viewGroup.addView(admobBannerCollapsibleModel.adView, 1)
         } catch (e: Exception) {
             e.message
         }
@@ -408,10 +413,10 @@ object AdmobLib {
             shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
         shimmerFrameLayout.startShimmer()
 
-        adView.adListener = object : AdListener() {
+        admobBannerCollapsibleModel.adView?.adListener = object : AdListener() {
             override fun onAdLoaded() {
-                adView.setOnPaidEventListener {
-                    AdjustUtils.postRevenueAdjust(it, adView.adUnitId)
+                admobBannerCollapsibleModel.adView?.setOnPaidEventListener {
+                    AdjustUtils.postRevenueAdjust(it, admobBannerCollapsibleModel.adView?.adUnitId)
                 }
                 shimmerFrameLayout.stopShimmer()
                 viewGroup.removeView(shimmerLoadingView)
@@ -435,7 +440,7 @@ object AdmobLib {
         extras.putString("collapsible", collapsibleType?.value ?: BannerCollapsibleType.BOTTOM.value)
         val adRequestCollapsible =
             AdRequest.Builder().addNetworkExtrasBundle(AdMobAdapter::class.java, extras).build()
-        adView.loadAd(adRequestCollapsible)
+        admobBannerCollapsibleModel.adView?.loadAd(adRequestCollapsible)
     }
 
     fun loadAndShowNative(

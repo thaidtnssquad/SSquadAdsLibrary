@@ -141,9 +141,10 @@ In bottom of activity.xml:
 ```
 #### Load And Show Banner Collapsible
 ```sh
+    val admobBannerCollapsibleModel = AdmobBannerCollapsibleModel("BANNER_COLLAPSIBLE_ID")
     AdmobLib.loadAndShowBannerCollapsible(
                 activity,
-                "BANNER_COLLAPSIBLE_ID",
+                admobBannerCollapsibleModel,
                 binding.frBanner,
                 binding.viewLine
             )
