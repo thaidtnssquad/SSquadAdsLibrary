@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.1.7-no-mediation"
+                version = "1.1.8-no-mediation"
             }
         }
     }
@@ -59,7 +59,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     //Ads
-    implementation("com.applovin:applovin-sdk:12.6.0")
+    implementation("com.applovin:applovin-sdk:12.6.1")
     implementation("com.google.android.gms:play-services-ads:23.3.0")
 
     implementation("androidx.lifecycle:lifecycle-process:2.8.4")
@@ -81,21 +81,21 @@ dependencies {
     implementation("com.google.android.ump:user-messaging-platform:3.0.0")
 
     //facebook sdk
-    implementation("com.facebook.android:facebook-android-sdk:16.2.0")
+    implementation("com.facebook.android:facebook-android-sdk:17.0.0")
 
     //admob mediation
-    implementation("com.google.ads.mediation:pangle:6.1.0.9.0")
-    implementation("com.google.ads.mediation:applovin:12.6.0.0")
-    implementation("com.google.ads.mediation:facebook:6.17.0.0")
-    implementation("com.google.ads.mediation:vungle:7.4.0.1")
-    implementation("com.google.ads.mediation:mintegral:16.8.31.0")
+//    implementation("com.google.ads.mediation:pangle:6.1.0.9.0")
+//    implementation("com.google.ads.mediation:applovin:12.6.0.0")
+//    implementation("com.google.ads.mediation:facebook:6.17.0.0")
+//    implementation("com.google.ads.mediation:vungle:7.4.0.1")
+//    implementation("com.google.ads.mediation:mintegral:16.8.31.0")
 
     //max mediation
-    implementation("com.applovin.mediation:google-adapter:+")
-    implementation("com.applovin.mediation:facebook-adapter:+")
-    implementation("com.applovin.mediation:mintegral-adapter:+")
-    implementation("com.applovin.mediation:bytedance-adapter:+")
-    implementation("com.applovin.mediation:vungle-adapter:+")
+//    implementation("com.applovin.mediation:google-adapter:+")
+//    implementation("com.applovin.mediation:facebook-adapter:+")
+//    implementation("com.applovin.mediation:mintegral-adapter:+")
+//    implementation("com.applovin.mediation:bytedance-adapter:+")
+//    implementation("com.applovin.mediation:vungle-adapter:+")
 
     //rating
     implementation("com.github.ome450901:SimpleRatingBar:1.5.1")

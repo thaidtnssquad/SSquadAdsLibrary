@@ -66,14 +66,19 @@ object AdmobLib {
         isDebug: Boolean = true,
         isShowAds: Boolean = true
     ) {
-        AdmobLib.isDebug = isDebug
-        AdmobLib.isShowAds = isShowAds
-        MobileAds.initialize(context) { Log.d("TAG=====", "initAds") }
-        val requestConfiguration = RequestConfiguration.Builder()
-            .setTestDeviceIds(listOf())
-            .build()
-        MobileAds.setRequestConfiguration(requestConfiguration)
-        initAdRequest(timeout)
+        try {
+            this.isDebug = isDebug
+            this.isShowAds = isShowAds
+            MobileAds.initialize(context) { Log.d("TAG=====", "initAds") }
+            val requestConfiguration = RequestConfiguration.Builder()
+                .setTestDeviceIds(listOf())
+                .build()
+            MobileAds.setRequestConfiguration(requestConfiguration)
+            initAdRequest(timeout)
+        } catch (e: Exception) {
+            e.message
+            this.isShowAds = false
+        }
     }
 
     private fun initAdRequest(timeOut: Int) {

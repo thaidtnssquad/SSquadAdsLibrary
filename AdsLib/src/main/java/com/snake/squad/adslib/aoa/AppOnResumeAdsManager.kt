@@ -89,7 +89,7 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
     }
 
     private fun loadAd() {
-        if (isLoadingAd || isAdAvailable() || AdmobLib.getShowInterAds()) {
+        if (isLoadingAd || isAdAvailable() || !AdmobLib.getShowAds() || AdmobLib.getShowInterAds()) {
             return
         }
         val appOnResumeID = if (AdmobLib.getDebugAds()) {
@@ -130,7 +130,7 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
     }
 
     private fun showAdIfAvailable(activity: Activity) {
-        if (isShowingAd || disabledActivities.contains(activity.javaClass)) {
+        if (!AdmobLib.getShowAds() || isShowingAd || disabledActivities.contains(activity.javaClass)) {
             return
         }
         if (!isAdAvailable()) {

@@ -40,6 +40,11 @@ class AppOpenAdsManager(
         get() = appOpenAd != null
 
     fun loadAndShowAoA() {
+        if (!AdmobLib.getShowAds()) {
+            onAoaDestroyed()
+            onAdsCloseOrFailed.invoke(false)
+            return
+        }
         val appOpenID = if (AdmobLib.getDebugAds()){
             AdsConstants.APP_OPEN_TEST
         } else {
@@ -88,7 +93,7 @@ class AppOpenAdsManager(
     }
 
     fun showAdIfAvailable() {
-        if (!isShowingAd && isAdAvailable && isLoadingAd) {
+        if (AdmobLib.getShowAds() && !isShowingAd && isAdAvailable && isLoadingAd) {
             isLoadingAd = false
             val fullScreenContentCallback: FullScreenContentCallback =
                 object : FullScreenContentCallback() {
