@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.1.8-mediation"
+                version = "1.1.9-mediation"
             }
         }
     }
@@ -59,13 +59,13 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     //Ads
-    implementation("com.applovin:applovin-sdk:12.6.1")
+    implementation("com.applovin:applovin-sdk:13.0.0")
     implementation("com.google.android.gms:play-services-ads:23.3.0")
 
-    implementation("androidx.lifecycle:lifecycle-process:2.8.4")
-    implementation("androidx.lifecycle:lifecycle-runtime:2.8.4")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
-    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-process:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-runtime:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
+    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.8.6")
 
     implementation("com.airbnb.android:lottie:6.4.1")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
@@ -84,11 +84,11 @@ dependencies {
     implementation("com.facebook.android:facebook-android-sdk:17.0.0")
 
     //admob mediation
-    implementation("com.google.ads.mediation:pangle:6.1.0.9.0")
-    implementation("com.google.ads.mediation:applovin:12.6.0.0")
-    implementation("com.google.ads.mediation:facebook:6.17.0.0")
-    implementation("com.google.ads.mediation:vungle:7.4.0.1")
-    implementation("com.google.ads.mediation:mintegral:16.8.31.0")
+    implementation("com.google.ads.mediation:pangle:+")
+    implementation("com.google.ads.mediation:applovin:+")
+    implementation("com.google.ads.mediation:facebook:+")
+    implementation("com.google.ads.mediation:vungle:+")
+    implementation("com.google.ads.mediation:mintegral:+")
 
     //max mediation
     implementation("com.applovin.mediation:google-adapter:+")
