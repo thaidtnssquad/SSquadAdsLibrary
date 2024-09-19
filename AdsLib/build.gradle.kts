@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.1.9-mediation"
+                version = "1.1.9-no-mediation"
             }
         }
     }
@@ -84,18 +84,18 @@ dependencies {
     implementation("com.facebook.android:facebook-android-sdk:17.0.0")
 
     //admob mediation
-    implementation("com.google.ads.mediation:pangle:+")
-    implementation("com.google.ads.mediation:applovin:+")
-    implementation("com.google.ads.mediation:facebook:+")
-    implementation("com.google.ads.mediation:vungle:+")
-    implementation("com.google.ads.mediation:mintegral:+")
+//    implementation("com.google.ads.mediation:pangle:+")
+//    implementation("com.google.ads.mediation:applovin:+")
+//    implementation("com.google.ads.mediation:facebook:+")
+//    implementation("com.google.ads.mediation:vungle:+")
+//    implementation("com.google.ads.mediation:mintegral:+")
 
     //max mediation
-    implementation("com.applovin.mediation:google-adapter:+")
-    implementation("com.applovin.mediation:facebook-adapter:+")
-    implementation("com.applovin.mediation:mintegral-adapter:+")
-    implementation("com.applovin.mediation:bytedance-adapter:+")
-    implementation("com.applovin.mediation:vungle-adapter:+")
+//    implementation("com.applovin.mediation:google-adapter:+")
+//    implementation("com.applovin.mediation:facebook-adapter:+")
+//    implementation("com.applovin.mediation:mintegral-adapter:+")
+//    implementation("com.applovin.mediation:bytedance-adapter:+")
+//    implementation("com.applovin.mediation:vungle-adapter:+")
 
     //rating
     implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
