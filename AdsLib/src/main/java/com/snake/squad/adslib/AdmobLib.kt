@@ -334,7 +334,9 @@ object AdmobLib {
         activity: Activity,
         bannerID: String,
         viewGroup: ViewGroup,
-        viewLine: View
+        viewLine: View,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: (() -> Unit?)? = null
     ) {
         if (!isShowAds || !isNetworkConnected(activity)) {
             viewGroup.visibility = View.GONE
@@ -366,6 +368,7 @@ object AdmobLib {
             override fun onAdLoaded() {
                 shimmerFrameLayout.stopShimmer()
                 viewGroup.removeView(shimmerLoadingView)
+                onAdsLoaded?.invoke()
             }
 
             override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -373,6 +376,7 @@ object AdmobLib {
                 viewGroup.removeView(shimmerLoadingView)
                 viewGroup.visibility = View.GONE
                 viewLine.visibility = View.GONE
+                onAdsLoadFail?.invoke()
             }
 
             override fun onAdOpened() {}
@@ -389,7 +393,9 @@ object AdmobLib {
         admobBannerCollapsibleModel: AdmobBannerCollapsibleModel,
         viewGroup: ViewGroup,
         viewLine: View,
-        collapsibleType: BannerCollapsibleType? = null
+        collapsibleType: BannerCollapsibleType? = null,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: (() -> Unit?)? = null
     ) {
         if (!isShowAds || !isNetworkConnected(activity)) {
             viewGroup.visibility = View.GONE
@@ -428,6 +434,7 @@ object AdmobLib {
                 val params: ViewGroup.LayoutParams = viewGroup.layoutParams
                 params.height = adSize.getHeightInPixels(activity)
                 viewGroup.layoutParams = params
+                onAdsLoaded?.invoke()
             }
 
             override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -435,6 +442,7 @@ object AdmobLib {
                 viewGroup.removeView(shimmerLoadingView)
                 viewGroup.visibility = View.GONE
                 viewLine.visibility = View.GONE
+                onAdsLoadFail?.invoke()
             }
 
             override fun onAdOpened() {}
@@ -453,7 +461,9 @@ object AdmobLib {
         admobNativeModel: AdmobNativeModel,
         viewGroup: ViewGroup,
         isMedium: Boolean = true,
-        layout: Int? = null
+        layout: Int? = null,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: (() -> Unit?)? = null
     ) {
         if (!isShowAds || !isNetworkConnected(activity)) {
             viewGroup.visibility = View.GONE
@@ -498,11 +508,13 @@ object AdmobLib {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     shimmerFrameLayout.stopShimmer()
                     viewGroup.visibility = View.GONE
+                    onAdsLoadFail?.invoke()
                 }
 
                 override fun onAdLoaded() {
                     super.onAdLoaded()
                     viewGroup.visibility = View.VISIBLE
+                    onAdsLoaded?.invoke()
                 }
             })
             .withNativeAdOptions(NativeAdOptions.Builder().build()).build()

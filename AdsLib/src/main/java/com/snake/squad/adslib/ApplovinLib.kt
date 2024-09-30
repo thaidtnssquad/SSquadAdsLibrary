@@ -368,7 +368,9 @@ object ApplovinLib {
         activity: Activity,
         bannerID: String,
         viewGroup: ViewGroup,
-        viewLine: View
+        viewLine: View,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: (() -> Unit?)? = null
     ) {
         if (applovinSdk == null ||
             applovinSdk?.isInitialized == false ||
@@ -413,6 +415,7 @@ object ApplovinLib {
             override fun onAdLoaded(p0: MaxAd) {
                 shimmerFrameLayout.stopShimmer()
                 viewGroup.removeView(shimmerLoadingView)
+                onAdsLoaded?.invoke()
             }
 
             override fun onAdDisplayed(p0: MaxAd) {
@@ -428,12 +431,14 @@ object ApplovinLib {
                 viewGroup.removeAllViews()
                 viewGroup.visibility = View.GONE
                 viewLine.visibility = View.GONE
+                onAdsLoadFail?.invoke()
             }
 
             override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
                 viewGroup.removeAllViews()
                 viewGroup.visibility = View.GONE
                 viewLine.visibility = View.GONE
+                onAdsLoadFail?.invoke()
             }
 
             override fun onAdExpanded(p0: MaxAd) {
@@ -465,7 +470,9 @@ object ApplovinLib {
         nativeModel: MaxNativeModel,
         viewGroup: ViewGroup,
         isMedium: Boolean = true,
-        layout: Int? = null
+        layout: Int? = null,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: (() -> Unit?)? = null
     ) {
         if (applovinSdk == null ||
             applovinSdk?.isInitialized == false ||
@@ -507,11 +514,13 @@ object ApplovinLib {
                 viewGroup.removeAllViews()
                 viewGroup.addView(adView)
                 viewGroup.visibility = View.VISIBLE
+                onAdsLoaded?.invoke()
             }
 
             override fun onNativeAdLoadFailed(adUnitId: String, error: MaxError) {
                 shimmerFrameLayout.stopShimmer()
                 viewGroup.visibility = View.GONE
+                onAdsLoadFail?.invoke()
             }
 
             override fun onNativeAdClicked(ad: MaxAd) {
@@ -560,7 +569,9 @@ object ApplovinLib {
         nativeModel: MaxNativeModel,
         viewGroup: ViewGroup,
         isMedium: Boolean = true,
-        layout: Int? = null
+        layout: Int? = null,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: (() -> Unit?)? = null
     ) {
         if (applovinSdk == null ||
             applovinSdk?.isInitialized == false ||
@@ -595,13 +606,16 @@ object ApplovinLib {
                 viewGroup.removeAllViews()
                 viewGroup.addView(adView)
                 viewGroup.visibility = View.VISIBLE
+                onAdsLoaded?.invoke()
             } else {
                 shimmerFrameLayout.stopShimmer()
                 viewGroup.visibility = View.GONE
+                onAdsLoadFail?.invoke()
             }
         } else {
             shimmerFrameLayout.stopShimmer()
             viewGroup.visibility = View.GONE
+            onAdsLoadFail?.invoke()
         }
 
     }
