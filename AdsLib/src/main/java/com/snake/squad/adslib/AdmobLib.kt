@@ -91,10 +91,12 @@ object AdmobLib {
         activity: AppCompatActivity,
         admobInterModel: AdmobInterModel,
         timeout: Long = 15000,
-        onAdsCloseOrFailed: (Boolean) -> Unit
+        onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
+        onAdsShowedOrFailed: ((Boolean) -> Unit)? = null
     ) {
         if (!isShowAds || isShowInterAds || !isNetworkConnected(activity)) {
-            onAdsCloseOrFailed.invoke(false)
+            onAdsShowedOrFailed?.invoke(false)
+            onAdsCloseOrFailed?.invoke(false)
             return
         }
         val handle = Handler(Looper.getMainLooper())
@@ -106,7 +108,8 @@ object AdmobLib {
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     dismissDialogFullScreen()
-                    onAdsCloseOrFailed.invoke(false)
+                    onAdsShowedOrFailed?.invoke(false)
+                    onAdsCloseOrFailed?.invoke(false)
                     admobInterModel.interstitialAd = null
                     AppOnResumeAdsManager.getInstance()
                         .setAppResumeEnabled(true)
@@ -120,7 +123,7 @@ object AdmobLib {
                             object : FullScreenContentCallback() {
                                 override fun onAdDismissedFullScreenContent() {
                                     isShowInterAds = false
-                                    onAdsCloseOrFailed.invoke(true)
+                                    onAdsCloseOrFailed?.invoke(true)
                                     admobInterModel.interstitialAd = null
                                     handle.removeCallbacksAndMessages(0)
                                     AppOnResumeAdsManager.getInstance()
@@ -130,7 +133,8 @@ object AdmobLib {
                                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                                     isShowInterAds = false
                                     dismissDialogFullScreen()
-                                    onAdsCloseOrFailed.invoke(false)
+                                    onAdsShowedOrFailed?.invoke(false)
+                                    onAdsCloseOrFailed?.invoke(false)
                                     admobInterModel.interstitialAd = null
                                     handle.removeCallbacksAndMessages(0)
                                     AppOnResumeAdsManager.getInstance()
@@ -143,6 +147,7 @@ object AdmobLib {
                                     isShowInterAds = true
                                     handle.postDelayed({
                                         dismissDialogFullScreen()
+                                        onAdsShowedOrFailed?.invoke(true)
                                     }, 800)
                                 }
                             }
@@ -169,10 +174,12 @@ object AdmobLib {
         activity: AppCompatActivity,
         admobInterModel: AdmobInterModel,
         timeout: Long = 15000,
-        onAdsCloseOrFailed: (Boolean) -> Unit
+        onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
+        onAdsShowedOrFailed: ((Boolean) -> Unit)? = null
     ) {
         if (!isShowAds || isShowInterAds || !isNetworkConnected(activity)) {
-            onAdsCloseOrFailed.invoke(false)
+            onAdsShowedOrFailed?.invoke(false)
+            onAdsCloseOrFailed?.invoke(false)
             return
         }
         showDialogFullScreen(activity)
@@ -186,7 +193,8 @@ object AdmobLib {
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     dismissDialogFullScreen()
-                    onAdsCloseOrFailed.invoke(false)
+                    onAdsShowedOrFailed?.invoke(false)
+                    onAdsCloseOrFailed?.invoke(false)
                     admobInterModel.interstitialAd = null
                     AppOnResumeAdsManager.getInstance()
                         .setAppResumeEnabled(true)
@@ -197,7 +205,7 @@ object AdmobLib {
                         object : FullScreenContentCallback() {
                             override fun onAdDismissedFullScreenContent() {
                                 isShowInterAds = false
-                                onAdsCloseOrFailed.invoke(true)
+                                onAdsCloseOrFailed?.invoke(true)
                                 admobInterModel.interstitialAd = null
                                 handle.removeCallbacksAndMessages(0)
                                 AppOnResumeAdsManager.getInstance()
@@ -207,7 +215,8 @@ object AdmobLib {
                             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                                 isShowInterAds = false
                                 dismissDialogFullScreen()
-                                onAdsCloseOrFailed.invoke(false)
+                                onAdsShowedOrFailed?.invoke(false)
+                                onAdsCloseOrFailed?.invoke(false)
                                 admobInterModel.interstitialAd = null
                                 handle.removeCallbacksAndMessages(0)
                                 AppOnResumeAdsManager.getInstance()
@@ -220,6 +229,7 @@ object AdmobLib {
                                 isShowInterAds = true
                                 handle.postDelayed({
                                     dismissDialogFullScreen()
+                                    onAdsShowedOrFailed?.invoke(true)
                                 }, 800)
                             }
                         }
@@ -271,11 +281,13 @@ object AdmobLib {
         admobInterModel: AdmobInterModel,
         timeout: Long = 10000,
         isPreload: Boolean = true,
-        onAdsCloseOrFailed: (Boolean) -> Unit
+        onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
+        onAdsShowedOrFailed: ((Boolean) -> Unit)? = null
     ) {
         if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || admobInterModel.interstitialAd == null) {
             if (admobInterModel.interstitialAd == null) loadInterstitial(activity, admobInterModel)
-            onAdsCloseOrFailed.invoke(false)
+            onAdsShowedOrFailed?.invoke(false)
+            onAdsCloseOrFailed?.invoke(false)
             return
         }
         showDialogFullScreen(activity)
@@ -286,7 +298,7 @@ object AdmobLib {
                 object : FullScreenContentCallback() {
                     override fun onAdDismissedFullScreenContent() {
                         isShowInterAds = false
-                        onAdsCloseOrFailed.invoke(true)
+                        onAdsCloseOrFailed?.invoke(true)
                         admobInterModel.interstitialAd = null
                         handle.removeCallbacksAndMessages(0)
                         AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
@@ -298,7 +310,8 @@ object AdmobLib {
                     override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                         isShowInterAds = false
                         dismissDialogFullScreen()
-                        onAdsCloseOrFailed.invoke(false)
+                        onAdsShowedOrFailed?.invoke(false)
+                        onAdsCloseOrFailed?.invoke(false)
                         admobInterModel.interstitialAd = null
                         handle.removeCallbacksAndMessages(0)
                         AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
@@ -313,6 +326,7 @@ object AdmobLib {
                         isShowInterAds = true
                         handle.postDelayed({
                             dismissDialogFullScreen()
+                            onAdsShowedOrFailed?.invoke(true)
                         }, 800)
                     }
                 }

@@ -89,14 +89,17 @@ object ApplovinLib {
         activity: AppCompatActivity,
         maxInterModel: MaxInterModel,
         timeout: Long,
-        onAdsCloseOrFailed: (Boolean) -> Unit
+        onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
+        onAdsShowedOrFailed: ((Boolean) -> Unit)? = null
     ) {
         if (applovinSdk == null || applovinSdk?.isInitialized == false) {
-            onAdsCloseOrFailed.invoke(false)
+            onAdsShowedOrFailed?.invoke(false)
+            onAdsCloseOrFailed?.invoke(false)
             return
         }
         if (!isShowAds || isShowInterAds || !isNetworkConnected(activity)) {
-            onAdsCloseOrFailed.invoke(false)
+            onAdsShowedOrFailed?.invoke(false)
+            onAdsCloseOrFailed?.invoke(false)
             return
         }
         val handle = Handler(Looper.getMainLooper())
@@ -117,12 +120,13 @@ object ApplovinLib {
                     isShowInterAds = true
                     handle.postDelayed({
                         dismissDialogFullScreen()
+                        onAdsShowedOrFailed?.invoke(true)
                     }, 800)
                 }
 
                 override fun onAdHidden(ad: MaxAd) {
                     isShowInterAds = false
-                    onAdsCloseOrFailed.invoke(true)
+                    onAdsCloseOrFailed?.invoke(true)
                     handle.removeCallbacksAndMessages(0)
                 }
 
@@ -130,14 +134,16 @@ object ApplovinLib {
 
                 override fun onAdLoadFailed(p0: String, p1: MaxError) {
                     isShowInterAds = false
-                    onAdsCloseOrFailed.invoke(false)
+                    onAdsShowedOrFailed?.invoke(false)
+                    onAdsCloseOrFailed?.invoke(false)
                     handle.removeCallbacksAndMessages(0)
                 }
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
                     isShowInterAds = false
                     dismissDialogFullScreen()
-                    onAdsCloseOrFailed.invoke(false)
+                    onAdsShowedOrFailed?.invoke(false)
+                    onAdsCloseOrFailed?.invoke(false)
                     handle.removeCallbacksAndMessages(0)
                 }
 
@@ -159,14 +165,17 @@ object ApplovinLib {
         activity: AppCompatActivity,
         maxInterModel: MaxInterModel,
         timeout: Long = 15000,
-        onAdsCloseOrFailed: (Boolean) -> Unit
+        onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
+        onAdsShowedOrFailed: ((Boolean) -> Unit)? = null
     ) {
         if (applovinSdk == null || applovinSdk?.isInitialized == false) {
-            onAdsCloseOrFailed.invoke(false)
+            onAdsShowedOrFailed?.invoke(false)
+            onAdsCloseOrFailed?.invoke(false)
             return
         }
         if (!isShowAds || isShowInterAds || !isNetworkConnected(activity)) {
-            onAdsCloseOrFailed.invoke(false)
+            onAdsShowedOrFailed?.invoke(false)
+            onAdsCloseOrFailed?.invoke(false)
             return
         }
         showDialogFullScreen(activity)
@@ -187,13 +196,14 @@ object ApplovinLib {
                     isShowInterAds = true
                     handle.postDelayed({
                         dismissDialogFullScreen()
+                        onAdsShowedOrFailed?.invoke(true)
                     }, 800)
                     handle.removeCallbacksAndMessages(0)
                 }
 
                 override fun onAdHidden(ad: MaxAd) {
                     isShowInterAds = false
-                    onAdsCloseOrFailed.invoke(true)
+                    onAdsCloseOrFailed?.invoke(true)
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                 }
@@ -202,14 +212,16 @@ object ApplovinLib {
 
                 override fun onAdLoadFailed(p0: String, p1: MaxError) {
                     isShowInterAds = false
-                    onAdsCloseOrFailed.invoke(false)
+                    onAdsShowedOrFailed?.invoke(false)
+                    onAdsCloseOrFailed?.invoke(false)
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                 }
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
                     isShowInterAds = false
-                    onAdsCloseOrFailed.invoke(false)
+                    onAdsShowedOrFailed?.invoke(false)
+                    onAdsCloseOrFailed?.invoke(false)
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                 }
@@ -279,19 +291,23 @@ object ApplovinLib {
         maxInterModel: MaxInterModel,
         timeout: Long = 10000,
         isPreload: Boolean = true,
-        onAdsCloseOrFailed: (Boolean) -> Unit
+        onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
+        onAdsShowedOrFailed: ((Boolean) -> Unit)? = null
     ) {
         if (applovinSdk == null || applovinSdk?.isInitialized == false) {
-            onAdsCloseOrFailed.invoke(false)
+            onAdsShowedOrFailed?.invoke(false)
+            onAdsCloseOrFailed?.invoke(false)
             return
         }
         if (!isShowAds || isShowInterAds || !isNetworkConnected(activity)) {
-            onAdsCloseOrFailed.invoke(false)
+            onAdsShowedOrFailed?.invoke(false)
+            onAdsCloseOrFailed?.invoke(false)
             return
         }
         if (maxInterModel.interstitialAd == null || maxInterModel.interstitialAd?.isReady == false) {
             loadInterstitial(activity, maxInterModel)
-            onAdsCloseOrFailed.invoke(false)
+            onAdsShowedOrFailed?.invoke(false)
+            onAdsCloseOrFailed?.invoke(false)
             return
         }
         maxInterModel.interstitialAd?.let {
@@ -310,12 +326,13 @@ object ApplovinLib {
                     isShowInterAds = true
                     handle.postDelayed({
                         dismissDialogFullScreen()
+                        onAdsShowedOrFailed?.invoke(true)
                     }, 800)
                 }
 
                 override fun onAdHidden(ad: MaxAd) {
                     isShowInterAds = false
-                    onAdsCloseOrFailed.invoke(true)
+                    onAdsCloseOrFailed?.invoke(true)
                     maxInterModel.interstitialAd = null
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
@@ -328,7 +345,8 @@ object ApplovinLib {
 
                 override fun onAdLoadFailed(p0: String, p1: MaxError) {
                     isShowInterAds = false
-                    onAdsCloseOrFailed.invoke(false)
+                    onAdsShowedOrFailed?.invoke(false)
+                    onAdsCloseOrFailed?.invoke(false)
                     maxInterModel.interstitialAd = null
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
@@ -339,7 +357,8 @@ object ApplovinLib {
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
                     isShowInterAds = false
-                    onAdsCloseOrFailed.invoke(false)
+                    onAdsShowedOrFailed?.invoke(false)
+                    onAdsCloseOrFailed?.invoke(false)
                     maxInterModel.interstitialAd = null
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)

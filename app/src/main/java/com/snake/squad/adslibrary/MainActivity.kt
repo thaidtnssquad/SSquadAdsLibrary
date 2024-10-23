@@ -22,10 +22,10 @@ class MainActivity : AppCompatActivity() {
         binding.btnLoadAndShowInter.setOnClickListener {
             AdmobLib.loadAndShowInterstitial(
                 this,
-                AdsConstants.admobInterModelTest
-            ) {
-                startActivity(Intent(this@MainActivity, SecondActivity::class.java))
-            }
+                AdsConstants.admobInterModelTest,
+                onAdsShowedOrFailed = {
+                    startActivity(Intent(this@MainActivity, SecondActivity::class.java))
+                })
         }
 
         binding.btnLoadInter.setOnClickListener {
@@ -38,10 +38,10 @@ class MainActivity : AppCompatActivity() {
         binding.btnShowInter.setOnClickListener {
             AdmobLib.showInterstitial(
                 this,
-                AdsConstants.admobInterModelTest
-            ) {
-                startActivity(Intent(this@MainActivity, SecondActivity::class.java))
-            }
+                AdsConstants.admobInterModelTest,
+                onAdsShowedOrFailed = {
+                    startActivity(Intent(this@MainActivity, SecondActivity::class.java))
+                })
         }
 
         binding.btnLoadAndShowNative.setOnClickListener {
