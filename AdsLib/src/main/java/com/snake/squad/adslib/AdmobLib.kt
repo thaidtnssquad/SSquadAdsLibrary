@@ -145,9 +145,9 @@ object AdmobLib {
                                 override fun onAdImpression() {}
                                 override fun onAdShowedFullScreenContent() {
                                     isShowInterAds = true
+                                    onAdsShowedOrFailed?.invoke(true)
                                     handle.postDelayed({
                                         dismissDialogFullScreen()
-                                        onAdsShowedOrFailed?.invoke(true)
                                     }, 800)
                                 }
                             }
@@ -227,9 +227,9 @@ object AdmobLib {
                             override fun onAdImpression() {}
                             override fun onAdShowedFullScreenContent() {
                                 isShowInterAds = true
+                                onAdsShowedOrFailed?.invoke(true)
                                 handle.postDelayed({
                                     dismissDialogFullScreen()
-                                    onAdsShowedOrFailed?.invoke(true)
                                 }, 800)
                             }
                         }
@@ -324,9 +324,9 @@ object AdmobLib {
                     override fun onAdImpression() {}
                     override fun onAdShowedFullScreenContent() {
                         isShowInterAds = true
+                        onAdsShowedOrFailed?.invoke(true)
                         handle.postDelayed({
                             dismissDialogFullScreen()
-                            onAdsShowedOrFailed?.invoke(true)
                         }, 800)
                     }
                 }

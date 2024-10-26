@@ -118,9 +118,9 @@ object ApplovinLib {
 
                 override fun onAdDisplayed(ad: MaxAd) {
                     isShowInterAds = true
+                    onAdsShowedOrFailed?.invoke(true)
                     handle.postDelayed({
                         dismissDialogFullScreen()
-                        onAdsShowedOrFailed?.invoke(true)
                     }, 800)
                 }
 
@@ -194,9 +194,9 @@ object ApplovinLib {
 
                 override fun onAdDisplayed(ad: MaxAd) {
                     isShowInterAds = true
+                    onAdsShowedOrFailed?.invoke(true)
                     handle.postDelayed({
                         dismissDialogFullScreen()
-                        onAdsShowedOrFailed?.invoke(true)
                     }, 800)
                     handle.removeCallbacksAndMessages(0)
                 }
@@ -324,9 +324,9 @@ object ApplovinLib {
 
                 override fun onAdDisplayed(ad: MaxAd) {
                     isShowInterAds = true
+                    onAdsShowedOrFailed?.invoke(true)
                     handle.postDelayed({
                         dismissDialogFullScreen()
-                        onAdsShowedOrFailed?.invoke(true)
                     }, 800)
                 }
 
