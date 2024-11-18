@@ -9,6 +9,7 @@ import com.snake.squad.adslib.AdmobLib
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
 import com.snake.squad.adslib.rates.RatingDialog
 import com.snake.squad.adslib.utils.AdsConstants
+import com.snake.squad.adslib.utils.GoogleENative
 import com.snake.squad.adslibrary.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             AdmobLib.loadAndShowInterstitial(
                 this,
                 AdsConstants.admobInterModelTest,
-                onAdsShowedOrFailed = {
+                onAdsCloseOrFailed = {
                     startActivity(Intent(this@MainActivity, SecondActivity::class.java))
                 })
         }
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             AdmobLib.showInterstitial(
                 this,
                 AdsConstants.admobInterModelTest,
-                onAdsShowedOrFailed = {
+                onAdsCloseOrFailed = {
                     startActivity(Intent(this@MainActivity, SecondActivity::class.java))
                 })
         }
@@ -49,7 +50,8 @@ class MainActivity : AppCompatActivity() {
             AdmobLib.loadAndShowNative(
                 this,
                 AdsConstants.admobNativeModelTest,
-                binding.frNative
+                binding.frNative,
+                GoogleENative.UNIFIED_SMALL_LIKE_BANNER
             )
         }
 
@@ -84,9 +86,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnLoadAndShowRewarded.setOnClickListener {
-            AdmobLib.loadAndShowRewarded(this, AdsConstants.admobRewardedModelTest) {
+            AdmobLib.loadAndShowRewarded(this, AdsConstants.admobRewardedModelTest, onAdsCloseOrFailed = {
                 Toast.makeText(this, if (it) "Earned" else "Not Earned", Toast.LENGTH_SHORT).show()
-            }
+            })
         }
 
         binding.btnLoadRewarded.setOnClickListener {
@@ -94,9 +96,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnShowRewarded.setOnClickListener {
-            AdmobLib.showRewarded(this, AdsConstants.admobRewardedModelTest) {
+            AdmobLib.showRewarded(this, AdsConstants.admobRewardedModelTest, onAdsCloseOrFailed =  {
                 Toast.makeText(this, if (it) "Earned" else "Not Earned", Toast.LENGTH_SHORT).show()
-            }
+            })
         }
 
         binding.btnShowRating.setOnClickListener {

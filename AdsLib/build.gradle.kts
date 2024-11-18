@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.2.1-no-mediation"
+                version = "1.2.3-mediation"
             }
         }
     }
@@ -59,36 +59,36 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     //Ads
-    implementation("com.applovin:applovin-sdk:13.0.0")
-    implementation("com.google.android.gms:play-services-ads:23.3.0")
+    implementation("com.applovin:applovin-sdk:13.0.1")
+    implementation("com.google.android.gms:play-services-ads:23.5.0")
 
-    implementation("androidx.lifecycle:lifecycle-process:2.8.6")
-    implementation("androidx.lifecycle:lifecycle-runtime:2.8.6")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
-    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-process:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-runtime:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.8.7")
 
     implementation("com.airbnb.android:lottie:6.4.1")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("com.orhanobut:hawk:2.0.1")
 
     //Adjust
-    implementation("com.adjust.sdk:adjust-android:5.0.0")
+    implementation("com.adjust.sdk:adjust-android:5.0.1")
     implementation("com.android.installreferrer:installreferrer:2.2")
     implementation("com.google.android.gms:play-services-ads-identifier:18.1.0")
     implementation("com.adjust.sdk:adjust-android-webbridge:5.0.0")
 
     //cmp
-    implementation("com.google.android.ump:user-messaging-platform:3.0.0")
+    implementation("com.google.android.ump:user-messaging-platform:3.1.0")
 
     //facebook sdk
     implementation("com.facebook.android:facebook-android-sdk:17.0.0")
 
     //admob mediation
-//    implementation("com.google.ads.mediation:pangle:+")
-//    implementation("com.google.ads.mediation:applovin:+")
-//    implementation("com.google.ads.mediation:facebook:+")
-//    implementation("com.google.ads.mediation:vungle:+")
-//    implementation("com.google.ads.mediation:mintegral:+")
+    implementation("com.google.ads.mediation:pangle:+")
+    implementation("com.google.ads.mediation:applovin:+")
+    implementation("com.google.ads.mediation:facebook:+")
+    implementation("com.google.ads.mediation:vungle:+")
+    implementation("com.google.ads.mediation:mintegral:+")
 
     //max mediation
 //    implementation("com.applovin.mediation:google-adapter:+")

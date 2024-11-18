@@ -24,16 +24,18 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun initAds() {
-        AdmobLib.initialize(this, isDebug = true, isShowAds = true)
-        AppOnResumeAdsManager.initialize(application, AdsConstants.APP_OPEN_TEST)
-        AppOnResumeAdsManager.getInstance().disableForActivity(SplashActivity::class.java)
+        AdmobLib.initialize(this, isDebug = true, isShowAds = true) {
+            AppOnResumeAdsManager.initialize(application, AdsConstants.APP_OPEN_TEST)
+            AppOnResumeAdsManager.getInstance().disableForActivity(SplashActivity::class.java)
+            loadAndShowAOA()
+        }
         ApplovinLib.initialize(
             application,
             "05TMDQ5tZabpXQ45_UTbmEGNUtVAzSTzT6KmWQc5_CuWdzccS4DCITZoL3yIWUG3bbq60QC_d4WF28tUC4gVTF",
             isDebug = true,
             isShowAds = true
         ) {
-            loadAndShowAOA()
+
         }
     }
 
