@@ -33,6 +33,7 @@ import com.google.android.gms.ads.OnPaidEventListener
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.nativead.NativeAdView
 import com.google.android.gms.ads.rewarded.RewardedAd
@@ -62,6 +63,8 @@ object AdmobLib {
     private var isShowRewardAds = false
     private var adRequest: AdRequest? = null
     private var dialogFullScreen: Dialog? = null
+    private var isTestDevice = false
+    private var isEnabledCheckTestDevice = false
 
     fun initialize(
         context: Context,
@@ -113,7 +116,7 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity)) {
+        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || isTestDevice) {
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
             return
@@ -214,7 +217,7 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity)) {
+        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || isTestDevice) {
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
             return
@@ -307,7 +310,7 @@ object AdmobLib {
         onAdsLoaded: (() -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || admobInterModel.interstitialAd != null) {
+        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || admobInterModel.interstitialAd != null || isTestDevice) {
             onAdsFail?.invoke()
             return
         }
@@ -351,7 +354,7 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || admobInterModel.interstitialAd == null) {
+        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || admobInterModel.interstitialAd == null || isTestDevice) {
             if (admobInterModel.interstitialAd == null) loadInterstitial(activity, admobInterModel)
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
@@ -426,7 +429,7 @@ object AdmobLib {
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null
     ) {
-        if (!isShowAds || !isNetworkConnected(activity)) {
+        if (!isShowAds || !isNetworkConnected(activity) || isTestDevice) {
             viewGroup.visibility = View.GONE
             viewLine.visibility = View.GONE
             onAdsLoadFail?.invoke()
@@ -489,7 +492,7 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsClosed: (() -> Unit)? = null
     ) {
-        if (!isShowAds || !isNetworkConnected(activity)) {
+        if (!isShowAds || !isNetworkConnected(activity) || isTestDevice) {
             viewGroup.visibility = View.GONE
             viewLine.visibility = View.GONE
             onAdsLoadFail?.invoke()
@@ -569,7 +572,7 @@ object AdmobLib {
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null
     ) {
-        if (!isShowAds || !isNetworkConnected(activity)) {
+        if (!isShowAds || !isNetworkConnected(activity) || isTestDevice) {
             viewGroup.visibility = View.GONE
             return
         }
@@ -605,6 +608,7 @@ object AdmobLib {
             if (isDebug) activity.getString(R.string.native_id_test) else admobNativeModel.adsID
         )
             .forNativeAd { nativeAd ->
+                checkTestDevice(isEnabledCheckTestDevice, nativeAd)
                 val layoutNative = layout
                     ?: when (size) {
                         GoogleENative.UNIFIED_MEDIUM -> R.layout.admob_ad_template_medium
@@ -647,6 +651,11 @@ object AdmobLib {
         onAdsLoadFail: (() -> Unit?)? = null
     ) {
         if (!isShowAds || !isNetworkConnected(activity) || admobNativeModel.nativeAd != null) {
+            onAdsLoadFail?.invoke()
+            return
+        }
+        if (isEnabledCheckTestDevice && isTestDevice) {
+            onAdsLoadFail?.invoke()
             return
         }
         val nativeAdRequest =
@@ -655,6 +664,7 @@ object AdmobLib {
             activity,
             if (isDebug) activity.getString(R.string.native_id_test) else admobNativeModel.adsID
         ).forNativeAd { nativeAd ->
+            checkTestDevice(isEnabledCheckTestDevice, nativeAd)
             admobNativeModel.nativeAd = nativeAd
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
@@ -682,7 +692,7 @@ object AdmobLib {
         onAdsShowed: (() -> Unit?)? = null,
         onAdsShowFail: (() -> Unit?)? = null
     ) {
-        if (!isShowAds || !isNetworkConnected(activity) || admobNativeModel.nativeAd == null) {
+        if (!isShowAds || !isNetworkConnected(activity) || admobNativeModel.nativeAd == null || isTestDevice) {
             viewGroup.visibility = View.GONE
             onAdsShowFail?.invoke()
             return
@@ -716,7 +726,7 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity)) {
+        if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity) || isTestDevice) {
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
             return
@@ -808,7 +818,7 @@ object AdmobLib {
         onAdsLoaded: (() -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity) || admobRewardedModel.rewardAd != null) {
+        if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity) || admobRewardedModel.rewardAd != null || isTestDevice) {
             onAdsFail?.invoke()
             return
         }
@@ -848,7 +858,7 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity) || admobRewardedModel.rewardAd == null) {
+        if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity) || admobRewardedModel.rewardAd == null || isTestDevice) {
             onAdsCloseOrFailed.invoke(false)
             onAdsFail?.invoke()
             return
@@ -938,6 +948,14 @@ object AdmobLib {
         AdmobLib.isShowInterAds = isShowInterAds
     }
 
+    fun getEnabledCheckTestDevice(): Boolean {
+        return isEnabledCheckTestDevice
+    }
+
+    fun setEnabledCheckTestDevice(isEnabledCheckTestDevice: Boolean) {
+        AdmobLib.isEnabledCheckTestDevice = isEnabledCheckTestDevice
+    }
+
     private fun getAdSize(activity: Activity): AdSize {
         val display = activity.windowManager.defaultDisplay
         val outMetrics = DisplayMetrics()
@@ -947,6 +965,38 @@ object AdmobLib {
         val adWidth = (widthPixels / density).toInt()
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth)
     }
+
+    private fun checkTestDevice(isEnabledCheck: Boolean, ad: NativeAd?) {
+        if (!isEnabledCheck) {
+            isTestDevice = false
+        } else {
+            try {
+                val testAdResponse = ad?.headline.toString().replace(" ", "").split(":")[0]
+                Log.d("TAG=====", testAdResponse)
+                val testAdResponses = arrayOf(
+                    "TestAd",
+                    "Anunciodeprueba",
+                    "Annoncetest",
+                    "테스트광고",
+                    "Annuncioditesto",
+                    "Testanzeige",
+                    "TesIklan",
+                    "Anúnciodeteste",
+                    "Тестовоеобъявление",
+                    "পরীক্ষামূলকবিজ্ঞাপন",
+                    "जाँचविज्ञापन",
+                    "إعلانتجريبي",
+                    "Quảngcáothửnghiệm",
+                    "IklanUjian"
+                )
+                isTestDevice = testAdResponses.contains(testAdResponse)
+            } catch (e: Exception) {
+                isTestDevice = true
+                Log.d("TAG=====", "Error: ${e.message}")
+            }
+        }
+    }
+
 
     private fun showDialogFullScreen(activity: Activity) {
         try {
