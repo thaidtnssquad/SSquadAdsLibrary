@@ -522,15 +522,21 @@ object AdmobLib {
 
         admobBannerCollapsibleModel.adView?.adListener = object : AdListener() {
             override fun onAdLoaded() {
-                admobBannerCollapsibleModel.adView?.setOnPaidEventListener {
-                    AdjustUtils.postRevenueAdjust(it, admobBannerCollapsibleModel.adView?.adUnitId)
+                try {
+                    if (!activity.isDestroyed && !activity.isFinishing) {
+                        admobBannerCollapsibleModel.adView?.setOnPaidEventListener {
+                            AdjustUtils.postRevenueAdjust(it, admobBannerCollapsibleModel.adView?.adUnitId)
+                        }
+                        shimmerFrameLayout.stopShimmer()
+                        viewGroup.removeView(shimmerLoadingView)
+                        val params: ViewGroup.LayoutParams = viewGroup.layoutParams
+                        params.height = adSize.getHeightInPixels(activity)
+                        viewGroup.layoutParams = params
+                        onAdsLoaded?.invoke()
+                    }
+                } catch (e: Exception) {
+                    e.message
                 }
-                shimmerFrameLayout.stopShimmer()
-                viewGroup.removeView(shimmerLoadingView)
-                val params: ViewGroup.LayoutParams = viewGroup.layoutParams
-                params.height = adSize.getHeightInPixels(activity)
-                viewGroup.layoutParams = params
-                onAdsLoaded?.invoke()
             }
 
             override fun onAdFailedToLoad(adError: LoadAdError) {
