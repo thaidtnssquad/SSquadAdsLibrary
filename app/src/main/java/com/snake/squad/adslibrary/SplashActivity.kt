@@ -24,10 +24,12 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun initAds() {
+
         AdmobLib.initialize(this, isDebug = true, isShowAds = true) {
             AppOnResumeAdsManager.initialize(application, AdsConstants.APP_OPEN_TEST)
             AppOnResumeAdsManager.getInstance().disableForActivity(SplashActivity::class.java)
             loadAndShowAOA()
+            AdmobLib.setEnabledCheckTestDevice(false)
         }
         ApplovinLib.initialize(
             application,
