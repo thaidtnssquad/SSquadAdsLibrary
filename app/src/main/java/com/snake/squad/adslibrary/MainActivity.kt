@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
                 this,
                 AdsConstants.admobNativeModelTest,
                 binding.frNative,
-                GoogleENative.UNIFIED_SMALL_LIKE_BANNER
+                GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON
             )
         }
 
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnShowNative.setOnClickListener {
             setupViewBannerOrNative(false)
-            AdmobLib.showNative(this, AdsConstants.admobNativeModelTest, binding.frNative, false)
+            AdmobLib.showNative(this, AdsConstants.admobNativeModelTest, binding.frNative, GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON)
         }
 
         binding.btnLoadAndShowBanner.setOnClickListener {

@@ -28,9 +28,11 @@ import com.google.android.gms.ads.AdValue
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MediaAspectRatio
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.OnPaidEventListener
 import com.google.android.gms.ads.RequestConfiguration
+import com.google.android.gms.ads.VideoOptions
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAd
@@ -53,7 +55,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 object AdmobLib {
 
@@ -575,6 +576,8 @@ object AdmobLib {
         viewGroup: ViewGroup,
         size: GoogleENative = GoogleENative.UNIFIED_MEDIUM,
         layout: Int? = null,
+        shimmerLayout: Int? = null,
+        mediaViewRatio: Int = MediaAspectRatio.SQUARE,
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null
     ) {
@@ -582,25 +585,20 @@ object AdmobLib {
             viewGroup.visibility = View.GONE
             return
         }
-        val shimmerLoadingView = when (size) {
-            GoogleENative.UNIFIED_MEDIUM -> activity.layoutInflater.inflate(
-                R.layout.native_medium_shimmer_layout,
-                null,
-                false
-            )
-
-            GoogleENative.UNIFIED_SMALL -> activity.layoutInflater.inflate(
-                R.layout.native_small_shimmer_layout,
-                null,
-                false
-            )
-
-            GoogleENative.UNIFIED_SMALL_LIKE_BANNER -> activity.layoutInflater.inflate(
-                R.layout.native_small_like_banner_shimmer_layout,
-                null,
-                false
-            )
+        val shimmerInflate = shimmerLayout?: when (size) {
+            GoogleENative.UNIFIED_MEDIUM -> R.layout.native_medium_shimmer_layout
+            GoogleENative.UNIFIED_SMALL -> R.layout.native_small_shimmer_layout
+            GoogleENative.UNIFIED_SMALL_LIKE_BANNER -> R.layout.native_small_like_banner_shimmer_layout
+            GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON -> R.layout.native_medium_like_button_shimmer_layout
+            GoogleENative.UNIFIED_FULL_SCREEN -> R.layout.native_full_screen_shimmer
         }
+
+        val shimmerLoadingView = activity.layoutInflater.inflate(
+            shimmerInflate,
+            null,
+            false
+        )
+
         viewGroup.removeAllViews()
         viewGroup.addView(shimmerLoadingView, 0)
         val shimmerFrameLayout =
@@ -613,13 +611,25 @@ object AdmobLib {
             activity,
             if (isDebug) activity.getString(R.string.native_id_test) else admobNativeModel.adsID
         )
-            .forNativeAd { nativeAd ->
+        if (size == GoogleENative.UNIFIED_FULL_SCREEN) {
+            val videoOptions = VideoOptions.Builder().setStartMuted(false).setCustomControlsRequested(false).build()
+            val adOptions = NativeAdOptions.Builder()
+                .setMediaAspectRatio(mediaViewRatio)
+                .setVideoOptions(videoOptions)
+                .build()
+            adLoader.withNativeAdOptions(adOptions)
+        } else {
+            adLoader.withNativeAdOptions(NativeAdOptions.Builder().build())
+        }
+        adLoader.forNativeAd { nativeAd ->
                 checkTestDevice(isEnabledCheckTestDevice, nativeAd)
                 val layoutNative = layout
                     ?: when (size) {
                         GoogleENative.UNIFIED_MEDIUM -> R.layout.admob_ad_template_medium
                         GoogleENative.UNIFIED_SMALL -> R.layout.admob_ad_template_small
                         GoogleENative.UNIFIED_SMALL_LIKE_BANNER -> R.layout.admob_ad_template_small_like_banner
+                        GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON -> R.layout.admob_ad_template_medium_like_button
+                        GoogleENative.UNIFIED_FULL_SCREEN -> R.layout.admob_ad_template_full_screen
                     }
                 val adView = activity.layoutInflater.inflate(layoutNative, null) as NativeAdView
                 NativeUtils.populateNativeAdView(
@@ -633,7 +643,8 @@ object AdmobLib {
                 nativeAd.setOnPaidEventListener { adValue: AdValue ->
                     AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
                 }
-            }.withAdListener(object : AdListener() {
+            }
+        adLoader.withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     shimmerFrameLayout.stopShimmer()
                     viewGroup.visibility = View.GONE
@@ -646,13 +657,14 @@ object AdmobLib {
                     onAdsLoaded?.invoke()
                 }
             })
-            .withNativeAdOptions(NativeAdOptions.Builder().build()).build()
-        adLoader.loadAd(nativeAdRequest)
+        adLoader.build().loadAd(nativeAdRequest)
     }
 
     fun loadNative(
         activity: Activity,
         admobNativeModel: AdmobNativeModel,
+        size: GoogleENative = GoogleENative.UNIFIED_MEDIUM,
+        mediaViewRatio: Int = MediaAspectRatio.SQUARE,
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null
     ) {
@@ -669,13 +681,25 @@ object AdmobLib {
         val adLoader = AdLoader.Builder(
             activity,
             if (isDebug) activity.getString(R.string.native_id_test) else admobNativeModel.adsID
-        ).forNativeAd { nativeAd ->
+        )
+        if (size == GoogleENative.UNIFIED_FULL_SCREEN) {
+            val videoOptions = VideoOptions.Builder().setStartMuted(false).setCustomControlsRequested(false).build()
+            val adOptions = NativeAdOptions.Builder()
+                .setMediaAspectRatio(mediaViewRatio)
+                .setVideoOptions(videoOptions)
+                .build()
+            adLoader.withNativeAdOptions(adOptions)
+        } else {
+            adLoader.withNativeAdOptions(NativeAdOptions.Builder().build())
+        }
+        adLoader.forNativeAd { nativeAd ->
             checkTestDevice(isEnabledCheckTestDevice, nativeAd)
             admobNativeModel.nativeAd = nativeAd
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
             }
-        }.withAdListener(object : AdListener() {
+        }
+        adLoader.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 onAdsLoadFail?.invoke()
                 admobNativeModel.nativeAd = null
@@ -685,15 +709,15 @@ object AdmobLib {
                 super.onAdLoaded()
                 onAdsLoaded?.invoke()
             }
-        }).withNativeAdOptions(NativeAdOptions.Builder().build()).build()
-        adLoader.loadAd(nativeAdRequest)
+        })
+        adLoader.build().loadAd(nativeAdRequest)
     }
 
     fun showNative(
         activity: Activity,
         admobNativeModel: AdmobNativeModel,
         viewGroup: ViewGroup,
-        isMedium: Boolean = true,
+        size: GoogleENative = GoogleENative.UNIFIED_MEDIUM,
         layout: Int? = null,
         onAdsShowed: (() -> Unit?)? = null,
         onAdsShowFail: (() -> Unit?)? = null
@@ -704,20 +728,92 @@ object AdmobLib {
             return
         }
         val layoutNative = layout
-            ?: if (isMedium) {
-                R.layout.admob_ad_template_medium
-            } else {
-                R.layout.admob_ad_template_small
+            ?: when (size) {
+                GoogleENative.UNIFIED_MEDIUM -> R.layout.admob_ad_template_medium
+                GoogleENative.UNIFIED_SMALL -> R.layout.admob_ad_template_small
+                GoogleENative.UNIFIED_SMALL_LIKE_BANNER -> R.layout.admob_ad_template_small_like_banner
+                GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON -> R.layout.admob_ad_template_medium_like_button
+                GoogleENative.UNIFIED_FULL_SCREEN -> R.layout.admob_ad_template_full_screen
             }
         val adView = activity.layoutInflater.inflate(layoutNative, null) as NativeAdView
         NativeUtils.populateNativeAdView(
             admobNativeModel.nativeAd!!,
             adView,
-            if (isMedium) GoogleENative.UNIFIED_MEDIUM else GoogleENative.UNIFIED_SMALL
+            size
         )
         viewGroup.removeAllViews()
         viewGroup.addView(adView)
         onAdsShowed?.invoke()
+    }
+
+    fun loadAndShowNativeFullScreen(
+        activity: Activity,
+        admobNativeModel: AdmobNativeModel,
+        viewGroup: ViewGroup,
+        mediaViewRatio: Int = MediaAspectRatio.SQUARE,
+        layout: Int? = null,
+        shimmerLayout: Int? = null,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: (() -> Unit?)? = null
+    ) {
+        if (!isShowAds || !isNetworkConnected(activity) || isTestDevice) {
+            viewGroup.visibility = View.GONE
+            return
+        }
+        val shimmerLoadingView = activity.layoutInflater.inflate(
+            shimmerLayout ?: R.layout.native_full_screen_shimmer,
+            null,
+            false
+        )
+        viewGroup.removeAllViews()
+        viewGroup.addView(shimmerLoadingView, 0)
+        val shimmerFrameLayout =
+            shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
+        shimmerFrameLayout.startShimmer()
+
+        val nativeAdRequest =
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+        val adLoader = AdLoader.Builder(
+            activity,
+            if (isDebug) activity.getString(R.string.native_id_test) else admobNativeModel.adsID
+        )
+        val videoOptions = VideoOptions.Builder().setStartMuted(false).setCustomControlsRequested(false).build()
+        val adOptions = NativeAdOptions.Builder()
+            .setMediaAspectRatio(mediaViewRatio)
+            .setVideoOptions(videoOptions)
+            .build()
+        adLoader.withNativeAdOptions(adOptions)
+        adLoader.forNativeAd { nativeAd ->
+            checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            val layoutNative = layout ?: R.layout.admob_ad_template_full_screen
+            val adView = activity.layoutInflater.inflate(layoutNative, null) as NativeAdView
+            NativeUtils.populateNativeAdView(
+                nativeAd,
+                adView,
+                GoogleENative.UNIFIED_FULL_SCREEN
+            )
+            shimmerFrameLayout.stopShimmer()
+            viewGroup.removeAllViews()
+            viewGroup.addView(adView)
+            nativeAd.setOnPaidEventListener { adValue: AdValue ->
+                AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
+            }
+        }
+        adLoader.withAdListener(object : AdListener() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                shimmerFrameLayout.stopShimmer()
+                viewGroup.visibility = View.GONE
+                onAdsLoadFail?.invoke()
+            }
+
+            override fun onAdLoaded() {
+                super.onAdLoaded()
+                viewGroup.visibility = View.VISIBLE
+                onAdsLoaded?.invoke()
+            }
+        })
+        adLoader.build().loadAd(nativeAdRequest)
+
     }
 
     fun loadAndShowRewarded(

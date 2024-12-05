@@ -22,7 +22,7 @@ object NativeUtils {
             return
         }
 
-        if (size == GoogleENative.UNIFIED_MEDIUM) {
+        if (size == GoogleENative.UNIFIED_MEDIUM || size == GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON || size == GoogleENative.UNIFIED_FULL_SCREEN) {
             adView.findViewById<MediaView>(R.id.ad_media)?.let {
                 adView.mediaView = it
             }
@@ -43,12 +43,11 @@ object NativeUtils {
             adView.starRatingView = it
         }
         if (nativeAd.mediaContent != null) {
-            if (size == GoogleENative.UNIFIED_MEDIUM) {
+            if (size == GoogleENative.UNIFIED_MEDIUM || size == GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON || size == GoogleENative.UNIFIED_FULL_SCREEN) {
                 adView.mediaView?.let {
                     it.setImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
                     val mediaContent = nativeAd.mediaContent
                     if (mediaContent != null && mediaContent.hasVideoContent()) {
-                        // Create a MediaView and set its media content.
                         val mediaView = MediaView(it.context)
                         mediaView.mediaContent = mediaContent
                         it.addView(mediaView)
@@ -69,7 +68,7 @@ object NativeUtils {
         if (nativeAd.callToAction == null) {
             adView.callToActionView!!.visibility = View.INVISIBLE
 
-        }else{
+        } else {
             adView.callToActionView!!.visibility = View.VISIBLE
             (adView.callToActionView as Button).text = nativeAd.callToAction
         }
