@@ -20,6 +20,7 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.appopen.AppOpenAd
 import com.google.android.gms.ads.appopen.AppOpenAd.AppOpenAdLoadCallback
 import com.snake.squad.adslib.AdmobLib
+import com.snake.squad.adslib.ApplovinLib
 import com.snake.squad.adslib.R
 import com.snake.squad.adslib.adjust.AdjustUtils
 import com.snake.squad.adslib.utils.AdsConstants
@@ -89,7 +90,7 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
     }
 
     private fun loadAd() {
-        if (isLoadingAd || isAdAvailable() || !AdmobLib.getShowAds() || AdmobLib.getShowInterAds() || AdmobLib.getEnabledCheckTestDevice()) {
+        if (isLoadingAd || isAdAvailable() || !AdmobLib.getShowAds() || AdmobLib.getEnabledCheckTestDevice()) {
             return
         }
         val appOnResumeID = if (AdmobLib.getDebugAds()) {
@@ -130,7 +131,16 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
     }
 
     private fun showAdIfAvailable(activity: Activity) {
-        if (!AdmobLib.getShowAds() || isShowingAd || disabledActivities.contains(activity.javaClass) || AdmobLib.getEnabledCheckTestDevice()) {
+        if (
+            !AdmobLib.getShowAds()
+            || AdmobLib.getShowInterAds()
+            || AdmobLib.getShowRewardAds()
+            || ApplovinLib.getShowInterAds()
+            || ApplovinLib.getShowRewardAds()
+            || isShowingAd
+            || disabledActivities.contains(activity.javaClass)
+            || AdmobLib.getEnabledCheckTestDevice()
+        ) {
             return
         }
         if (!isAdAvailable()) {

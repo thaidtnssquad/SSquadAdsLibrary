@@ -985,4 +985,36 @@ object ApplovinLib {
         }
     }
 
+    fun getDebugAds(): Boolean {
+        return isDebug
+    }
+
+    fun setDebugAds(isDebug: Boolean) {
+        ApplovinLib.isDebug = isDebug
+    }
+
+    fun getShowAds(): Boolean {
+        return isShowAds
+    }
+
+    fun setShowAds(isShowAds: Boolean) {
+        ApplovinLib.isShowAds = isShowAds
+    }
+
+    fun getShowInterAds(): Boolean {
+        return isShowInterAds
+    }
+
+    fun setShowInterAds(isShowInterAds: Boolean) {
+        ApplovinLib.isShowInterAds = isShowInterAds
+    }
+
+    fun getShowRewardAds(): Boolean {
+        return isShowRewardAds
+    }
+
+    fun setShowRewardAds(isShowRewardAds: Boolean) {
+        ApplovinLib.isShowRewardAds = isShowRewardAds
+    }
+
 }

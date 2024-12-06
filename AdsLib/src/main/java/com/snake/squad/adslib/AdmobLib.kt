@@ -1050,6 +1050,14 @@ object AdmobLib {
         AdmobLib.isShowInterAds = isShowInterAds
     }
 
+    fun getShowRewardAds(): Boolean {
+        return isShowRewardAds
+    }
+
+    fun setShowRewardAds(isShowRewardAds: Boolean) {
+        AdmobLib.isShowRewardAds = isShowRewardAds
+    }
+
     fun getEnabledCheckTestDevice(): Boolean {
         return isEnabledCheckTestDevice
     }
