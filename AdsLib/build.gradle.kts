@@ -84,11 +84,11 @@ dependencies {
     implementation("com.facebook.android:facebook-android-sdk:17.0.0")
 
     //admob mediation
-    implementation("com.google.ads.mediation:pangle:+")
-    implementation("com.google.ads.mediation:applovin:+")
-    implementation("com.google.ads.mediation:facebook:+")
-    implementation("com.google.ads.mediation:vungle:+")
-    implementation("com.google.ads.mediation:mintegral:+")
+//    implementation("com.google.ads.mediation:pangle:+")
+//    implementation("com.google.ads.mediation:applovin:+")
+//    implementation("com.google.ads.mediation:facebook:+")
+//    implementation("com.google.ads.mediation:vungle:+")
+//    implementation("com.google.ads.mediation:mintegral:+")
 
     //max mediation
 //    implementation("com.applovin.mediation:google-adapter:+")
