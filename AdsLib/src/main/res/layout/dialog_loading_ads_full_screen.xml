@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/loading_ads_full_screen"
+        app:lottie_rawRes="@raw/loading_ads_full_screen_2"
         app:layout_constraintVertical_bias="0.4"/>
 
     <TextView

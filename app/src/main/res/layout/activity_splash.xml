@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/snake_logo" />
+            android:src="@drawable/ssquad_rounded_logo_black" />
 
     </com.google.android.material.circularreveal.cardview.CircularRevealCardView>
 

@@ -609,7 +609,7 @@ object AdmobLib {
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
         val adLoader = AdLoader.Builder(
             activity,
-            if (isDebug) activity.getString(R.string.native_id_test) else admobNativeModel.adsID
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
         )
         if (size == GoogleENative.UNIFIED_FULL_SCREEN) {
             val videoOptions = VideoOptions.Builder().setStartMuted(false).setCustomControlsRequested(false).build()
@@ -680,7 +680,7 @@ object AdmobLib {
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
         val adLoader = AdLoader.Builder(
             activity,
-            if (isDebug) activity.getString(R.string.native_id_test) else admobNativeModel.adsID
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
         )
         if (size == GoogleENative.UNIFIED_FULL_SCREEN) {
             val videoOptions = VideoOptions.Builder().setStartMuted(false).setCustomControlsRequested(false).build()
@@ -775,7 +775,7 @@ object AdmobLib {
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
         val adLoader = AdLoader.Builder(
             activity,
-            if (isDebug) activity.getString(R.string.native_id_test) else admobNativeModel.adsID
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
         )
         val videoOptions = VideoOptions.Builder().setStartMuted(false).setCustomControlsRequested(false).build()
         val adOptions = NativeAdOptions.Builder()
@@ -1114,7 +1114,7 @@ object AdmobLib {
             dialogFullScreen?.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialogFullScreen?.setContentView(R.layout.dialog_loading_ads_full_screen)
             dialogFullScreen?.setCancelable(false)
-            dialogFullScreen?.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+            dialogFullScreen?.window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
             dialogFullScreen?.window?.setLayout(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
