@@ -118,7 +118,7 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || isTestDevice) {
+        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity)) {
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
             return
@@ -135,7 +135,7 @@ object AdmobLib {
                     dismissDialogFullScreen()
                     onAdsCloseOrFailed?.invoke(false)
                     onAdsFail?.invoke()
-                    admobInterModel.interstitialAd.postValue(null)
+                    admobInterModel.interstitialAd.value = null
                     AppOnResumeAdsManager.getInstance()
                         .setAppResumeEnabled(true)
                 }
@@ -151,7 +151,7 @@ object AdmobLib {
                                     isShowInterAds = false
                                     onAdsCloseOrFailed?.invoke(true)
                                     onAdsClose?.invoke()
-                                    admobInterModel.interstitialAd.postValue(null)
+                                    admobInterModel.interstitialAd.value = null
                                     handle.removeCallbacksAndMessages(0)
                                     AppOnResumeAdsManager.getInstance()
                                         .setAppResumeEnabled(true)
@@ -162,7 +162,7 @@ object AdmobLib {
                                     dismissDialogFullScreen()
                                     onAdsCloseOrFailed?.invoke(false)
                                     onAdsFail?.invoke()
-                                    admobInterModel.interstitialAd.postValue(null)
+                                    admobInterModel.interstitialAd.value = null
                                     handle.removeCallbacksAndMessages(0)
                                     AppOnResumeAdsManager.getInstance()
                                         .setAppResumeEnabled(true)
@@ -200,7 +200,7 @@ object AdmobLib {
             if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                 isShowInterAds = false
                 dismissDialogFullScreen()
-                admobInterModel.interstitialAd.postValue(null)
+                admobInterModel.interstitialAd.value = null
                 handle.removeCallbacksAndMessages(0)
                 AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
             }
@@ -238,7 +238,7 @@ object AdmobLib {
                     dismissDialogFullScreen()
                     onAdsCloseOrFailed?.invoke(false)
                     onAdsFail?.invoke()
-                    admobInterModel.interstitialAd.postValue(null)
+                    admobInterModel.interstitialAd.value = null
                     AppOnResumeAdsManager.getInstance()
                         .setAppResumeEnabled(true)
                 }
@@ -251,7 +251,7 @@ object AdmobLib {
                                 isShowInterAds = false
                                 onAdsCloseOrFailed?.invoke(true)
                                 onAdsClose?.invoke()
-                                admobInterModel.interstitialAd.postValue(null)
+                                admobInterModel.interstitialAd.value = null
                                 handle.removeCallbacksAndMessages(0)
                                 AppOnResumeAdsManager.getInstance()
                                     .setAppResumeEnabled(true)
@@ -262,7 +262,7 @@ object AdmobLib {
                                 dismissDialogFullScreen()
                                 onAdsCloseOrFailed?.invoke(false)
                                 onAdsFail?.invoke()
-                                admobInterModel.interstitialAd.postValue(null)
+                                admobInterModel.interstitialAd.value = null
                                 handle.removeCallbacksAndMessages(0)
                                 AppOnResumeAdsManager.getInstance()
                                     .setAppResumeEnabled(true)
@@ -299,7 +299,7 @@ object AdmobLib {
             if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                 isShowInterAds = false
                 dismissDialogFullScreen()
-                admobInterModel.interstitialAd.postValue(null)
+                admobInterModel.interstitialAd.value = null
                 handle.removeCallbacksAndMessages(0)
                 AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
             }
@@ -332,14 +332,14 @@ object AdmobLib {
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     isShowInterAds = false
-                    admobInterModel.interstitialAd.postValue(null)
+                    admobInterModel.interstitialAd.value = null
                     admobInterModel.isLoading.postValue(false)
                     onAdsFail?.invoke()
                 }
 
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
                     isShowInterAds = false
-                    admobInterModel.interstitialAd.postValue(interstitialAd)
+                    admobInterModel.interstitialAd.value = interstitialAd
                     admobInterModel.isLoading.postValue(false)
                     onAdsLoaded?.invoke()
                     interstitialAd.setOnPaidEventListener {
@@ -386,7 +386,7 @@ object AdmobLib {
                                 isShowInterAds = false
                                 onAdsCloseOrFailed?.invoke(true)
                                 onAdsClose?.invoke()
-                                admobInterModel.interstitialAd.postValue(null)
+                                admobInterModel.interstitialAd.value = null
                                 admobInterModel.isLoading.removeObservers(activity as LifecycleOwner)
                                 handle.removeCallbacksAndMessages(0)
                                 AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
@@ -400,7 +400,7 @@ object AdmobLib {
                                 dismissDialogFullScreen()
                                 onAdsCloseOrFailed?.invoke(false)
                                 onAdsFail?.invoke()
-                                admobInterModel.interstitialAd.postValue(null)
+                                admobInterModel.interstitialAd.value = null
                                 admobInterModel.isLoading.removeObservers(activity as LifecycleOwner)
                                 handle.removeCallbacksAndMessages(0)
                                 AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
@@ -433,6 +433,9 @@ object AdmobLib {
                     onAdsFail?.invoke()
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                     admobInterModel.isLoading.removeObservers(activity as LifecycleOwner)
+                    if (isPreload) {
+                        loadInterstitial(activity, admobInterModel)
+                    }
                 }
             }
         }
@@ -722,7 +725,7 @@ object AdmobLib {
         }
         adLoader.forNativeAd { nativeAd ->
             checkTestDevice(isEnabledCheckTestDevice, nativeAd)
-            admobNativeModel.nativeAd.postValue(nativeAd)
+            admobNativeModel.nativeAd.value = nativeAd
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
             }
@@ -730,7 +733,7 @@ object AdmobLib {
         adLoader.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 onAdsLoadFail?.invoke()
-                admobNativeModel.nativeAd.postValue(null)
+                admobNativeModel.nativeAd.value = null
                 admobNativeModel.isLoading.postValue(false)
             }
 
@@ -839,7 +842,7 @@ object AdmobLib {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     isShowRewardAds = false
                     dismissDialogFullScreen()
-                    admobRewardedModel.rewardAd.postValue(null)
+                    admobRewardedModel.rewardAd.value = null
                     onAdsCloseOrFailed?.invoke(isEarnedReward)
                     onAdsFail?.invoke()
                     handle.removeCallbacksAndMessages(0)
@@ -856,7 +859,7 @@ object AdmobLib {
 
                         override fun onAdDismissedFullScreenContent() {
                             isShowRewardAds = false
-                            admobRewardedModel.rewardAd.postValue(null)
+                            admobRewardedModel.rewardAd.value = null
                             onAdsCloseOrFailed?.invoke(isEarnedReward)
                             onAdsClose?.invoke()
                             handle.removeCallbacksAndMessages(0)
@@ -866,7 +869,7 @@ object AdmobLib {
 
                         override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                             isShowRewardAds = false
-                            admobRewardedModel.rewardAd.postValue(null)
+                            admobRewardedModel.rewardAd.value = null
                             onAdsCloseOrFailed?.invoke(isEarnedReward)
                             onAdsFail?.invoke()
                             handle.removeCallbacksAndMessages(0)
@@ -899,7 +902,7 @@ object AdmobLib {
             if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                 isShowRewardAds = false
                 dismissDialogFullScreen()
-                admobRewardedModel.rewardAd.postValue(null)
+                admobRewardedModel.rewardAd.value = null
                 handle.removeCallbacksAndMessages(0)
                 AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
             }
@@ -933,14 +936,14 @@ object AdmobLib {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     onAdsFail?.invoke()
                     isShowRewardAds = false
-                    admobRewardedModel.rewardAd.postValue(null)
+                    admobRewardedModel.rewardAd.value = null
                     admobRewardedModel.isLoading.postValue(false)
                 }
 
                 override fun onAdLoaded(rewardedAd: RewardedAd) {
                     onAdsLoaded?.invoke()
                     isShowRewardAds = false
-                    admobRewardedModel.rewardAd.postValue(rewardedAd)
+                    admobRewardedModel.rewardAd.value = rewardedAd
                     admobRewardedModel.isLoading.postValue(false)
                     rewardedAd.setOnPaidEventListener {
                         AdjustUtils.postRevenueAdjustRewarded(rewardedAd, it, rewardedAd.adUnitId)
@@ -978,7 +981,7 @@ object AdmobLib {
                         object : FullScreenContentCallback() {
                             override fun onAdDismissedFullScreenContent() {
                                 isShowRewardAds = false
-                                admobRewardedModel.rewardAd.postValue(null)
+                                admobRewardedModel.rewardAd.value = null
                                 admobRewardedModel.isLoading.removeObservers(activity as LifecycleOwner)
                                 onAdsCloseOrFailed.invoke(isEarnedReward)
                                 onAdsClose?.invoke()
@@ -992,7 +995,7 @@ object AdmobLib {
 
                             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                                 isShowRewardAds = false
-                                admobRewardedModel.rewardAd.postValue(null)
+                                admobRewardedModel.rewardAd.value = null
                                 admobRewardedModel.isLoading.removeObservers(activity as LifecycleOwner)
                                 onAdsCloseOrFailed.invoke(isEarnedReward)
                                 onAdsFail?.invoke()
@@ -1027,6 +1030,9 @@ object AdmobLib {
                     onAdsFail?.invoke()
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                     admobRewardedModel.isLoading.removeObservers(activity as LifecycleOwner)
+                    if (isPreload) {
+                        loadRewarded(activity, admobRewardedModel)
+                    }
                 }
             }
         }
