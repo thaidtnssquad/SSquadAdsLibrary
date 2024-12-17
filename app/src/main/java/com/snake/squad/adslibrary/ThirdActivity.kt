@@ -7,6 +7,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.snake.squad.adslib.AdmobLib
 import com.snake.squad.adslib.utils.AdsConstants
+import com.snake.squad.adslib.utils.GoogleENative
 import com.snake.squad.adslibrary.databinding.ActivityThirdBinding
 
 class ThirdActivity : AppCompatActivity() {
@@ -17,7 +18,7 @@ class ThirdActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        AdmobLib.loadAndShowNativeFullScreen(this, AdsConstants.admobNativeModelTest, binding.frNative)
+        AdmobLib.loadAndShowNative(this, AdsConstants.admobNativeModelTest, binding.frNative, GoogleENative.UNIFIED_FULL_SCREEN)
 
     }
 }

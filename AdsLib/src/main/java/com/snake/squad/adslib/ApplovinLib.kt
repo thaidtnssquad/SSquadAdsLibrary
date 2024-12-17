@@ -106,8 +106,8 @@ object ApplovinLib {
             return
         }
         val handle = Handler(Looper.getMainLooper())
-        maxInterModel.interstitialAd = MaxInterstitialAd(maxInterModel.adsID, activity)
-        maxInterModel.interstitialAd?.let {
+        maxInterModel.interstitialAd.postValue(MaxInterstitialAd(maxInterModel.adsID, activity))
+        maxInterModel.interstitialAd.value?.let {
             it.setRevenueListener { ad ->
                 AdjustUtils.postRevenueAdjustMax(ad)
             }
@@ -192,8 +192,8 @@ object ApplovinLib {
         showDialogFullScreen(activity)
         val handle = Handler(Looper.getMainLooper())
         AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
-        maxInterModel.interstitialAd = MaxInterstitialAd(maxInterModel.adsID, activity)
-        maxInterModel.interstitialAd?.let {
+        maxInterModel.interstitialAd.postValue(MaxInterstitialAd(maxInterModel.adsID, activity))
+        maxInterModel.interstitialAd.value?.let {
             it.setRevenueListener { ad ->
                 AdjustUtils.postRevenueAdjustMax(ad)
             }
@@ -265,7 +265,7 @@ object ApplovinLib {
             onAdsFail?.invoke()
             return
         }
-        if (maxInterModel.interstitialAd?.isReady == true) {
+        if (maxInterModel.interstitialAd.value?.isReady == true) {
             onAdsFail?.invoke()
             return
         }
@@ -273,8 +273,8 @@ object ApplovinLib {
             onAdsFail?.invoke()
             return
         }
-        maxInterModel.interstitialAd = MaxInterstitialAd(maxInterModel.adsID, activity)
-        maxInterModel.interstitialAd?.let {
+        maxInterModel.interstitialAd.postValue(MaxInterstitialAd(maxInterModel.adsID, activity))
+        maxInterModel.interstitialAd.value?.let {
             it.setRevenueListener { ad ->
                 AdjustUtils.postRevenueAdjustMax(ad)
             }
@@ -290,20 +290,20 @@ object ApplovinLib {
 
                 override fun onAdHidden(ad: MaxAd) {
                     isShowInterAds = false
-                    maxInterModel.interstitialAd = null
+                    maxInterModel.interstitialAd.postValue(null)
                 }
 
                 override fun onAdClicked(ad: MaxAd) {}
 
                 override fun onAdLoadFailed(p0: String, p1: MaxError) {
                     isShowInterAds = false
-                    maxInterModel.interstitialAd = null
+                    maxInterModel.interstitialAd.postValue(null)
                     onAdsFail?.invoke()
                 }
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
                     isShowInterAds = false
-                    maxInterModel.interstitialAd = null
+                    maxInterModel.interstitialAd.postValue(null)
                 }
 
             })
@@ -333,13 +333,13 @@ object ApplovinLib {
             onAdsFail?.invoke()
             return
         }
-        if (maxInterModel.interstitialAd == null || maxInterModel.interstitialAd?.isReady == false) {
+        if (maxInterModel.interstitialAd.value == null || maxInterModel.interstitialAd.value?.isReady == false) {
             loadInterstitial(activity, maxInterModel)
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
             return
         }
-        maxInterModel.interstitialAd?.let {
+        maxInterModel.interstitialAd.value?.let {
             showDialogFullScreen(activity)
             val handle = Handler(Looper.getMainLooper())
             AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
@@ -364,7 +364,7 @@ object ApplovinLib {
                     isShowInterAds = false
                     onAdsCloseOrFailed?.invoke(true)
                     onAdsClose?.invoke()
-                    maxInterModel.interstitialAd = null
+                    maxInterModel.interstitialAd.postValue(null)
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                     if (isPreload) {
@@ -380,7 +380,7 @@ object ApplovinLib {
                     isShowInterAds = false
                     onAdsCloseOrFailed?.invoke(false)
                     onAdsFail?.invoke()
-                    maxInterModel.interstitialAd = null
+                    maxInterModel.interstitialAd.postValue(null)
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                     if (isPreload) {
@@ -392,7 +392,7 @@ object ApplovinLib {
                     isShowInterAds = false
                     onAdsCloseOrFailed?.invoke(false)
                     onAdsFail?.invoke()
-                    maxInterModel.interstitialAd = null
+                    maxInterModel.interstitialAd.postValue(null)
                     handle.removeCallbacksAndMessages(0)
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                     if (isPreload) {
@@ -448,7 +448,7 @@ object ApplovinLib {
         banner.setExtraParameter("adaptive_banner", "true")
 
         val shimmerLoadingView: View =
-            activity.layoutInflater.inflate(R.layout.banner_shimmer_layout, null, false)
+            activity.layoutInflater.inflate(R.layout.banner_shimmer_layout, viewGroup, false)
 
         try {
             viewGroup.removeAllViews()
@@ -550,9 +550,9 @@ object ApplovinLib {
         }
 
         val shimmerLoadingView: View = if (isMedium) {
-            activity.layoutInflater.inflate(R.layout.native_medium_shimmer_layout, null, false)
+            activity.layoutInflater.inflate(R.layout.native_medium_shimmer_layout, viewGroup, false)
         } else {
-            activity.layoutInflater.inflate(R.layout.native_small_shimmer_layout, null, false)
+            activity.layoutInflater.inflate(R.layout.native_small_shimmer_layout, viewGroup, false)
         }
         viewGroup.removeAllViews()
         viewGroup.addView(shimmerLoadingView, 0)
@@ -663,9 +663,9 @@ object ApplovinLib {
         }
 
         val shimmerLoadingView: View = if (isMedium) {
-            activity.layoutInflater.inflate(R.layout.native_medium_shimmer_layout, null, false)
+            activity.layoutInflater.inflate(R.layout.native_medium_shimmer_layout, viewGroup, false)
         } else {
-            activity.layoutInflater.inflate(R.layout.native_small_shimmer_layout, null, false)
+            activity.layoutInflater.inflate(R.layout.native_small_shimmer_layout, viewGroup, false)
         }
         viewGroup.removeAllViews()
         viewGroup.addView(shimmerLoadingView, 0)
