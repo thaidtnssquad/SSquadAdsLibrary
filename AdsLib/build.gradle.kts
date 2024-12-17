@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.2.8-no-mediation"
+                version = "1.2.9-mediation-admob"
             }
         }
     }
@@ -74,7 +74,7 @@ dependencies {
     //Adjust
     implementation("com.adjust.sdk:adjust-android:5.0.1")
     implementation("com.android.installreferrer:installreferrer:2.2")
-    implementation("com.google.android.gms:play-services-ads-identifier:18.1.0")
+    implementation("com.google.android.gms:play-services-ads-identifier:18.2.0")
     implementation("com.adjust.sdk:adjust-android-webbridge:5.0.0")
 
     //cmp
@@ -84,11 +84,11 @@ dependencies {
     implementation("com.facebook.android:facebook-android-sdk:17.0.0")
 
     //admob mediation
-//    implementation("com.google.ads.mediation:pangle:+")
-//    implementation("com.google.ads.mediation:applovin:+")
-//    implementation("com.google.ads.mediation:facebook:+")
-//    implementation("com.google.ads.mediation:vungle:+")
-//    implementation("com.google.ads.mediation:mintegral:+")
+    implementation("com.google.ads.mediation:pangle:+")
+    implementation("com.google.ads.mediation:applovin:+")
+    implementation("com.google.ads.mediation:facebook:+")
+    implementation("com.google.ads.mediation:vungle:+")
+    implementation("com.google.ads.mediation:mintegral:+")
 
     //max mediation
 //    implementation("com.applovin.mediation:google-adapter:+")
