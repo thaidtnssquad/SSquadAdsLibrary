@@ -836,7 +836,7 @@ object AdmobLib {
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         RewardedAd.load(
             activity,
-            admobRewardedModel.adsID,
+            if (isDebug) AdsConstants.admobRewardedModelTest.adsID else admobRewardedModel.adsID,
             rewardedAdRequest,
             object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -930,7 +930,7 @@ object AdmobLib {
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
         RewardedAd.load(
             activity,
-            admobRewardedModel.adsID,
+            if (isDebug) AdsConstants.admobRewardedModelTest.adsID else admobRewardedModel.adsID,
             rewardedAdRequest,
             object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -1076,6 +1076,14 @@ object AdmobLib {
 
     fun setEnabledCheckTestDevice(isEnabledCheckTestDevice: Boolean) {
         AdmobLib.isEnabledCheckTestDevice = isEnabledCheckTestDevice
+    }
+
+    fun getCheckTestDevice(): Boolean {
+        return isTestDevice
+    }
+
+    fun setCheckTestDevice(isTestDevice: Boolean) {
+        AdmobLib.isTestDevice = isTestDevice
     }
 
     private fun getAdSize(activity: Activity): AdSize {
