@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.3.2-mediation-admob"
+                version = "1.3.3-mediation-admob"
             }
         }
     }
@@ -87,7 +87,7 @@ dependencies {
     implementation("com.google.ads.mediation:pangle:+")
     implementation("com.google.ads.mediation:applovin:+")
     implementation("com.google.ads.mediation:facebook:+")
-    implementation("com.google.ads.mediation:vungle:+")
+    implementation("com.google.ads.mediation:vungle:7.3.2.0")
     implementation("com.google.ads.mediation:mintegral:+")
 
     //max mediation
