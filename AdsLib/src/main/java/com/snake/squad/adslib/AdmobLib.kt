@@ -211,6 +211,7 @@ object AdmobLib {
         activity: AppCompatActivity,
         admobInterModel: AdmobInterModel,
         timeout: Long = 15000,
+        isShowOnTestDevice: Boolean = false,
         onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
         onAdsLoaded: (() -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null,
@@ -219,7 +220,7 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || isTestDevice) {
+        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
             return
@@ -309,6 +310,7 @@ object AdmobLib {
     fun loadInterstitial(
         activity: Activity,
         admobInterModel: AdmobInterModel,
+        isShowOnTestDevice: Boolean = false,
         onAdsLoaded: (() -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null
     ) {
@@ -317,7 +319,7 @@ object AdmobLib {
             || !isNetworkConnected(activity)
             || admobInterModel.interstitialAd.value != null
             || admobInterModel.isLoading.value == true
-            || isTestDevice
+            || (!isShowOnTestDevice && isTestDevice)
         ) {
             onAdsFail?.invoke()
             return
@@ -357,6 +359,7 @@ object AdmobLib {
         activity: AppCompatActivity,
         admobInterModel: AdmobInterModel,
         isPreload: Boolean = true,
+        isShowOnTestDevice: Boolean = false,
         onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null,
         onAdsClose: (() -> Unit)? = null,
@@ -364,7 +367,7 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || isTestDevice) {
+        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
             if (admobInterModel.interstitialAd.value == null) loadInterstitial(
                 activity,
                 admobInterModel
@@ -391,7 +394,7 @@ object AdmobLib {
                                 handle.removeCallbacksAndMessages(0)
                                 AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                                 if (isPreload) {
-                                    loadInterstitial(activity, admobInterModel)
+                                    loadInterstitial(activity, admobInterModel, isShowOnTestDevice)
                                 }
                             }
 
@@ -405,7 +408,7 @@ object AdmobLib {
                                 handle.removeCallbacksAndMessages(0)
                                 AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                                 if (isPreload) {
-                                    loadInterstitial(activity, admobInterModel)
+                                    loadInterstitial(activity, admobInterModel, isShowOnTestDevice)
                                 }
                             }
 
@@ -434,7 +437,7 @@ object AdmobLib {
                     AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                     admobInterModel.isLoading.removeObservers(activity as LifecycleOwner)
                     if (isPreload) {
-                        loadInterstitial(activity, admobInterModel)
+                        loadInterstitial(activity, admobInterModel, isShowOnTestDevice)
                     }
                 }
             }
@@ -446,10 +449,11 @@ object AdmobLib {
         bannerID: String,
         viewGroup: ViewGroup,
         viewLine: View,
+        isShowOnTestDevice: Boolean = false,
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null
     ) {
-        if (!isShowAds || !isNetworkConnected(activity) || isTestDevice) {
+        if (!isShowAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
             viewGroup.visibility = View.GONE
             viewLine.visibility = View.GONE
             onAdsLoadFail?.invoke()
@@ -506,13 +510,14 @@ object AdmobLib {
         viewGroup: ViewGroup,
         viewLine: View,
         collapsibleType: BannerCollapsibleType? = null,
+        isShowOnTestDevice: Boolean = false,
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null,
         onAdsOpened: (() -> Unit?)? = null,
         onAdsClicked: (() -> Unit)? = null,
         onAdsClosed: (() -> Unit)? = null
     ) {
-        if (!isShowAds || !isNetworkConnected(activity) || isTestDevice) {
+        if (!isShowAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
             viewGroup.visibility = View.GONE
             viewLine.visibility = View.GONE
             onAdsLoadFail?.invoke()
@@ -600,10 +605,11 @@ object AdmobLib {
         layout: Int? = null,
         shimmerLayout: Int? = null,
         mediaViewRatio: Int = MediaAspectRatio.SQUARE,
+        isShowOnTestDevice: Boolean = false,
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null
     ) {
-        if (!isShowAds || !isNetworkConnected(activity) || isTestDevice) {
+        if (!isShowAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
             viewGroup.visibility = View.GONE
             return
         }
@@ -815,6 +821,7 @@ object AdmobLib {
         activity: AppCompatActivity,
         admobRewardedModel: AdmobRewardedModel,
         timeout: Long = 15000L,
+        isShowOnTestDevice: Boolean = false,
         onAdsCloseOrFailed: ((isEarned: Boolean) -> Unit)? = null,
         onAdsLoaded: (() -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null,
@@ -823,7 +830,7 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity) || isTestDevice) {
+        if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
             return
@@ -912,6 +919,7 @@ object AdmobLib {
     fun loadRewarded(
         activity: Activity,
         admobRewardedModel: AdmobRewardedModel,
+        isShowOnTestDevice: Boolean = false,
         onAdsLoaded: (() -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null
     ) {
@@ -920,7 +928,7 @@ object AdmobLib {
             || !isNetworkConnected(activity)
             || admobRewardedModel.rewardAd.value != null
             || admobRewardedModel.isLoading.value == true
-            || isTestDevice
+            || (!isShowOnTestDevice && isTestDevice)
         ) {
             onAdsFail?.invoke()
             return
@@ -956,6 +964,7 @@ object AdmobLib {
         activity: AppCompatActivity,
         admobRewardedModel: AdmobRewardedModel,
         isPreload: Boolean = true,
+        isShowOnTestDevice: Boolean = false,
         onAdsCloseOrFailed: (isEarned: Boolean) -> Unit,
         onAdsFail: (() -> Unit)? = null,
         onAdsClose: (() -> Unit)? = null,
@@ -963,7 +972,7 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
-        if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity) || isTestDevice) {
+        if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
             onAdsCloseOrFailed.invoke(false)
             onAdsFail?.invoke()
             return
