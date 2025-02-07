@@ -606,6 +606,7 @@ object AdmobLib {
         shimmerLayout: Int? = null,
         mediaViewRatio: Int = MediaAspectRatio.SQUARE,
         isShowOnTestDevice: Boolean = false,
+        isCheckTestAds: Boolean = false,
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null
     ) {
@@ -652,7 +653,7 @@ object AdmobLib {
             adLoader.withNativeAdOptions(NativeAdOptions.Builder().build())
         }
         adLoader.forNativeAd { nativeAd ->
-            checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
             val layoutNative = layout
                 ?: when (size) {
                     GoogleENative.UNIFIED_MEDIUM -> R.layout.admob_ad_template_medium
@@ -696,7 +697,8 @@ object AdmobLib {
         size: GoogleENative = GoogleENative.UNIFIED_MEDIUM,
         mediaViewRatio: Int = MediaAspectRatio.SQUARE,
         onAdsLoaded: (() -> Unit?)? = null,
-        onAdsLoadFail: (() -> Unit?)? = null
+        onAdsLoadFail: (() -> Unit?)? = null,
+        isCheckTestAds: Boolean = false,
     ) {
         if (!isShowAds
             || !isNetworkConnected(activity)
@@ -730,7 +732,7 @@ object AdmobLib {
             adLoader.withNativeAdOptions(NativeAdOptions.Builder().build())
         }
         adLoader.forNativeAd { nativeAd ->
-            checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
             admobNativeModel.nativeAd.value = nativeAd
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
