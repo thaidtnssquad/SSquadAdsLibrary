@@ -50,6 +50,7 @@ import com.snake.squad.adslib.models.AdmobRewardedModel
 import com.snake.squad.adslib.utils.AdsConstants
 import com.snake.squad.adslib.utils.AdsHelper.isNetworkConnected
 import com.snake.squad.adslib.utils.BannerCollapsibleType
+import com.snake.squad.adslib.utils.BannerType
 import com.snake.squad.adslib.utils.GoogleENative
 import com.snake.squad.adslib.utils.NativeUtils
 import kotlinx.coroutines.CoroutineScope
@@ -449,6 +450,7 @@ object AdmobLib {
         bannerID: String,
         viewGroup: ViewGroup,
         viewLine: View,
+        bannerType: BannerType? = null,
         isShowOnTestDevice: Boolean = false,
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null
@@ -461,7 +463,16 @@ object AdmobLib {
         }
         val adView = AdView(activity)
         adView.adUnitId = if (isDebug) AdsConstants.ADMOB_BANNER_TEST else bannerID
-        adView.setAdSize(getAdSize(activity))
+        adView.setAdSize(
+            when(bannerType) {
+                BannerType.BANNER -> AdSize.BANNER
+                BannerType.LARGE_BANNER -> AdSize.LARGE_BANNER
+                BannerType.MEDIUM_RECTANGLE -> AdSize.MEDIUM_RECTANGLE
+                BannerType.FULL_BANNER -> AdSize.FULL_BANNER
+                BannerType.LEADERBOARD -> AdSize.LEADERBOARD
+                else -> getAdSize(activity)
+            }
+        )
         val shimmerLoadingView =
             activity.layoutInflater.inflate(R.layout.banner_shimmer_layout, viewGroup, false)
         try {
