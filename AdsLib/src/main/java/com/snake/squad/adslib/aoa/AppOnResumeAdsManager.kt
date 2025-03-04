@@ -34,6 +34,8 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
         private var adsID: String? = null
 
         fun initialize(application: Application, adUnitId: String) {
+            instance?.release()
+
             this.application = application
             this.adsID = adUnitId
             instance = AppOnResumeAdsManager()
@@ -55,16 +57,30 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
     private var currentActivity: Activity? = null
     private val disabledActivities = mutableSetOf<Class<*>>()
 
+    private val lifecycleEventObserver by lazy {
+        LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START && isAppResumeEnabled) {
+                onStartEvent()
+            }
+        }
+    }
+
+    private fun onStartEvent() {
+        Log.d("TAG", "on lifecycle event observer: ${lifecycleEventObserver.toString()}")
+        currentActivity?.let {
+            showAdIfAvailable(it)
+        }
+    }
+
     init {
         initAdRequest()
         application?.registerActivityLifecycleCallbacks(this)
-        ProcessLifecycleOwner.get().lifecycle.addObserver(LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_START && isAppResumeEnabled) {
-                currentActivity?.let {
-                    showAdIfAvailable(it)
-                }
-            }
-        })
+        ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleEventObserver)
+    }
+
+    fun release() {
+        ProcessLifecycleOwner.get().lifecycle.removeObserver(lifecycleEventObserver)
+        instance = null
     }
 
     fun disableForActivity(activityClass: Class<*>) {
