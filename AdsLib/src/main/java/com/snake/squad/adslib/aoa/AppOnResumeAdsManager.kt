@@ -137,7 +137,6 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
             || AdmobLib.getShowRewardAds()
             || ApplovinLib.getShowInterAds()
             || ApplovinLib.getShowRewardAds()
-            || isShowingAd
             || disabledActivities.contains(activity.javaClass)
             || AdmobLib.getEnabledCheckTestDevice()
         ) {
@@ -147,8 +146,11 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
             loadAd()
             return
         }
+        if (isShowingAd) {
+            dismissDialogFullScreen()
+            appOpenAd?.fullScreenContentCallback?.onAdDismissedFullScreenContent()
+        }
         showDialogFullScreen(activity)
-        isShowingAd = true
         appOpenAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
                 Log.d(logTag, "Ad dismissed")
@@ -167,6 +169,7 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
             }
 
             override fun onAdShowedFullScreenContent() {
+                isShowingAd = true
                 Log.d(logTag, "Ad shown")
             }
         }

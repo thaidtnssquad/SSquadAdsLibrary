@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.3.6-mediation-admob"
+                version = "1.3.6-testing"
             }
         }
     }
