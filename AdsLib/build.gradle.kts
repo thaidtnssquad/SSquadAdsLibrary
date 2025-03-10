@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.snake.squad.adslib"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 28
@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.3.8"
+                version = "1.3.7"
             }
         }
     }
@@ -59,15 +59,15 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     //Ads
-    implementation("com.applovin:applovin-sdk:13.0.1")
-    implementation("com.google.android.gms:play-services-ads:23.5.0")
+    implementation("com.applovin:applovin-sdk:13.1.0")
+    implementation("com.google.android.gms:play-services-ads:24.0.0")
 
     implementation("androidx.lifecycle:lifecycle-process:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime:2.8.7")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.8.7")
 
-    implementation("com.airbnb.android:lottie:6.4.1")
+    implementation("com.airbnb.android:lottie:6.5.2")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
     implementation("com.orhanobut:hawk:2.0.1")
 
@@ -82,7 +82,7 @@ dependencies {
     implementation("com.google.android.ump:user-messaging-platform:3.1.0")
 
     //facebook sdk
-    implementation("com.facebook.android:facebook-android-sdk:17.0.0")
+    implementation("com.facebook.android:facebook-android-sdk:18.0.2")
 
     //admob mediation
     implementation("com.google.ads.mediation:pangle:+")

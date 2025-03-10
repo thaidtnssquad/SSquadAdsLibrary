@@ -62,7 +62,7 @@ object ApplovinLib {
         sdkKey: String,
         isDebug: Boolean,
         isShowAds: Boolean,
-        onInitializationComplete: (AppLovinSdkConfiguration) -> Unit
+        onInitializationComplete: ((AppLovinSdkConfiguration) -> Unit)? = null
     ) {
         this.isDebug = isDebug
         this.isShowAds = isShowAds
@@ -78,7 +78,7 @@ object ApplovinLib {
             applovinSdk = AppLovinSdk.getInstance(application)
             applovinSdk?.initialize(initConfig.build()) { sdkConfig ->
                 runOnUiThread {
-                    onInitializationComplete.invoke(sdkConfig)
+                    onInitializationComplete?.invoke(sdkConfig)
                 }
             }
         }

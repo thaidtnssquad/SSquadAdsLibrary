@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.snake.squad.adslibrary"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.snake.squad.adslibrary"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 100
         versionName = "1.0.0"
 

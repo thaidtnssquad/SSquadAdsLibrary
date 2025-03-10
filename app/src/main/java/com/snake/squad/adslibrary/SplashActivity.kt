@@ -36,9 +36,7 @@ class SplashActivity : AppCompatActivity() {
             "05TMDQ5tZabpXQ45_UTbmEGNUtVAzSTzT6KmWQc5_CuWdzccS4DCITZoL3yIWUG3bbq60QC_d4WF28tUC4gVTF",
             isDebug = true,
             isShowAds = true
-        ) {
-
-        }
+        )
     }
 
     private fun loadAndShowAOA() {
