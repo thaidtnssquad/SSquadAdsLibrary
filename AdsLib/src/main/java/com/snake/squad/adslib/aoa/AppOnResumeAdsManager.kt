@@ -185,7 +185,6 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
             }
 
             override fun onAdShowedFullScreenContent() {
-                isShowingAd = true
                 Log.d(logTag, "Ad shown")
             }
         }
@@ -204,6 +203,7 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
             if (!activity.isFinishing && dialogFullScreen != null && dialogFullScreen?.isShowing == false) {
+                isShowingAd = true
                 dialogFullScreen?.show()
             }
         } catch (e: Exception) {
