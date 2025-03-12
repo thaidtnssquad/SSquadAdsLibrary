@@ -154,7 +154,7 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
             || ApplovinLib.getShowInterAds()
             || ApplovinLib.getShowRewardAds()
             || disabledActivities.contains(activity.javaClass)
-            || AdmobLib.getEnabledCheckTestDevice()
+            || AdmobLib.getCheckTestDevice()
         ) {
             return
         }
