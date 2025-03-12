@@ -106,7 +106,7 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
     }
 
     private fun loadAd() {
-        if (isLoadingAd || isAdAvailable() || !AdmobLib.getShowAds() || AdmobLib.getEnabledCheckTestDevice()) {
+        if (isLoadingAd || isAdAvailable() || !AdmobLib.getShowAds() || AdmobLib.getCheckTestDevice()) {
             return
         }
         val appOnResumeID = if (AdmobLib.getDebugAds()) {
