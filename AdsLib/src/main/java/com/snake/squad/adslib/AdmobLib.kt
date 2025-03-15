@@ -60,6 +60,7 @@ import kotlinx.coroutines.launch
 
 object AdmobLib {
 
+    private var isInitAds: Boolean = false
     private var isDebug = false
     private var isShowAds = true
     private var isShowInterAds = false
@@ -88,11 +89,13 @@ object AdmobLib {
                     MobileAds.setRequestConfiguration(requestConfiguration)
                     initAdRequest(timeout)
                     runOnUiThread {
+                        this@AdmobLib.isInitAds = true
                         onInitializedAds.invoke(true)
                     }
                 }
             } catch (e: Exception) {
                 e.message
+                this@AdmobLib.isInitAds = false
                 this@AdmobLib.isShowAds = false
                 runOnUiThread {
                     onInitializedAds.invoke(false)
@@ -1058,6 +1061,14 @@ object AdmobLib {
                 }
             }
         }
+    }
+
+    fun getInitAds(): Boolean {
+        return isInitAds
+    }
+
+    fun setInitAds(isInitAds: Boolean) {
+        AdmobLib.isInitAds = isInitAds
     }
 
     fun getDebugAds(): Boolean {

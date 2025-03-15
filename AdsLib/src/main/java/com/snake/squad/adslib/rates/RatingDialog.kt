@@ -12,10 +12,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.orhanobut.hawk.Hawk
 import com.snake.squad.adslib.R
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
 import com.snake.squad.adslib.databinding.LayoutRatingDialogBinding
+import com.snake.squad.adslib.utils.SharedPrefManager
 
 class RatingDialog : DialogFragment() {
 
@@ -43,7 +43,7 @@ class RatingDialog : DialogFragment() {
 
     private fun handleRating(rating: Float) {
         if (rating >= 4) {
-            Hawk.put(KEY_COUNT_RATE, Hawk.get(KEY_COUNT_RATE, 0) + 1)
+            SharedPrefManager.putInt(KEY_COUNT_RATE, SharedPrefManager.getInt(KEY_COUNT_RATE, 0) + 1)
             openPlayStoreForRating()
         } else {
             sendEmailFeedback()
@@ -96,12 +96,12 @@ class RatingDialog : DialogFragment() {
         }
 
         fun showRateAppDialogAuto(activity: Activity, fragmentManager: FragmentManager, time: Int, email: String) {
-            var appLaunchCount = Hawk.get(PREF_KEY_APP_LAUNCH_COUNT, 0)
-            val ratingCount = Hawk.get(KEY_COUNT_RATE, 0)
+            var appLaunchCount = SharedPrefManager.getInt(PREF_KEY_APP_LAUNCH_COUNT, 0)
+            val ratingCount = SharedPrefManager.getInt(KEY_COUNT_RATE, 0)
             if (appLaunchCount >= time && ratingCount < 2) {
                 showRateAppDialog(activity, fragmentManager, email)
             } else {
-                Hawk.put(PREF_KEY_APP_LAUNCH_COUNT, ++appLaunchCount)
+                SharedPrefManager.putInt(PREF_KEY_APP_LAUNCH_COUNT, ++appLaunchCount)
             }
         }
     }

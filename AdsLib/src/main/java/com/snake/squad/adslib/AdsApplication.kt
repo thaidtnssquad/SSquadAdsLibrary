@@ -5,15 +5,15 @@ import android.app.Application
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import com.adjust.sdk.Adjust
-import com.orhanobut.hawk.Hawk
 import com.snake.squad.adslib.adjust.AdjustUtils
+import com.snake.squad.adslib.utils.SharedPrefManager
 
 open class AdsApplication(private val adjustKey: String, private val isProduction: Boolean) : Application() {
 
     override fun onCreate() {
         super.onCreate()
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        Hawk.init(this).build()
+        SharedPrefManager.init(this)
         AdjustUtils.initAdjust(this,adjustKey, isProduction)
         registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())
     }

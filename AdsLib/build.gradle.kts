@@ -25,11 +25,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         viewBinding = true
@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.3.9"
+                version = "1.4.0"
             }
         }
     }
@@ -69,7 +69,6 @@ dependencies {
 
     implementation("com.airbnb.android:lottie:6.5.2")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
-    implementation("com.orhanobut:hawk:2.0.1")
 
     //Adjust
     implementation("com.adjust.sdk:adjust-android:5.1.0")
@@ -100,5 +99,6 @@ dependencies {
 
     //rating
     implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
+    implementation ("com.google.code.gson:gson:2.11.0")
 
 }
