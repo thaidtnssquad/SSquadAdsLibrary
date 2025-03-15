@@ -625,6 +625,7 @@ object AdmobLib {
         onAdsLoadFail: (() -> Unit?)? = null
     ) {
         if (!isShowAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
+            onAdsLoadFail?.invoke()
             viewGroup.visibility = View.GONE
             return
         }
