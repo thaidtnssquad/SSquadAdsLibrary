@@ -1151,7 +1151,13 @@ object AdmobLib {
                     "जाँचविज्ञापन",
                     "إعلانتجريبي",
                     "Quảngcáothửnghiệm",
-                    "IklanUjian"
+                    "IklanUjian",
+                    "Reklamatestowa",
+                    "Testannoncer",
+                    "Testadvertenties",
+                    "Testannonser",
+                    "Testimainokset",
+                    "TestReklamları"
                 )
                 isTestDevice = testAdResponses.contains(testAdResponse)
             } catch (e: Exception) {
