@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.4.2"
+                version = "1.4.3"
             }
         }
     }
@@ -59,8 +59,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     //Ads
-    implementation("com.applovin:applovin-sdk:13.1.0")
-    implementation("com.google.android.gms:play-services-ads:24.0.0")
+    implementation("com.applovin:applovin-sdk:13.2.0")
+    implementation("com.google.android.gms:play-services-ads:24.2.0")
 
     implementation("androidx.lifecycle:lifecycle-process:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime:2.8.7")
@@ -71,14 +71,14 @@ dependencies {
     implementation("com.facebook.shimmer:shimmer:0.5.0")
 
     //Adjust
-    implementation("com.adjust.sdk:adjust-android:5.1.0")
-    implementation("com.adjust.sdk:adjust-android-webbridge:5.1.0")
+    implementation("com.adjust.sdk:adjust-android:5.2.0")
+    implementation("com.adjust.sdk:adjust-android-webbridge:5.2.0")
     implementation("com.android.installreferrer:installreferrer:2.2")
     implementation("com.google.android.gms:play-services-ads-identifier:18.2.0")
 
 
     //cmp
-    implementation("com.google.android.ump:user-messaging-platform:3.1.0")
+    implementation("com.google.android.ump:user-messaging-platform:3.2.0")
 
     //facebook sdk
     implementation("com.facebook.android:facebook-android-sdk:18.0.2")
