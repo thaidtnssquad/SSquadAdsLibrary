@@ -513,8 +513,8 @@ object AdmobLib {
             override fun onAdClicked() {}
             override fun onAdClosed() {}
         }
-        if (adRequest != null) {
-            adView.loadAd(adRequest!!)
+        (adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()).let {
+            adView.loadAd(it)
         }
     }
 
@@ -1068,10 +1068,6 @@ object AdmobLib {
         return isInitAds
     }
 
-    fun setInitAds(isInitAds: Boolean) {
-        AdmobLib.isInitAds = isInitAds
-    }
-
     fun getDebugAds(): Boolean {
         return isDebug
     }
@@ -1092,16 +1088,8 @@ object AdmobLib {
         return isShowInterAds
     }
 
-    fun setShowInterAds(isShowInterAds: Boolean) {
-        AdmobLib.isShowInterAds = isShowInterAds
-    }
-
     fun getShowRewardAds(): Boolean {
         return isShowRewardAds
-    }
-
-    fun setShowRewardAds(isShowRewardAds: Boolean) {
-        AdmobLib.isShowRewardAds = isShowRewardAds
     }
 
     fun getEnabledCheckTestDevice(): Boolean {
@@ -1116,9 +1104,32 @@ object AdmobLib {
         return isTestDevice
     }
 
-    fun setCheckTestDevice(isTestDevice: Boolean) {
-        AdmobLib.isTestDevice = isTestDevice
+    fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean("is_init_ads", isInitAds)
+        outState.putBoolean("is_debug", isDebug)
+        outState.putBoolean("is_show_ads", isShowAds)
+        outState.putBoolean("is_enable_check_test_device", isEnabledCheckTestDevice)
+        outState.putBoolean("is_test_device", isTestDevice)
     }
+
+    fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        if (savedInstanceState.containsKey("is_init_ads")) {
+            isInitAds = savedInstanceState.getBoolean("is_init_ads")
+        }
+        if (savedInstanceState.containsKey("is_debug")) {
+            isDebug = savedInstanceState.getBoolean("is_debug")
+        }
+        if (savedInstanceState.containsKey("is_show_ads")) {
+            isShowAds = savedInstanceState.getBoolean("is_show_ads")
+        }
+        if (savedInstanceState.containsKey("is_enable_check_test_device")) {
+            isEnabledCheckTestDevice = savedInstanceState.getBoolean("is_enable_check_test_device")
+        }
+        if (savedInstanceState.containsKey("is_test_device")) {
+            isInitAds = savedInstanceState.getBoolean("is_test_device")
+        }
+    }
+
 
     private fun getAdSize(activity: Activity): AdSize {
         val display = activity.windowManager.defaultDisplay
@@ -1194,5 +1205,4 @@ object AdmobLib {
             e.message
         }
     }
-
 }
