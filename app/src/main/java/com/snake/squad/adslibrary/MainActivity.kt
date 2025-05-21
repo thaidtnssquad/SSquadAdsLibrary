@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                 this,
                 AdsConstants.admobRewardedModelTest,
                 onAdsCloseOrFailed = {
-                    Toast.makeText(this, if (it) "Earned" else "Not Earned", Toast.LENGTH_SHORT)
+                    Toast.makeText(this, if (it) "Earned!" else "Not Earned!", Toast.LENGTH_SHORT)
                         .show()
                 })
         }
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnShowRewarded.setOnClickListener {
             AdmobLib.showRewarded(this, AdsConstants.admobRewardedModelTest, onAdsCloseOrFailed = {
-                Toast.makeText(this, if (it) "Earned" else "Not Earned", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, if (it) "Earned!" else "Not Earned!", Toast.LENGTH_SHORT).show()
             })
         }
 
