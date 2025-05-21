@@ -16,7 +16,9 @@ object NativeUtils {
     fun populateNativeAdView(
         nativeAd: NativeAd,
         adView: NativeAdView,
-        size: GoogleENative
+        size: GoogleENative,
+        isExpandedLayout: Boolean = false,
+        onCollapsedLayoutClick: (() -> Unit)? = null
     ) {
         if (nativeAd == null || adView == null || size == null) {
             return
@@ -41,6 +43,14 @@ object NativeUtils {
         }
         adView.findViewById<RatingBar>(R.id.ad_stars)?.let {
             adView.starRatingView = it
+        }
+        if (isExpandedLayout) {
+            adView.findViewById<ImageView>(R.id.iv_close)?.let {
+                it.visibility = View.VISIBLE
+                it.setOnClickListener {
+                    onCollapsedLayoutClick?.invoke()
+                }
+            }
         }
         if (nativeAd.mediaContent != null) {
             if (size == GoogleENative.UNIFIED_MEDIUM || size == GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON || size == GoogleENative.UNIFIED_FULL_SCREEN) {

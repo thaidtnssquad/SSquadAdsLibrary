@@ -8,14 +8,16 @@ import com.adjust.sdk.Adjust
 import com.snake.squad.adslib.adjust.AdjustUtils
 import com.snake.squad.adslib.utils.SharedPrefManager
 
-open class AdsApplication(private val adjustKey: String, private val isProduction: Boolean) : Application() {
+open class AdsApplication(private val adjustKey: String, private val isProduction: Boolean, private val isEnabledAdjust: Boolean = true) : Application() {
 
     override fun onCreate() {
         super.onCreate()
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         SharedPrefManager.init(this)
-        AdjustUtils.initAdjust(this,adjustKey, isProduction)
-        registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())
+        if (isEnabledAdjust) {
+            AdjustUtils.initAdjust(this,adjustKey, isProduction)
+            registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())
+        }
     }
 
     private class AdjustLifecycleCallbacks : ActivityLifecycleCallbacks {

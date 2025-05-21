@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.4.4"
+                version = "1.4.5"
             }
         }
     }
@@ -60,19 +60,19 @@ dependencies {
 
     //Ads
     implementation("com.applovin:applovin-sdk:13.2.0")
-    implementation("com.google.android.gms:play-services-ads:24.2.0")
+    implementation("com.google.android.gms:play-services-ads:24.3.0")
 
-    implementation("androidx.lifecycle:lifecycle-process:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-runtime:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
-    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-process:2.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime:2.9.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.9.0")
+    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.9.0")
 
-    implementation("com.airbnb.android:lottie:6.5.2")
+    implementation("com.airbnb.android:lottie:6.6.0")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
 
     //Adjust
-    implementation("com.adjust.sdk:adjust-android:5.2.0")
-    implementation("com.adjust.sdk:adjust-android-webbridge:5.2.0")
+    implementation("com.adjust.sdk:adjust-android:5.4.0")
+    implementation("com.adjust.sdk:adjust-android-webbridge:5.4.0")
     implementation("com.android.installreferrer:installreferrer:2.2")
     implementation("com.google.android.gms:play-services-ads-identifier:18.2.0")
 
@@ -81,7 +81,7 @@ dependencies {
     implementation("com.google.android.ump:user-messaging-platform:3.2.0")
 
     //facebook sdk
-    implementation("com.facebook.android:facebook-android-sdk:18.0.2")
+    implementation("com.facebook.android:facebook-android-sdk:18.0.3")
 
     //admob mediation
     implementation("com.google.ads.mediation:pangle:+")

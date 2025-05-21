@@ -140,6 +140,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:id="@+id/frNative"/>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/frNativeExpanded"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

@@ -706,6 +706,124 @@ object AdmobLib {
         adLoader.build().loadAd(nativeAdRequest)
     }
 
+    fun loadAndShowNativeCollapsible(
+        activity: Activity,
+        admobNativeModelExpanded: AdmobNativeModel,
+        admobNativeModelCollapsed: AdmobNativeModel? = null,
+        viewGroupExpanded: ViewGroup,
+        viewGroupCollapsed: ViewGroup,
+        layoutExpanded: Int? = null,
+        layoutCollapsed: Int? = null,
+        shimmerLayout: Int? = null,
+        isShowOnTestDevice: Boolean = false,
+        isCheckTestAds: Boolean = false,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: (() -> Unit?)? = null,
+        onAdsClosed: (() -> Unit?)? = null
+    ) {
+        if (!isShowAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
+            onAdsLoadFail?.invoke()
+            viewGroupExpanded.visibility = View.GONE
+            viewGroupCollapsed.visibility = View.GONE
+            return
+        }
+
+        val shimmerInflate = shimmerLayout ?: R.layout.native_small_like_banner_shimmer_layout
+        val shimmerLoadingView = activity.layoutInflater.inflate(
+            shimmerInflate,
+            null,
+            false
+        )
+
+        val nativeAdRequest =
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+
+        viewGroupExpanded.removeAllViews()
+        viewGroupCollapsed.removeAllViews()
+
+        //Collapsed
+        viewGroupCollapsed.addView(shimmerLoadingView, 0)
+        val shimmerFrameLayout =
+            shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
+        shimmerFrameLayout.startShimmer()
+        val adLoaderCollapsed = AdLoader.Builder(
+            activity,
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID
+        )
+        adLoaderCollapsed.withNativeAdOptions(NativeAdOptions.Builder().build())
+        adLoaderCollapsed.forNativeAd { nativeAd ->
+            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            val layoutNativeCollapsed = layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
+            val adView = activity.layoutInflater.inflate(layoutNativeCollapsed, null) as NativeAdView
+            NativeUtils.populateNativeAdView(
+                nativeAd,
+                adView,
+                GoogleENative.UNIFIED_SMALL_LIKE_BANNER
+            )
+            shimmerFrameLayout.stopShimmer()
+            viewGroupCollapsed.removeAllViews()
+            viewGroupCollapsed.addView(adView)
+            nativeAd.setOnPaidEventListener { adValue: AdValue ->
+                AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID)
+            }
+        }
+        adLoaderCollapsed.withAdListener(object : AdListener() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                shimmerFrameLayout.stopShimmer()
+                viewGroupCollapsed.visibility = View.GONE
+                onAdsLoadFail?.invoke()
+            }
+
+            override fun onAdLoaded() {
+                super.onAdLoaded()
+                viewGroupCollapsed.visibility = View.VISIBLE
+                onAdsLoaded?.invoke()
+            }
+        })
+
+        val adLoaderExpanded = AdLoader.Builder(
+            activity,
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelExpanded.adsID
+        )
+        adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
+        adLoaderExpanded.forNativeAd { nativeAd ->
+            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            val layoutNativeExpanded = layoutExpanded ?: R.layout.admob_ad_template_medium
+            val adView = activity.layoutInflater.inflate(layoutNativeExpanded, null) as NativeAdView
+            NativeUtils.populateNativeAdView(
+                nativeAd,
+                adView,
+                GoogleENative.UNIFIED_MEDIUM,
+                true
+            ) {
+                viewGroupExpanded.visibility = View.GONE
+                onAdsClosed?.invoke()
+                adLoaderCollapsed.build().loadAd(nativeAdRequest)
+            }
+            shimmerFrameLayout.stopShimmer()
+            viewGroupExpanded.removeAllViews()
+            viewGroupExpanded.addView(adView)
+            nativeAd.setOnPaidEventListener { adValue: AdValue ->
+                AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModelExpanded.adsID)
+            }
+        }
+        adLoaderExpanded.withAdListener(object : AdListener() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                shimmerFrameLayout.stopShimmer()
+                viewGroupExpanded.visibility = View.GONE
+                onAdsLoadFail?.invoke()
+                adLoaderCollapsed.build().loadAd(nativeAdRequest)
+            }
+
+            override fun onAdLoaded() {
+                super.onAdLoaded()
+                viewGroupExpanded.visibility = View.VISIBLE
+                onAdsLoaded?.invoke()
+            }
+        })
+        adLoaderExpanded.build().loadAd(nativeAdRequest)
+    }
+
     fun loadNative(
         activity: Activity,
         admobNativeModel: AdmobNativeModel,
@@ -808,27 +926,33 @@ object AdmobLib {
         val shimmerFrameLayout =
             shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
 
-        viewGroup.removeAllViews()
-
         admobNativeModel.isLoading.observe(activity as LifecycleOwner) { isLoading ->
-            if (isLoading) {
-                viewGroup.addView(shimmerLoadingView, 0)
-                shimmerFrameLayout.startShimmer()
-            } else {
-                if (admobNativeModel.nativeAd.value != null) {
-                    val adView = activity.layoutInflater.inflate(layoutNative, null) as NativeAdView
-                    NativeUtils.populateNativeAdView(
-                        admobNativeModel.nativeAd.value!!,
-                        adView,
-                        size
-                    )
-                    viewGroup.addView(adView)
-                    onAdsShowed?.invoke()
+            try {
+                viewGroup.removeAllViews()
+                if (isLoading) {
+                    viewGroup.addView(shimmerLoadingView, 0)
+                    shimmerFrameLayout.startShimmer()
                 } else {
-                    viewGroup.visibility = View.GONE
-                    onAdsShowFail?.invoke()
+                    if (admobNativeModel.nativeAd.value != null) {
+                        val adView = activity.layoutInflater.inflate(layoutNative, null) as NativeAdView
+                        NativeUtils.populateNativeAdView(
+                            admobNativeModel.nativeAd.value!!,
+                            adView,
+                            size
+                        )
+                        viewGroup.addView(adView)
+                        onAdsShowed?.invoke()
+                    } else {
+                        viewGroup.visibility = View.GONE
+                        onAdsShowFail?.invoke()
+                    }
+                    shimmerFrameLayout.stopShimmer()
+                    admobNativeModel.isLoading.removeObservers(activity as LifecycleOwner)
                 }
-                shimmerFrameLayout.stopShimmer()
+            } catch (e: Exception) {
+                e.message
+                onAdsShowFail?.invoke()
+                viewGroup.visibility = View.GONE
                 admobNativeModel.isLoading.removeObservers(activity as LifecycleOwner)
             }
         }

@@ -47,11 +47,11 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnLoadAndShowNative.setOnClickListener {
             setupViewBannerOrNative(false)
-            AdmobLib.loadAndShowNative(
+            AdmobLib.loadAndShowNativeCollapsible(
                 this,
                 AdsConstants.admobNativeModelTest,
-                binding.frNative,
-                GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON
+                viewGroupExpanded = binding.frNativeExpanded,
+                viewGroupCollapsed = binding.frNative,
             )
         }
 
