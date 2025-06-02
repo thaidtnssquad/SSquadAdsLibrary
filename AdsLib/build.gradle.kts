@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.4.5"
+                version = "1.4.6"
             }
         }
     }
@@ -59,7 +59,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     //Ads
-    implementation("com.applovin:applovin-sdk:13.2.0")
+    implementation("com.applovin:applovin-sdk:13.3.0")
     implementation("com.google.android.gms:play-services-ads:24.3.0")
 
     implementation("androidx.lifecycle:lifecycle-process:2.9.0")
