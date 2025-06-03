@@ -8,9 +8,6 @@ In settings.gradle
     maven (url = "https://jitpack.io")
     maven (url = "https://maven.google.com")
     maven (url = "https://android-sdk.is.com/")
-    maven (url = "https://artifact.bytedance.com/repository/pangle/")
-    maven (url = "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea")
-    maven (url = "https://artifactory.bidmachine.io/bidmachine")
 ```
 In build.gradle :app
 ```sh
@@ -47,9 +44,17 @@ In build.gradle :app
 ### In Splash Screen:
 #### ADMOB
 ```sh
-    AdmobLib.initialize(application, isDebug = true, isShowAds = true)
-    AppOnResumeAdsManager.initialize(application, "ADS_ID")
-    AppOnResumeAdsManager.getInstance().disableForActivity(SplashActivity::class.java)
+    AdmobLib.setEnabledCheckTestDevice(true)
+    AdmobLib.initialize(application, isDebug = true, isShowAds = true, onInitializedAds = {
+          if(it) {
+                //AppOnResumeInitialized
+                AppOnResumeAdsManager.initialize(application, "ADS_ID")
+                AppOnResumeAdsManager.getInstance().disableForActivity(SplashActivity::class.java)
+                //Next Step Logic Ads
+          } else {
+            //NextActivity
+          }
+    })
 ```
 #### MAX APPLOVIN
 ```sh

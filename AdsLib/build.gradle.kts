@@ -43,7 +43,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.4.7"
+                version = "1.4.8"
             }
         }
     }
@@ -76,26 +76,15 @@ dependencies {
     implementation("com.android.installreferrer:installreferrer:2.2")
     implementation("com.google.android.gms:play-services-ads-identifier:18.2.0")
 
-
     //cmp
     implementation("com.google.android.ump:user-messaging-platform:3.2.0")
 
     //facebook sdk
     implementation("com.facebook.android:facebook-android-sdk:18.0.3")
 
-    //admob mediation
-    implementation("com.google.ads.mediation:pangle:+")
+    //mediation admob
     implementation("com.google.ads.mediation:applovin:+")
     implementation("com.google.ads.mediation:facebook:+")
-    implementation("com.google.ads.mediation:vungle:7.3.2.0")
-    implementation("com.google.ads.mediation:mintegral:+")
-
-    //max mediation
-//    implementation("com.applovin.mediation:google-adapter:+")
-//    implementation("com.applovin.mediation:facebook-adapter:+")
-//    implementation("com.applovin.mediation:mintegral-adapter:+")
-//    implementation("com.applovin.mediation:bytedance-adapter:+")
-//    implementation("com.applovin.mediation:vungle-adapter:+")
 
     //rating
     implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
