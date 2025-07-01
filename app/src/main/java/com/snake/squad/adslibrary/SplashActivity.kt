@@ -28,7 +28,7 @@ class SplashActivity : AppCompatActivity() {
         AdmobLib.initialize(this, isDebug = true, isShowAds = true) {
             AppOnResumeAdsManager.initialize(application, AdsConstants.APP_OPEN_TEST)
             AppOnResumeAdsManager.getInstance().disableForActivity(SplashActivity::class.java)
-            loadAndShowAOA()
+            loadAndShowInter()
             AdmobLib.setEnabledCheckTestDevice(false)
         }
 //        ApplovinLib.initialize(
@@ -50,9 +50,9 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun loadAndShowInter() {
-        AdmobLib.loadAndShowInterstitialSplash(this, AdsConstants.admobInterModelTest) {
+        AdmobLib.loadAndShowInterstitialSplash(this, AdsConstants.admobInterModelTest, onAdsCloseOrFailed = {
             replaceActivity()
-        }
+        })
     }
 
     private fun replaceActivity() {

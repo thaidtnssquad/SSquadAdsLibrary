@@ -43,6 +43,7 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.snake.squad.adslib.adjust.AdjustUtils
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
+import com.snake.squad.adslib.facebook.FacebookUtils
 import com.snake.squad.adslib.models.AdmobBannerCollapsibleModel
 import com.snake.squad.adslib.models.AdmobInterModel
 import com.snake.squad.adslib.models.AdmobNativeModel
@@ -194,6 +195,7 @@ object AdmobLib {
                                 it,
                                 admobInterModel.adsID
                             )
+                            FacebookUtils.adImpressionFacebookRevenue(activity, it)
                         }
                         interstitialAd.show(activity)
                     }, 800)
@@ -295,6 +297,7 @@ object AdmobLib {
                             it,
                             admobInterModel.adsID
                         )
+                        FacebookUtils.adImpressionFacebookRevenue(activity, it)
                     }
                     interstitialAd.show(activity)
                 }
@@ -354,6 +357,7 @@ object AdmobLib {
                             it,
                             admobInterModel.adsID
                         )
+                        FacebookUtils.adImpressionFacebookRevenue(activity, it)
                     }
                 }
             })
@@ -467,7 +471,7 @@ object AdmobLib {
         val adView = AdView(activity)
         adView.adUnitId = if (isDebug) AdsConstants.ADMOB_BANNER_TEST else bannerID
         adView.setAdSize(
-            when(bannerType) {
+            when (bannerType) {
                 BannerType.BANNER -> AdSize.BANNER
                 BannerType.LARGE_BANNER -> AdSize.LARGE_BANNER
                 BannerType.MEDIUM_RECTANGLE -> AdSize.MEDIUM_RECTANGLE
@@ -493,6 +497,7 @@ object AdmobLib {
         shimmerFrameLayout.startShimmer()
         adView.setOnPaidEventListener {
             AdjustUtils.postRevenueAdjust(it, adView.adUnitId)
+            FacebookUtils.adImpressionFacebookRevenue(activity, it)
         }
         adView.adListener = object : AdListener() {
             override fun onAdLoaded() {
@@ -568,6 +573,7 @@ object AdmobLib {
                                 it,
                                 admobBannerCollapsibleModel.adView?.adUnitId
                             )
+                            FacebookUtils.adImpressionFacebookRevenue(activity, it)
                         }
                         shimmerFrameLayout.stopShimmer()
                         viewGroup.removeView(shimmerLoadingView)
@@ -688,6 +694,7 @@ object AdmobLib {
             viewGroup.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
+                FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
             }
         }
         adLoader.withAdListener(object : AdListener() {
@@ -748,13 +755,16 @@ object AdmobLib {
         shimmerFrameLayout.startShimmer()
         val adLoaderCollapsed = AdLoader.Builder(
             activity,
-            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelCollapsed?.adsID
+                ?: admobNativeModelExpanded.adsID
         )
         adLoaderCollapsed.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderCollapsed.forNativeAd { nativeAd ->
             if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
-            val layoutNativeCollapsed = layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
-            val adView = activity.layoutInflater.inflate(layoutNativeCollapsed, null) as NativeAdView
+            val layoutNativeCollapsed =
+                layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
+            val adView =
+                activity.layoutInflater.inflate(layoutNativeCollapsed, null) as NativeAdView
             NativeUtils.populateNativeAdView(
                 nativeAd,
                 adView,
@@ -764,7 +774,12 @@ object AdmobLib {
             viewGroupCollapsed.removeAllViews()
             viewGroupCollapsed.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID)
+                AdjustUtils.postRevenueAdjustNative(
+                    nativeAd,
+                    adValue,
+                    admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID
+                )
+                FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
             }
         }
         adLoaderCollapsed.withAdListener(object : AdListener() {
@@ -803,7 +818,12 @@ object AdmobLib {
             viewGroupExpanded.removeAllViews()
             viewGroupExpanded.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModelExpanded.adsID)
+                AdjustUtils.postRevenueAdjustNative(
+                    nativeAd,
+                    adValue,
+                    admobNativeModelExpanded.adsID
+                )
+                FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
             }
         }
         adLoaderExpanded.withAdListener(object : AdListener() {
@@ -880,8 +900,10 @@ object AdmobLib {
             ) {
                 viewGroupExpanded.visibility = View.GONE
                 onAdsClosed?.invoke()
-                val layoutNativeCollapsed = layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
-                val adView = activity.layoutInflater.inflate(layoutNativeCollapsed, null) as NativeAdView
+                val layoutNativeCollapsed =
+                    layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
+                val adView =
+                    activity.layoutInflater.inflate(layoutNativeCollapsed, null) as NativeAdView
                 NativeUtils.populateNativeAdView(
                     nativeAd,
                     adView,
@@ -890,9 +912,11 @@ object AdmobLib {
                 viewGroupCollapsed.removeAllViews()
                 viewGroupCollapsed.addView(adView)
                 nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                    AdjustUtils.postRevenueAdjustNative(nativeAd, adValue,
+                    AdjustUtils.postRevenueAdjustNative(
+                        nativeAd, adValue,
                         admobNativeModel.adsID
                     )
+                    FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                 }
             }
             shimmerFrameLayout.stopShimmer()
@@ -900,6 +924,7 @@ object AdmobLib {
             viewGroupExpanded.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
+                FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
             }
         }
         adLoaderExpanded.withAdListener(object : AdListener() {
@@ -965,6 +990,7 @@ object AdmobLib {
             admobNativeModel.nativeAd.value = nativeAd
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
+                FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
             }
         }
         adLoader.withAdListener(object : AdListener() {
@@ -1030,7 +1056,8 @@ object AdmobLib {
                     shimmerFrameLayout.startShimmer()
                 } else {
                     if (admobNativeModel.nativeAd.value != null) {
-                        val adView = activity.layoutInflater.inflate(layoutNative, null) as NativeAdView
+                        val adView =
+                            activity.layoutInflater.inflate(layoutNative, null) as NativeAdView
                         NativeUtils.populateNativeAdView(
                             admobNativeModel.nativeAd.value!!,
                             adView,
@@ -1135,6 +1162,7 @@ object AdmobLib {
                     }
                     ad.onPaidEventListener = OnPaidEventListener { adValue ->
                         AdjustUtils.postRevenueAdjustRewarded(ad, adValue, ad.adUnitId)
+                        FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                     }
                     ad.show(activity) { _ ->
                         isEarnedReward = true
@@ -1192,6 +1220,7 @@ object AdmobLib {
                     admobRewardedModel.isLoading.postValue(false)
                     rewardedAd.setOnPaidEventListener {
                         AdjustUtils.postRevenueAdjustRewarded(rewardedAd, it, rewardedAd.adUnitId)
+                        FacebookUtils.adImpressionFacebookRevenue(activity, it)
                     }
                 }
             })
