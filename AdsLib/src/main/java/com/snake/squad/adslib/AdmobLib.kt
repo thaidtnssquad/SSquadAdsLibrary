@@ -43,6 +43,7 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.snake.squad.adslib.adjust.AdjustUtils
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
+import com.snake.squad.adslib.dialogs.NativeAfterInterDialog
 import com.snake.squad.adslib.facebook.FacebookUtils
 import com.snake.squad.adslib.models.AdmobBannerCollapsibleModel
 import com.snake.squad.adslib.models.AdmobInterModel
@@ -1312,6 +1313,162 @@ object AdmobLib {
             }
         }
     }
+
+    // region show inter with native after
+    private fun createNativeFullScreen(
+        mActivity: AppCompatActivity,
+        model: AdmobNativeModel,
+        layout: Int = R.layout.admob_ad_template_full_screen,
+        isShowNative: Boolean = true,
+        isStartNow: Boolean = false,
+        counter: Int = NativeAfterInterDialog.DEFAULT_COUNTER,
+        navAction: () -> Unit,
+        onFailure: () -> Unit = navAction
+    ): NativeAfterInterDialog? {
+        if (!isShowNative) return null
+
+        return NativeAfterInterDialog(
+            mActivity, model, layout, isStartNow, counter, navAction, onFailure
+        )
+    }
+
+    private fun loadNativeFullScreen(
+        mActivity: AppCompatActivity,
+        model: AdmobNativeModel,
+        isShowNative: Boolean = true,
+    ) {
+        if (!isShowNative) return
+
+        loadNative(mActivity, model, GoogleENative.UNIFIED_FULL_SCREEN, MediaAspectRatio.ANY)
+    }
+
+    fun loadAndShowInterWithNativeAfter(
+        mActivity: AppCompatActivity,
+        interModel: AdmobInterModel,
+        nativeModel: AdmobNativeModel,
+        vShowInterAds: View?,
+        isShowNativeAfter: Boolean = true,
+        nativeLayout: Int = R.layout.admob_ad_template_full_screen,
+        counter: Int = NativeAfterInterDialog.DEFAULT_COUNTER,
+        isShowOnTestDevice: Boolean = true,
+        onInterCloseOrFailed: (isDone: Boolean) -> Unit = {},
+        navAction: () -> Unit
+    ) {
+        vShowInterAds?.visibility = View.VISIBLE
+        loadNativeFullScreen(mActivity, nativeModel, isShowNativeAfter)
+        var nativeDialog: NativeAfterInterDialog? = null
+        var isNativeFail = false
+        loadAndShowInterstitial(
+            mActivity,
+            interModel,
+            isShowOnTestDevice = isShowOnTestDevice,
+            onAdsShowed = {
+//            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
+                mActivity.lifecycleScope.launch {
+                    delay(1000)
+                    nativeDialog = createNativeFullScreen(
+                        mActivity,
+                        nativeModel,
+                        layout = nativeLayout,
+                        isShowNative = isShowNativeAfter,
+                        navAction = navAction,
+                        counter = counter,
+                        onFailure = {
+                            isNativeFail = true
+                        }
+                    )
+                    nativeDialog?.show()
+                }
+            },
+            onAdsFail = {
+//            Log.d("TAG", "loadAndShowInterWithNativeAfter: on fail")
+                mActivity.lifecycleScope.launch {
+                    createNativeFullScreen(
+                        mActivity,
+                        nativeModel,
+                        layout = nativeLayout,
+                        isShowNative = isShowNativeAfter,
+                        isStartNow = true,
+                        counter = counter,
+                        navAction = navAction
+                    )?.show()
+                }
+            },
+            onAdsCloseOrFailed = {
+                mActivity.lifecycleScope.launch {
+                    if (!isShowNativeAfter || isNativeFail) {
+                        navAction()
+                    } else {
+                        nativeDialog?.isClosedOrFail = true
+                    }
+                }
+                onInterCloseOrFailed(it)
+            }
+        )
+    }
+
+    fun loadAndShowInterSplashWithNativeAfter(
+        mActivity: AppCompatActivity,
+        interModel: AdmobInterModel,
+        nativeModel: AdmobNativeModel,
+        isShowNativeAfter: Boolean = true,
+        nativeLayout: Int = R.layout.admob_ad_template_full_screen,
+        counter: Int = NativeAfterInterDialog.DEFAULT_COUNTER,
+        vShowInterAds: View? = null,
+        navAction: () -> Unit
+    ) {
+        vShowInterAds?.visibility = View.VISIBLE
+        loadNativeFullScreen(mActivity, nativeModel, isShowNativeAfter)
+        var nativeDialog: NativeAfterInterDialog? = null
+        var isNativeFail = false
+        loadAndShowInterstitialSplash(
+            mActivity,
+            interModel,
+            onAdsShowed = {
+//            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
+                mActivity.lifecycleScope.launch {
+                    delay(1000)
+                    nativeDialog = createNativeFullScreen(
+                        mActivity,
+                        nativeModel,
+                        layout = nativeLayout,
+                        isShowNative = isShowNativeAfter,
+                        counter = counter,
+                        navAction = navAction,
+                        onFailure = {
+                            isNativeFail = true
+                        }
+                    )
+                    nativeDialog?.show()
+                }
+            },
+            onAdsFail = {
+//            Log.d("TAG", "loadAndShowInterWithNativeAfter: on fail")
+                mActivity.lifecycleScope.launch {
+                    createNativeFullScreen(
+                        mActivity,
+                        nativeModel,
+                        layout = nativeLayout,
+                        isShowNative = isShowNativeAfter,
+                        isStartNow = true,
+                        counter = counter,
+                        navAction = navAction
+                    )?.show()
+                }
+            },
+            onAdsCloseOrFailed = {
+                mActivity.lifecycleScope.launch {
+                    if (!isShowNativeAfter || isNativeFail) {
+                        navAction()
+                    } else {
+                        nativeDialog?.isClosedOrFail = true
+                    }
+                }
+            }
+        )
+    }
+
+    // endregion
 
     fun getInitAds(): Boolean {
         return isInitAds

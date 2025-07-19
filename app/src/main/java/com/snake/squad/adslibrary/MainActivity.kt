@@ -45,6 +45,17 @@ class MainActivity : AppCompatActivity() {
                 })
         }
 
+        binding.btnInterWithNativeAfter.setOnClickListener {
+            AdmobLib.loadAndShowInterWithNativeAfter(
+                this,
+                AdsConstants.admobInterModelTest,
+                AdsConstants.admobNativeModelTest,
+                null,
+            ) {
+                startActivity(Intent(this@MainActivity, SecondActivity::class.java))
+            }
+        }
+
         binding.btnLoadAndShowNative.setOnClickListener {
             setupViewBannerOrNative(false)
             AdmobLib.loadAndShowNativeCollapsible(
@@ -62,7 +73,12 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnShowNative.setOnClickListener {
             setupViewBannerOrNative(false)
-            AdmobLib.showNative(this, AdsConstants.admobNativeModelTest, binding.frNative, GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON)
+            AdmobLib.showNative(
+                this,
+                AdsConstants.admobNativeModelTest,
+                binding.frNative,
+                GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON
+            )
         }
 
         binding.btnLoadAndShowBanner.setOnClickListener {
@@ -101,7 +117,8 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnShowRewarded.setOnClickListener {
             AdmobLib.showRewarded(this, AdsConstants.admobRewardedModelTest, onAdsCloseOrFailed = {
-                Toast.makeText(this, if (it) "Earned!" else "Not Earned!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, if (it) "Earned!" else "Not Earned!", Toast.LENGTH_SHORT)
+                    .show()
             })
         }
 
