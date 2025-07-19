@@ -31,7 +31,7 @@ class NativeAfterInterDialog(
     private val binding by lazy { DialogNativeAfterInterBinding.inflate(layoutInflater) }
 
     companion object {
-        const val DEFAULT_COUNTER = 3
+        const val DEFAULT_COUNTER = 0
     }
 
     var isClosedOrFail: Boolean = false

@@ -1350,7 +1350,7 @@ object AdmobLib {
         isShowNativeAfter: Boolean = true,
         nativeLayout: Int = R.layout.admob_ad_template_full_screen,
         counter: Int = NativeAfterInterDialog.DEFAULT_COUNTER,
-        isShowOnTestDevice: Boolean = true,
+        isShowOnTestDevice: Boolean = false,
         onInterCloseOrFailed: (isDone: Boolean) -> Unit = {},
         navAction: () -> Unit
     ) {
