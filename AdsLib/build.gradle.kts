@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -28,8 +30,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
     }
     buildFeatures {
         viewBinding = true
@@ -43,7 +47,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.5.0"
+                version = "1.5.1"
             }
         }
     }
@@ -83,8 +87,12 @@ dependencies {
     implementation("com.facebook.android:facebook-android-sdk:18.0.3")
 
     //mediation admob
-    implementation("com.google.ads.mediation:applovin:+")
-    implementation("com.google.ads.mediation:facebook:+")
+    implementation("com.google.ads.mediation:pangle:7.3.0.4.0")
+    implementation("com.google.ads.mediation:applovin:13.3.1.1")
+    implementation("com.google.ads.mediation:facebook:6.20.0.0")
+    implementation("com.google.ads.mediation:vungle:7.5.0.1")
+    implementation("com.google.ads.mediation:mintegral:16.9.81.0")
+    implementation("com.google.ads.mediation:ironsource:8.10.0.0")
 
     //rating
     implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
