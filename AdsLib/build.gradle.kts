@@ -93,6 +93,8 @@ dependencies {
     implementation("com.google.ads.mediation:vungle:7.5.0.1")
     implementation("com.google.ads.mediation:mintegral:16.9.81.0")
     implementation("com.google.ads.mediation:ironsource:8.10.0.0")
+    implementation("com.unity3d.ads:unity-ads:4.16.0")
+    implementation("com.google.ads.mediation:unity:4.15.1.0")
 
     //rating
     implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
