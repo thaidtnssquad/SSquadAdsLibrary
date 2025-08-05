@@ -18,11 +18,15 @@ import com.google.android.gms.ads.appopen.AppOpenAd
 import com.snake.squad.adslib.AdmobLib
 import com.snake.squad.adslib.R
 import com.snake.squad.adslib.adjust.AdjustUtils
+import com.snake.squad.adslib.facebook.FacebookUtils
+import com.snake.squad.adslib.solar.SolarUtils
+import com.snake.squad.adslib.utils.AdType
 import com.snake.squad.adslib.utils.AdsConstants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.core.graphics.drawable.toDrawable
 
 class AppOpenAdsManager(
     private val activity: Activity,
@@ -82,6 +86,8 @@ class AppOpenAdsManager(
                         appOpenAd = ad
                         ad.setOnPaidEventListener { adValue ->
                             AdjustUtils.postRevenueAdjust(adValue, ad.adUnitId)
+                            FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
+                            SolarUtils.postRevenueSolarInter(adValue, AdType.APP_OPEN, appOpenID, appOpenAd = ad)
                         }
                         job.cancel()
                         if (!isShowingAd) {
@@ -123,6 +129,8 @@ class AppOpenAdsManager(
                     if (!isShowingAd) {
                         setOnPaidEventListener { adValue ->
                             AdjustUtils.postRevenueAdjust(adValue, adUnitId)
+                            FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
+                            SolarUtils.postRevenueSolarInter(adValue, AdType.APP_OPEN, adUnitId, appOpenAd = appOpenAd)
                         }
                         show(activity)
                     } else {
@@ -151,7 +159,7 @@ class AppOpenAdsManager(
         dialogFullScreen?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialogFullScreen?.setContentView(R.layout.dialog_loading_ads_full_screen)
         dialogFullScreen?.setCancelable(false)
-        dialogFullScreen?.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+        dialogFullScreen?.window?.setBackgroundDrawable(Color.WHITE.toDrawable())
         dialogFullScreen?.window?.setLayout(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.MATCH_PARENT

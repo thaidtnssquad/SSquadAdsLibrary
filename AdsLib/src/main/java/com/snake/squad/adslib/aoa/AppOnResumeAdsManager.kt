@@ -23,6 +23,9 @@ import com.snake.squad.adslib.AdmobLib
 import com.snake.squad.adslib.ApplovinLib
 import com.snake.squad.adslib.R
 import com.snake.squad.adslib.adjust.AdjustUtils
+import com.snake.squad.adslib.facebook.FacebookUtils
+import com.snake.squad.adslib.solar.SolarUtils
+import com.snake.squad.adslib.utils.AdType
 import com.snake.squad.adslib.utils.AdsConstants
 
 class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
@@ -127,6 +130,10 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
                             appOpenAd = ad
                             ad.setOnPaidEventListener { adValue ->
                                 AdjustUtils.postRevenueAdjust(adValue, ad.adUnitId)
+                                currentActivity?.let { activity ->
+                                    FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
+                                }
+                                SolarUtils.postRevenueSolarInter(adValue, AdType.APP_OPEN, appOnResumeID, appOpenAd = ad)
                             }
                             isLoadingAd = false
                             loadTime = System.currentTimeMillis()

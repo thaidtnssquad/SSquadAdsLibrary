@@ -34,3 +34,11 @@
    boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
+
+-keep class com.reyun.** {*; }
+-keep class route.**{*;}
+-keep interface com.reyun.** {*; }
+-keep interface route.**{*;}
+-dontwarn com.reyun.**
+-dontwarn org.json.**
+-keep class org.json.**{*;}

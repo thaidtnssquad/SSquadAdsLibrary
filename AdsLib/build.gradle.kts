@@ -47,7 +47,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.5.1"
+                version = "1.5.2"
             }
         }
     }
@@ -99,5 +99,8 @@ dependencies {
     //rating
     implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
     implementation ("com.google.code.gson:gson:2.13.1")
+
+    //Solar Engine
+    implementation("com.reyun.solar.engine.oversea:solar-engine-core:1.3.0.5")
 
 }
