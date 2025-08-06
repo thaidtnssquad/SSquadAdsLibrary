@@ -133,7 +133,7 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
                                 currentActivity?.let { activity ->
                                     FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                                 }
-                                SolarUtils.postRevenueSolarInter(adValue, AdType.APP_OPEN, appOnResumeID, appOpenAd = ad)
+                                SolarUtils.postRevenueSolar(adValue, AdType.APP_OPEN, appOnResumeID, appOpenAd = ad)
                             }
                             isLoadingAd = false
                             loadTime = System.currentTimeMillis()

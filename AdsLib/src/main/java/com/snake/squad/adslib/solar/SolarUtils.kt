@@ -1,7 +1,6 @@
 package com.snake.squad.adslib.solar
 
 import android.content.Context
-import android.os.Bundle
 import android.util.Log
 import com.google.android.gms.ads.AdValue
 import com.google.android.gms.ads.AdView
@@ -31,7 +30,7 @@ object SolarUtils {
             }
     }
 
-    fun postRevenueSolarInter(
+    fun postRevenueSolar(
         adValue: AdValue,
         adType: AdType,
         adUnitId: String,

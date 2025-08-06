@@ -199,7 +199,12 @@ object AdmobLib {
                                 admobInterModel.adsID
                             )
                             FacebookUtils.adImpressionFacebookRevenue(activity, it)
-                            SolarUtils.postRevenueSolarInter(it, AdType.INTERSTITIAL, admobInterModel.adsID, interAd = interstitialAd)
+                            SolarUtils.postRevenueSolar(
+                                it,
+                                AdType.INTERSTITIAL,
+                                admobInterModel.adsID,
+                                interAd = interstitialAd
+                            )
                         }
                         interstitialAd.show(activity)
                     }, 800)
@@ -302,7 +307,12 @@ object AdmobLib {
                             admobInterModel.adsID
                         )
                         FacebookUtils.adImpressionFacebookRevenue(activity, it)
-                        SolarUtils.postRevenueSolarInter(it, AdType.INTERSTITIAL, admobInterModel.adsID, interAd = interstitialAd)
+                        SolarUtils.postRevenueSolar(
+                            it,
+                            AdType.INTERSTITIAL,
+                            admobInterModel.adsID,
+                            interAd = interstitialAd
+                        )
                     }
                     interstitialAd.show(activity)
                 }
@@ -363,7 +373,12 @@ object AdmobLib {
                             admobInterModel.adsID
                         )
                         FacebookUtils.adImpressionFacebookRevenue(activity, it)
-                        SolarUtils.postRevenueSolarInter(it, AdType.INTERSTITIAL, admobInterModel.adsID, interAd = interstitialAd)
+                        SolarUtils.postRevenueSolar(
+                            it,
+                            AdType.INTERSTITIAL,
+                            admobInterModel.adsID,
+                            interAd = interstitialAd
+                        )
                     }
                 }
             })
@@ -504,7 +519,7 @@ object AdmobLib {
         adView.setOnPaidEventListener {
             AdjustUtils.postRevenueAdjust(it, adView.adUnitId)
             FacebookUtils.adImpressionFacebookRevenue(activity, it)
-            SolarUtils.postRevenueSolarInter(it, AdType.BANNER, bannerID, adView = adView)
+            SolarUtils.postRevenueSolar(it, AdType.BANNER, bannerID, adView = adView)
         }
         adView.adListener = object : AdListener() {
             override fun onAdLoaded() {
@@ -581,7 +596,12 @@ object AdmobLib {
                                 admobBannerCollapsibleModel.adView?.adUnitId
                             )
                             FacebookUtils.adImpressionFacebookRevenue(activity, it)
-                            SolarUtils.postRevenueSolarInter(it, AdType.BANNER, admobBannerCollapsibleModel.adsID, adView = admobBannerCollapsibleModel.adView)
+                            SolarUtils.postRevenueSolar(
+                                it,
+                                AdType.BANNER,
+                                admobBannerCollapsibleModel.adsID,
+                                adView = admobBannerCollapsibleModel.adView
+                            )
                         }
                         shimmerFrameLayout.stopShimmer()
                         viewGroup.removeView(shimmerLoadingView)
@@ -703,7 +723,12 @@ object AdmobLib {
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                SolarUtils.postRevenueSolarInter(adValue, AdType.NATIVE, admobNativeModel.adsID, nativeAd = nativeAd)
+                SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoader.withAdListener(object : AdListener() {
@@ -789,7 +814,12 @@ object AdmobLib {
                     admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID
                 )
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                SolarUtils.postRevenueSolarInter(adValue, AdType.NATIVE, admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID, nativeAd = nativeAd)
+                SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoaderCollapsed.withAdListener(object : AdListener() {
@@ -834,7 +864,12 @@ object AdmobLib {
                     admobNativeModelExpanded.adsID
                 )
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                SolarUtils.postRevenueSolarInter(adValue, AdType.NATIVE, admobNativeModelExpanded.adsID, nativeAd = nativeAd)
+                SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModelExpanded.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoaderExpanded.withAdListener(object : AdListener() {
@@ -928,17 +963,17 @@ object AdmobLib {
                         admobNativeModel.adsID
                     )
                     FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                    SolarUtils.postRevenueSolarInter(adValue, AdType.NATIVE, admobNativeModel.adsID, nativeAd = nativeAd)
+                    SolarUtils.postRevenueSolar(
+                        adValue,
+                        AdType.NATIVE,
+                        admobNativeModel.adsID,
+                        nativeAd = nativeAd
+                    )
                 }
             }
             shimmerFrameLayout.stopShimmer()
             viewGroupExpanded.removeAllViews()
             viewGroupExpanded.addView(adView)
-            nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
-                FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                SolarUtils.postRevenueSolarInter(adValue, AdType.NATIVE, admobNativeModel.adsID, nativeAd = nativeAd)
-            }
         }
         adLoaderExpanded.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -1004,7 +1039,12 @@ object AdmobLib {
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                SolarUtils.postRevenueSolarInter(adValue, AdType.NATIVE, admobNativeModel.adsID, nativeAd = nativeAd)
+                SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoader.withAdListener(object : AdListener() {
@@ -1177,7 +1217,12 @@ object AdmobLib {
                     ad.onPaidEventListener = OnPaidEventListener { adValue ->
                         AdjustUtils.postRevenueAdjustRewarded(ad, adValue, ad.adUnitId)
                         FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                        SolarUtils.postRevenueSolarInter(adValue, AdType.REWARDED, admobRewardedModel.adsID, rewardAd = ad)
+                        SolarUtils.postRevenueSolar(
+                            adValue,
+                            AdType.REWARDED,
+                            admobRewardedModel.adsID,
+                            rewardAd = ad
+                        )
                     }
                     ad.show(activity) { _ ->
                         isEarnedReward = true
@@ -1236,7 +1281,12 @@ object AdmobLib {
                     rewardedAd.setOnPaidEventListener {
                         AdjustUtils.postRevenueAdjustRewarded(rewardedAd, it, rewardedAd.adUnitId)
                         FacebookUtils.adImpressionFacebookRevenue(activity, it)
-                        SolarUtils.postRevenueSolarInter(it, AdType.REWARDED, admobRewardedModel.adsID, rewardAd = rewardedAd)
+                        SolarUtils.postRevenueSolar(
+                            it,
+                            AdType.REWARDED,
+                            admobRewardedModel.adsID,
+                            rewardAd = rewardedAd
+                        )
                     }
                 }
             })

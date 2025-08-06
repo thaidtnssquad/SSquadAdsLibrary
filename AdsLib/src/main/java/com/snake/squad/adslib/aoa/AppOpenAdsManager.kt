@@ -3,7 +3,6 @@ package com.snake.squad.adslib.aoa
 import android.app.Activity
 import android.app.Dialog
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -11,7 +10,6 @@ import android.view.Window
 import android.widget.LinearLayout
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdValue
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.appopen.AppOpenAd
@@ -87,7 +85,7 @@ class AppOpenAdsManager(
                         ad.setOnPaidEventListener { adValue ->
                             AdjustUtils.postRevenueAdjust(adValue, ad.adUnitId)
                             FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                            SolarUtils.postRevenueSolarInter(adValue, AdType.APP_OPEN, appOpenID, appOpenAd = ad)
+                            SolarUtils.postRevenueSolar(adValue, AdType.APP_OPEN, appOpenID, appOpenAd = ad)
                         }
                         job.cancel()
                         if (!isShowingAd) {
@@ -127,11 +125,6 @@ class AppOpenAdsManager(
                 showDialogFullScreen()
                 Handler(Looper.getMainLooper()).postDelayed({
                     if (!isShowingAd) {
-                        setOnPaidEventListener { adValue ->
-                            AdjustUtils.postRevenueAdjust(adValue, adUnitId)
-                            FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                            SolarUtils.postRevenueSolarInter(adValue, AdType.APP_OPEN, adUnitId, appOpenAd = appOpenAd)
-                        }
                         show(activity)
                     } else {
                         onAdsCloseOrFailed.invoke(false)
