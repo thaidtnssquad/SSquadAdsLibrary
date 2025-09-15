@@ -58,11 +58,12 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnLoadAndShowNative.setOnClickListener {
             setupViewBannerOrNative(false)
-            AdmobLib.loadAndShowNativeCollapsible(
+            AdmobLib.loadAndShowNativeCollapsibleWithContext(
                 this,
                 AdsConstants.admobNativeModelTest,
                 viewGroupExpanded = binding.frNativeExpanded,
                 viewGroupCollapsed = binding.frNative,
+                isShowNativeLikeBanner = false
             )
         }
 

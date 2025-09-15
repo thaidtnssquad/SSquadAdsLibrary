@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -747,6 +748,108 @@ object AdmobLib {
         adLoader.build().loadAd(nativeAdRequest)
     }
 
+    fun loadAndShowNativeWithContext(
+        context: Context,
+        admobNativeModel: AdmobNativeModel,
+        viewGroup: ViewGroup,
+        size: GoogleENative = GoogleENative.UNIFIED_MEDIUM,
+        layout: Int? = null,
+        shimmerLayout: Int? = null,
+        mediaViewRatio: Int = MediaAspectRatio.SQUARE,
+        isShowOnTestDevice: Boolean = false,
+        isCheckTestAds: Boolean = false,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: (() -> Unit?)? = null
+    ) {
+        if (!isShowAds || !isNetworkConnected(context) || (!isShowOnTestDevice && isTestDevice)) {
+            onAdsLoadFail?.invoke()
+            viewGroup.visibility = View.GONE
+            return
+        }
+        val shimmerInflate = shimmerLayout ?: when (size) {
+            GoogleENative.UNIFIED_MEDIUM -> R.layout.native_medium_shimmer_layout
+            GoogleENative.UNIFIED_SMALL -> R.layout.native_small_shimmer_layout
+            GoogleENative.UNIFIED_SMALL_LIKE_BANNER -> R.layout.native_small_like_banner_shimmer_layout
+            GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON -> R.layout.native_medium_like_button_shimmer_layout
+            GoogleENative.UNIFIED_FULL_SCREEN -> R.layout.native_full_screen_shimmer
+        }
+
+        val shimmerLoadingView = LayoutInflater.from(context).inflate(
+            shimmerInflate,
+            null,
+            false
+        )
+
+        viewGroup.removeAllViews()
+        viewGroup.addView(shimmerLoadingView, 0)
+        val shimmerFrameLayout =
+            shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
+        shimmerFrameLayout.startShimmer()
+
+        val nativeAdRequest =
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+        val adLoader = AdLoader.Builder(
+            context,
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
+        )
+        if (size == GoogleENative.UNIFIED_FULL_SCREEN) {
+            val videoOptions =
+                VideoOptions.Builder().setStartMuted(false).setCustomControlsRequested(false)
+                    .build()
+            val adOptions = NativeAdOptions.Builder()
+                .setMediaAspectRatio(mediaViewRatio)
+                .setVideoOptions(videoOptions)
+                .build()
+            adLoader.withNativeAdOptions(adOptions)
+        } else {
+            adLoader.withNativeAdOptions(NativeAdOptions.Builder().build())
+        }
+        adLoader.forNativeAd { nativeAd ->
+            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            val layoutNative = layout
+                ?: when (size) {
+                    GoogleENative.UNIFIED_MEDIUM -> R.layout.admob_ad_template_medium
+                    GoogleENative.UNIFIED_SMALL -> R.layout.admob_ad_template_small
+                    GoogleENative.UNIFIED_SMALL_LIKE_BANNER -> R.layout.admob_ad_template_small_like_banner
+                    GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON -> R.layout.admob_ad_template_medium_like_button
+                    GoogleENative.UNIFIED_FULL_SCREEN -> R.layout.admob_ad_template_full_screen
+                }
+            val adView = LayoutInflater.from(context).inflate(layoutNative, null) as NativeAdView
+            NativeUtils.populateNativeAdView(
+                nativeAd,
+                adView,
+                size
+            )
+            shimmerFrameLayout.stopShimmer()
+            viewGroup.removeAllViews()
+            viewGroup.addView(adView)
+            nativeAd.setOnPaidEventListener { adValue: AdValue ->
+                AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
+                FacebookUtils.adImpressionFacebookRevenue(context, adValue)
+                SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
+            }
+        }
+        adLoader.withAdListener(object : AdListener() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                shimmerFrameLayout.stopShimmer()
+                viewGroup.visibility = View.GONE
+                onAdsLoadFail?.invoke()
+            }
+
+            override fun onAdLoaded() {
+                super.onAdLoaded()
+                viewGroup.visibility = View.VISIBLE
+                onAdsLoaded?.invoke()
+            }
+        })
+        adLoader.build().loadAd(nativeAdRequest)
+    }
+
     fun loadAndShowNativeCollapsible(
         activity: Activity,
         admobNativeModelExpanded: AdmobNativeModel,
@@ -900,6 +1003,7 @@ object AdmobLib {
         shimmerLayout: Int? = null,
         isShowOnTestDevice: Boolean = false,
         isCheckTestAds: Boolean = false,
+        isShowNativeLikeBanner: Boolean? = true,
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null,
         onAdsClosed: (() -> Unit?)? = null
@@ -946,29 +1050,143 @@ object AdmobLib {
             ) {
                 viewGroupExpanded.visibility = View.GONE
                 onAdsClosed?.invoke()
-                val layoutNativeCollapsed =
-                    layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
-                val adView =
-                    activity.layoutInflater.inflate(layoutNativeCollapsed, null) as NativeAdView
-                NativeUtils.populateNativeAdView(
-                    nativeAd,
-                    adView,
-                    GoogleENative.UNIFIED_SMALL_LIKE_BANNER
-                )
-                viewGroupCollapsed.removeAllViews()
-                viewGroupCollapsed.addView(adView)
-                nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                    AdjustUtils.postRevenueAdjustNative(
-                        nativeAd, adValue,
-                        admobNativeModel.adsID
+                if (isShowNativeLikeBanner == true) {
+                    val layoutNativeCollapsed =
+                        layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
+                    val adView =
+                        activity.layoutInflater.inflate(layoutNativeCollapsed, null) as NativeAdView
+                    NativeUtils.populateNativeAdView(
+                        nativeAd,
+                        adView,
+                        GoogleENative.UNIFIED_SMALL_LIKE_BANNER
                     )
-                    FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                    SolarUtils.postRevenueSolar(
-                        adValue,
-                        AdType.NATIVE,
-                        admobNativeModel.adsID,
-                        nativeAd = nativeAd
+                    viewGroupCollapsed.removeAllViews()
+                    viewGroupCollapsed.addView(adView)
+                    nativeAd.setOnPaidEventListener { adValue: AdValue ->
+                        AdjustUtils.postRevenueAdjustNative(
+                            nativeAd, adValue,
+                            admobNativeModel.adsID
+                        )
+                        FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
+                        SolarUtils.postRevenueSolar(
+                            adValue,
+                            AdType.NATIVE,
+                            admobNativeModel.adsID,
+                            nativeAd = nativeAd
+                        )
+                    }
+                } else {
+                    viewGroupCollapsed.visibility = View.GONE
+                }
+            }
+            shimmerFrameLayout.stopShimmer()
+            viewGroupExpanded.removeAllViews()
+            viewGroupExpanded.addView(adView)
+        }
+        adLoaderExpanded.withAdListener(object : AdListener() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                shimmerFrameLayout.stopShimmer()
+                viewGroupExpanded.visibility = View.GONE
+                viewGroupCollapsed.visibility = View.GONE
+                onAdsLoadFail?.invoke()
+            }
+
+            override fun onAdLoaded() {
+                super.onAdLoaded()
+                viewGroupExpanded.visibility = View.VISIBLE
+                viewGroupCollapsed.visibility = View.VISIBLE
+                onAdsLoaded?.invoke()
+            }
+        })
+        adLoaderExpanded.build().loadAd(nativeAdRequest)
+    }
+
+    fun loadAndShowNativeCollapsibleWithContext(
+        context: Context,
+        admobNativeModel: AdmobNativeModel,
+        viewGroupExpanded: ViewGroup,
+        viewGroupCollapsed: ViewGroup,
+        layoutExpanded: Int? = null,
+        layoutCollapsed: Int? = null,
+        shimmerLayout: Int? = null,
+        isShowOnTestDevice: Boolean = false,
+        isCheckTestAds: Boolean = false,
+        isShowNativeLikeBanner: Boolean? = true,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: (() -> Unit?)? = null,
+        onAdsClosed: (() -> Unit?)? = null
+    ) {
+        if (!isShowAds || !isNetworkConnected(context) || (!isShowOnTestDevice && isTestDevice)) {
+            onAdsLoadFail?.invoke()
+            viewGroupExpanded.visibility = View.GONE
+            viewGroupCollapsed.visibility = View.GONE
+            return
+        }
+
+        val shimmerInflate = shimmerLayout ?: R.layout.native_small_like_banner_shimmer_layout
+        val shimmerLoadingView = LayoutInflater.from(context).inflate(
+            shimmerInflate,
+            null,
+            false
+        )
+
+        val nativeAdRequest =
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+
+        viewGroupExpanded.removeAllViews()
+        viewGroupCollapsed.removeAllViews()
+        viewGroupCollapsed.addView(shimmerLoadingView, 0)
+
+        val shimmerFrameLayout =
+            shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
+        shimmerFrameLayout.startShimmer()
+
+        val adLoaderExpanded = AdLoader.Builder(
+            context,
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
+        )
+        adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
+        adLoaderExpanded.forNativeAd { nativeAd ->
+            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            val layoutNativeExpanded = layoutExpanded ?: R.layout.admob_ad_template_medium
+            val adView =
+                LayoutInflater.from(context).inflate(layoutNativeExpanded, null) as NativeAdView
+            NativeUtils.populateNativeAdView(
+                nativeAd,
+                adView,
+                GoogleENative.UNIFIED_MEDIUM,
+                true
+            ) {
+                viewGroupExpanded.visibility = View.GONE
+                onAdsClosed?.invoke()
+                if (isShowNativeLikeBanner == true) {
+                    val layoutNativeCollapsed =
+                        layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
+                    val adView =
+                        LayoutInflater.from(context)
+                            .inflate(layoutNativeCollapsed, null) as NativeAdView
+                    NativeUtils.populateNativeAdView(
+                        nativeAd,
+                        adView,
+                        GoogleENative.UNIFIED_SMALL_LIKE_BANNER
                     )
+                    viewGroupCollapsed.removeAllViews()
+                    viewGroupCollapsed.addView(adView)
+                    nativeAd.setOnPaidEventListener { adValue: AdValue ->
+                        AdjustUtils.postRevenueAdjustNative(
+                            nativeAd, adValue,
+                            admobNativeModel.adsID
+                        )
+                        FacebookUtils.adImpressionFacebookRevenue(context, adValue)
+                        SolarUtils.postRevenueSolar(
+                            adValue,
+                            AdType.NATIVE,
+                            admobNativeModel.adsID,
+                            nativeAd = nativeAd
+                        )
+                    }
+                } else {
+                    viewGroupCollapsed.visibility = View.GONE
                 }
             }
             shimmerFrameLayout.stopShimmer()
