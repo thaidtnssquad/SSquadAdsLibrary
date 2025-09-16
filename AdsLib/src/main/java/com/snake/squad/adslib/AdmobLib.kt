@@ -53,6 +53,7 @@ import com.snake.squad.adslib.models.AdmobRewardedModel
 import com.snake.squad.adslib.solar.SolarUtils
 import com.snake.squad.adslib.utils.AdType
 import com.snake.squad.adslib.utils.AdsConstants
+import com.snake.squad.adslib.utils.AdsHelper
 import com.snake.squad.adslib.utils.AdsHelper.isNetworkConnected
 import com.snake.squad.adslib.utils.BannerCollapsibleType
 import com.snake.squad.adslib.utils.BannerType
@@ -703,7 +704,7 @@ object AdmobLib {
             adLoader.withNativeAdOptions(NativeAdOptions.Builder().build())
         }
         adLoader.forNativeAd { nativeAd ->
-            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
             val layoutNative = layout
                 ?: when (size) {
                     GoogleENative.UNIFIED_MEDIUM -> R.layout.admob_ad_template_medium
@@ -805,7 +806,7 @@ object AdmobLib {
             adLoader.withNativeAdOptions(NativeAdOptions.Builder().build())
         }
         adLoader.forNativeAd { nativeAd ->
-            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            if (isCheckTestAds) checkTestDevice(context, isEnabledCheckTestDevice, nativeAd)
             val layoutNative = layout
                 ?: when (size) {
                     GoogleENative.UNIFIED_MEDIUM -> R.layout.admob_ad_template_medium
@@ -897,7 +898,7 @@ object AdmobLib {
         )
         adLoaderCollapsed.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderCollapsed.forNativeAd { nativeAd ->
-            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
             val layoutNativeCollapsed =
                 layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
             val adView =
@@ -945,7 +946,7 @@ object AdmobLib {
         )
         adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderExpanded.forNativeAd { nativeAd ->
-            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
             val layoutNativeExpanded = layoutExpanded ?: R.layout.admob_ad_template_medium
             val adView = activity.layoutInflater.inflate(layoutNativeExpanded, null) as NativeAdView
             NativeUtils.populateNativeAdView(
@@ -1039,7 +1040,7 @@ object AdmobLib {
         )
         adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderExpanded.forNativeAd { nativeAd ->
-            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
             val layoutNativeExpanded = layoutExpanded ?: R.layout.admob_ad_template_medium
             val adView = activity.layoutInflater.inflate(layoutNativeExpanded, null) as NativeAdView
             NativeUtils.populateNativeAdView(
@@ -1147,7 +1148,7 @@ object AdmobLib {
         )
         adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderExpanded.forNativeAd { nativeAd ->
-            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            if (isCheckTestAds) checkTestDevice(context, isEnabledCheckTestDevice, nativeAd)
             val layoutNativeExpanded = layoutExpanded ?: R.layout.admob_ad_template_medium
             val adView =
                 LayoutInflater.from(context).inflate(layoutNativeExpanded, null) as NativeAdView
@@ -1252,7 +1253,7 @@ object AdmobLib {
             adLoader.withNativeAdOptions(NativeAdOptions.Builder().build())
         }
         adLoader.forNativeAd { nativeAd ->
-            if (isCheckTestAds) checkTestDevice(isEnabledCheckTestDevice, nativeAd)
+            if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
             admobNativeModel.nativeAd.value = nativeAd
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
@@ -1830,7 +1831,7 @@ object AdmobLib {
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth)
     }
 
-    private fun checkTestDevice(isEnabledCheck: Boolean, ad: NativeAd?) {
+    private fun checkTestDevice(context: Context, isEnabledCheck: Boolean, ad: NativeAd?) {
         if (!isEnabledCheck) {
             isTestDevice = false
         } else {
@@ -1859,7 +1860,17 @@ object AdmobLib {
                     "Testimainokset",
                     "TestReklamları"
                 )
-                isTestDevice = testAdResponses.contains(testAdResponse)
+                if (testAdResponses.contains(testAdResponse)) {
+                    isTestDevice = true
+                } else {
+                    AdsHelper.getReferrer(context) { referrerUrl ->
+                        isTestDevice = if (referrerUrl != null) {
+                            AdsHelper.isOrganicUser(referrerUrl)
+                        } else {
+                            false
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 isTestDevice = true
                 Log.d("TAG=====", "Error: ${e.message}")
