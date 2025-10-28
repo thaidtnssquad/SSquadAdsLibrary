@@ -42,7 +42,6 @@ import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.nativead.NativeAdView
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-import com.snake.squad.adslib.adjust.AdjustUtils
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
 import com.snake.squad.adslib.dialogs.NativeAfterInterDialog
 import com.snake.squad.adslib.facebook.FacebookUtils
@@ -51,6 +50,7 @@ import com.snake.squad.adslib.models.AdmobInterModel
 import com.snake.squad.adslib.models.AdmobNativeModel
 import com.snake.squad.adslib.models.AdmobRewardedModel
 import com.snake.squad.adslib.solar.SolarUtils
+import com.snake.squad.adslib.tiktok.TiktokUtils
 import com.snake.squad.adslib.utils.AdType
 import com.snake.squad.adslib.utils.AdsConstants
 import com.snake.squad.adslib.utils.AdsHelper
@@ -195,13 +195,14 @@ object AdmobLib {
                                 }
                             }
                         interstitialAd.setOnPaidEventListener {
-                            AdjustUtils.postRevenueAdjustInter(
-                                interstitialAd,
-                                it,
-                                admobInterModel.adsID
-                            )
                             FacebookUtils.adImpressionFacebookRevenue(activity, it)
                             SolarUtils.postRevenueSolar(
+                                it,
+                                AdType.INTERSTITIAL,
+                                admobInterModel.adsID,
+                                interAd = interstitialAd
+                            )
+                            TiktokUtils.postRevenueTiktok(
                                 it,
                                 AdType.INTERSTITIAL,
                                 admobInterModel.adsID,
@@ -303,13 +304,14 @@ object AdmobLib {
                             }
                         }
                     interstitialAd.setOnPaidEventListener {
-                        AdjustUtils.postRevenueAdjustInter(
-                            interstitialAd,
-                            it,
-                            admobInterModel.adsID
-                        )
                         FacebookUtils.adImpressionFacebookRevenue(activity, it)
                         SolarUtils.postRevenueSolar(
+                            it,
+                            AdType.INTERSTITIAL,
+                            admobInterModel.adsID,
+                            interAd = interstitialAd
+                        )
+                        TiktokUtils.postRevenueTiktok(
                             it,
                             AdType.INTERSTITIAL,
                             admobInterModel.adsID,
@@ -369,13 +371,14 @@ object AdmobLib {
                     admobInterModel.isLoading.postValue(false)
                     onAdsLoaded?.invoke()
                     interstitialAd.setOnPaidEventListener {
-                        AdjustUtils.postRevenueAdjustInter(
-                            interstitialAd,
-                            it,
-                            admobInterModel.adsID
-                        )
                         FacebookUtils.adImpressionFacebookRevenue(activity, it)
                         SolarUtils.postRevenueSolar(
+                            it,
+                            AdType.INTERSTITIAL,
+                            admobInterModel.adsID,
+                            interAd = interstitialAd
+                        )
+                        TiktokUtils.postRevenueTiktok(
                             it,
                             AdType.INTERSTITIAL,
                             admobInterModel.adsID,
@@ -519,9 +522,9 @@ object AdmobLib {
             shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
         shimmerFrameLayout.startShimmer()
         adView.setOnPaidEventListener {
-            AdjustUtils.postRevenueAdjust(it, adView.adUnitId)
             FacebookUtils.adImpressionFacebookRevenue(activity, it)
             SolarUtils.postRevenueSolar(it, AdType.BANNER, bannerID, adView = adView)
+            TiktokUtils.postRevenueTiktok(it, AdType.BANNER, bannerID, adView = adView)
         }
         adView.adListener = object : AdListener() {
             override fun onAdLoaded() {
@@ -593,12 +596,14 @@ object AdmobLib {
                 try {
                     if (!activity.isDestroyed && !activity.isFinishing) {
                         admobBannerCollapsibleModel.adView?.setOnPaidEventListener {
-                            AdjustUtils.postRevenueAdjust(
-                                it,
-                                admobBannerCollapsibleModel.adView?.adUnitId
-                            )
                             FacebookUtils.adImpressionFacebookRevenue(activity, it)
                             SolarUtils.postRevenueSolar(
+                                it,
+                                AdType.BANNER,
+                                admobBannerCollapsibleModel.adsID,
+                                adView = admobBannerCollapsibleModel.adView
+                            )
+                            TiktokUtils.postRevenueTiktok(
                                 it,
                                 AdType.BANNER,
                                 admobBannerCollapsibleModel.adsID,
@@ -723,9 +728,14 @@ object AdmobLib {
             viewGroup.removeAllViews()
             viewGroup.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                 SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
+                TiktokUtils.postRevenueTiktok(
                     adValue,
                     AdType.NATIVE,
                     admobNativeModel.adsID,
@@ -825,9 +835,14 @@ object AdmobLib {
             viewGroup.removeAllViews()
             viewGroup.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
                 FacebookUtils.adImpressionFacebookRevenue(context, adValue)
                 SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
+                TiktokUtils.postRevenueTiktok(
                     adValue,
                     AdType.NATIVE,
                     admobNativeModel.adsID,
@@ -912,13 +927,14 @@ object AdmobLib {
             viewGroupCollapsed.removeAllViews()
             viewGroupCollapsed.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                AdjustUtils.postRevenueAdjustNative(
-                    nativeAd,
-                    adValue,
-                    admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID
-                )
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                 SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID,
+                    nativeAd = nativeAd
+                )
+                TiktokUtils.postRevenueTiktok(
                     adValue,
                     AdType.NATIVE,
                     admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID,
@@ -962,13 +978,14 @@ object AdmobLib {
             viewGroupExpanded.removeAllViews()
             viewGroupExpanded.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                AdjustUtils.postRevenueAdjustNative(
-                    nativeAd,
-                    adValue,
-                    admobNativeModelExpanded.adsID
-                )
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                 SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModelExpanded.adsID,
+                    nativeAd = nativeAd
+                )
+                TiktokUtils.postRevenueTiktok(
                     adValue,
                     AdType.NATIVE,
                     admobNativeModelExpanded.adsID,
@@ -1064,12 +1081,14 @@ object AdmobLib {
                     viewGroupCollapsed.removeAllViews()
                     viewGroupCollapsed.addView(adView)
                     nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                        AdjustUtils.postRevenueAdjustNative(
-                            nativeAd, adValue,
-                            admobNativeModel.adsID
-                        )
                         FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                         SolarUtils.postRevenueSolar(
+                            adValue,
+                            AdType.NATIVE,
+                            admobNativeModel.adsID,
+                            nativeAd = nativeAd
+                        )
+                        TiktokUtils.postRevenueTiktok(
                             adValue,
                             AdType.NATIVE,
                             admobNativeModel.adsID,
@@ -1174,12 +1193,14 @@ object AdmobLib {
                     viewGroupCollapsed.removeAllViews()
                     viewGroupCollapsed.addView(adView)
                     nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                        AdjustUtils.postRevenueAdjustNative(
-                            nativeAd, adValue,
-                            admobNativeModel.adsID
-                        )
                         FacebookUtils.adImpressionFacebookRevenue(context, adValue)
                         SolarUtils.postRevenueSolar(
+                            adValue,
+                            AdType.NATIVE,
+                            admobNativeModel.adsID,
+                            nativeAd = nativeAd
+                        )
+                        TiktokUtils.postRevenueTiktok(
                             adValue,
                             AdType.NATIVE,
                             admobNativeModel.adsID,
@@ -1256,9 +1277,14 @@ object AdmobLib {
             if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
             admobNativeModel.nativeAd.value = nativeAd
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
-                AdjustUtils.postRevenueAdjustNative(nativeAd, adValue, admobNativeModel.adsID)
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                 SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
+                TiktokUtils.postRevenueTiktok(
                     adValue,
                     AdType.NATIVE,
                     admobNativeModel.adsID,
@@ -1434,9 +1460,14 @@ object AdmobLib {
                         }
                     }
                     ad.onPaidEventListener = OnPaidEventListener { adValue ->
-                        AdjustUtils.postRevenueAdjustRewarded(ad, adValue, ad.adUnitId)
                         FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                         SolarUtils.postRevenueSolar(
+                            adValue,
+                            AdType.REWARDED,
+                            admobRewardedModel.adsID,
+                            rewardAd = ad
+                        )
+                        TiktokUtils.postRevenueTiktok(
                             adValue,
                             AdType.REWARDED,
                             admobRewardedModel.adsID,
@@ -1498,9 +1529,14 @@ object AdmobLib {
                     admobRewardedModel.rewardAd.value = rewardedAd
                     admobRewardedModel.isLoading.postValue(false)
                     rewardedAd.setOnPaidEventListener {
-                        AdjustUtils.postRevenueAdjustRewarded(rewardedAd, it, rewardedAd.adUnitId)
                         FacebookUtils.adImpressionFacebookRevenue(activity, it)
                         SolarUtils.postRevenueSolar(
+                            it,
+                            AdType.REWARDED,
+                            admobRewardedModel.adsID,
+                            rewardAd = rewardedAd
+                        )
+                        TiktokUtils.postRevenueTiktok(
                             it,
                             AdType.REWARDED,
                             admobRewardedModel.adsID,

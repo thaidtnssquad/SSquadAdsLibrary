@@ -23,15 +23,6 @@
             android:resource="@xml/gma_ad_services_config"
             tools:replace="android:resource" />
 
-        <receiver
-            android:name="com.adjust.sdk.AdjustReferrerReceiver"
-            android:exported="true"
-            android:permission="android.permission.INSTALL_PACKAGES">
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
-
         <meta-data
             android:name="com.facebook.sdk.AutoInitEnabled"
             android:value="true" />

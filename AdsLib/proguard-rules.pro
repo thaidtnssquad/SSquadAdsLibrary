@@ -22,7 +22,6 @@
 -keep class com.android.vending.billing.**
 -keep class com.vapp.admoblibrary.utils.SweetAlert.**
 
--keep class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
    int SUCCESS;
 }
@@ -42,3 +41,7 @@
 -dontwarn com.reyun.**
 -dontwarn org.json.**
 -keep class org.json.**{*;}
+
+-keep class com.tiktok.** { *; }
+-keep class com.android.billingclient.api.** { *; }
+-keep class androidx.lifecycle.** { *; }

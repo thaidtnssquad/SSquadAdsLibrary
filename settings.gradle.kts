@@ -19,7 +19,6 @@ dependencyResolutionManagement {
         maven (url = "https://jitpack.io")
         maven (url = "https://maven.google.com")
         maven (url = "https://android-sdk.is.com/")
-        maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
         maven (url = "https://artifact.bytedance.com/repository/pangle/")
         maven (url = "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea")
         maven (url = "https://artifactory.bidmachine.io/bidmachine")

@@ -8,6 +8,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.Window
 import android.widget.LinearLayout
+import androidx.core.graphics.drawable.toDrawable
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -15,16 +16,15 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.appopen.AppOpenAd
 import com.snake.squad.adslib.AdmobLib
 import com.snake.squad.adslib.R
-import com.snake.squad.adslib.adjust.AdjustUtils
 import com.snake.squad.adslib.facebook.FacebookUtils
 import com.snake.squad.adslib.solar.SolarUtils
+import com.snake.squad.adslib.tiktok.TiktokUtils
 import com.snake.squad.adslib.utils.AdType
 import com.snake.squad.adslib.utils.AdsConstants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.core.graphics.drawable.toDrawable
 
 class AppOpenAdsManager(
     private val activity: Activity,
@@ -83,9 +83,9 @@ class AppOpenAdsManager(
                         super.onAdLoaded(ad)
                         appOpenAd = ad
                         ad.setOnPaidEventListener { adValue ->
-                            AdjustUtils.postRevenueAdjust(adValue, ad.adUnitId)
                             FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                             SolarUtils.postRevenueSolar(adValue, AdType.APP_OPEN, appOpenID, appOpenAd = ad)
+                            TiktokUtils.postRevenueTiktok(adValue, AdType.APP_OPEN, appOpenID, appOpenAd = ad)
                         }
                         job.cancel()
                         if (!isShowingAd) {

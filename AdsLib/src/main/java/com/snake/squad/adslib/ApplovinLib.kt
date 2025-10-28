@@ -36,7 +36,6 @@ import com.applovin.sdk.AppLovinSdkUtils
 import com.applovin.sdk.AppLovinSdkUtils.runOnUiThread
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
-import com.snake.squad.adslib.adjust.AdjustUtils
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
 import com.snake.squad.adslib.models.MaxInterModel
 import com.snake.squad.adslib.models.MaxNativeModel
@@ -109,7 +108,6 @@ object ApplovinLib {
         maxInterModel.interstitialAd.postValue(MaxInterstitialAd(maxInterModel.adsID, activity))
         maxInterModel.interstitialAd.value?.let {
             it.setRevenueListener { ad ->
-                AdjustUtils.postRevenueAdjustMax(ad)
             }
             it.setListener(object : MaxAdListener {
                 override fun onAdLoaded(ad: MaxAd) {
@@ -195,7 +193,6 @@ object ApplovinLib {
         maxInterModel.interstitialAd.postValue(MaxInterstitialAd(maxInterModel.adsID, activity))
         maxInterModel.interstitialAd.value?.let {
             it.setRevenueListener { ad ->
-                AdjustUtils.postRevenueAdjustMax(ad)
             }
             it.setListener(object : MaxAdListener {
                 override fun onAdLoaded(ad: MaxAd) {
@@ -276,7 +273,6 @@ object ApplovinLib {
         maxInterModel.interstitialAd.postValue(MaxInterstitialAd(maxInterModel.adsID, activity))
         maxInterModel.interstitialAd.value?.let {
             it.setRevenueListener { ad ->
-                AdjustUtils.postRevenueAdjustMax(ad)
             }
             it.setListener(object : MaxAdListener {
                 override fun onAdLoaded(ad: MaxAd) {
@@ -344,7 +340,6 @@ object ApplovinLib {
             val handle = Handler(Looper.getMainLooper())
             AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
             it.setRevenueListener { ad ->
-                AdjustUtils.postRevenueAdjustMax(ad)
             }
             it.setListener(object : MaxAdListener {
                 override fun onAdLoaded(ad: MaxAd) {
@@ -467,7 +462,6 @@ object ApplovinLib {
         shimmerFrameLayout.startShimmer()
 
         banner.setRevenueListener { ad ->
-            AdjustUtils.postRevenueAdjustMax(ad)
         }
 
         banner.setListener(object : MaxAdViewAdListener {
@@ -562,7 +556,6 @@ object ApplovinLib {
 
         nativeModel.nativeAdLoader = MaxNativeAdLoader(nativeModel.adsID, activity)
         nativeModel.nativeAdLoader?.setRevenueListener { ad ->
-            AdjustUtils.postRevenueAdjustMax(ad)
         }
         nativeModel.nativeAdLoader?.setNativeAdListener(object : MaxNativeAdListener() {
             override fun onNativeAdLoaded(nativeAdView: MaxNativeAdView?, maxAd: MaxAd) {
@@ -619,7 +612,6 @@ object ApplovinLib {
         }
         nativeModel.nativeAdLoader = MaxNativeAdLoader(nativeModel.adsID, activity)
         nativeModel.nativeAdLoader?.setRevenueListener { ad ->
-            AdjustUtils.postRevenueAdjustMax(ad)
         }
         nativeModel.nativeAdLoader?.setNativeAdListener(object : MaxNativeAdListener() {
             override fun onNativeAdLoaded(nativeAdView: MaxNativeAdView?, ad: MaxAd) {
@@ -729,7 +721,6 @@ object ApplovinLib {
         rewardedModel.rewardAd = MaxRewardedAd.getInstance(rewardedModel.adsID, activity)
         rewardedModel.rewardAd?.let {
             it.setRevenueListener { ad ->
-                AdjustUtils.postRevenueAdjustMax(ad)
             }
             it.setListener(object : MaxRewardedAdListener {
                 override fun onAdLoaded(maxAd: MaxAd) {
@@ -887,7 +878,6 @@ object ApplovinLib {
             showDialogFullScreen(activity)
             AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
             it.setRevenueListener { ad ->
-                AdjustUtils.postRevenueAdjustMax(ad)
             }
             it.setListener(object : MaxRewardedAdListener {
                 override fun onAdLoaded(maxAd: MaxAd) {
