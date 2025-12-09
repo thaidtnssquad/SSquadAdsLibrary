@@ -49,6 +49,8 @@ import com.snake.squad.adslib.models.AdmobBannerCollapsibleModel
 import com.snake.squad.adslib.models.AdmobInterModel
 import com.snake.squad.adslib.models.AdmobNativeModel
 import com.snake.squad.adslib.models.AdmobRewardedModel
+import com.snake.squad.adslib.solar.SolarUtils
+import com.snake.squad.adslib.tiktok.TiktokUtils
 import com.snake.squad.adslib.utils.AdType
 import com.snake.squad.adslib.utils.AdsConstants
 import com.snake.squad.adslib.utils.AdsHelper
@@ -194,6 +196,18 @@ object AdmobLib {
                             }
                         interstitialAd.setOnPaidEventListener {
                             FacebookUtils.adImpressionFacebookRevenue(activity, it)
+                            SolarUtils.postRevenueSolar(
+                                it,
+                                AdType.INTERSTITIAL,
+                                admobInterModel.adsID,
+                                interAd = interstitialAd
+                            )
+                            TiktokUtils.postRevenueTiktok(
+                                it,
+                                AdType.INTERSTITIAL,
+                                admobInterModel.adsID,
+                                interAd = interstitialAd
+                            )
                         }
                         interstitialAd.show(activity)
                     }, 800)
@@ -291,6 +305,18 @@ object AdmobLib {
                         }
                     interstitialAd.setOnPaidEventListener {
                         FacebookUtils.adImpressionFacebookRevenue(activity, it)
+                        SolarUtils.postRevenueSolar(
+                            it,
+                            AdType.INTERSTITIAL,
+                            admobInterModel.adsID,
+                            interAd = interstitialAd
+                        )
+                        TiktokUtils.postRevenueTiktok(
+                            it,
+                            AdType.INTERSTITIAL,
+                            admobInterModel.adsID,
+                            interAd = interstitialAd
+                        )
                     }
                     interstitialAd.show(activity)
                 }
@@ -346,6 +372,18 @@ object AdmobLib {
                     onAdsLoaded?.invoke()
                     interstitialAd.setOnPaidEventListener {
                         FacebookUtils.adImpressionFacebookRevenue(activity, it)
+                        SolarUtils.postRevenueSolar(
+                            it,
+                            AdType.INTERSTITIAL,
+                            admobInterModel.adsID,
+                            interAd = interstitialAd
+                        )
+                        TiktokUtils.postRevenueTiktok(
+                            it,
+                            AdType.INTERSTITIAL,
+                            admobInterModel.adsID,
+                            interAd = interstitialAd
+                        )
                     }
                 }
             })
@@ -485,6 +523,8 @@ object AdmobLib {
         shimmerFrameLayout.startShimmer()
         adView.setOnPaidEventListener {
             FacebookUtils.adImpressionFacebookRevenue(activity, it)
+            SolarUtils.postRevenueSolar(it, AdType.BANNER, bannerID, adView = adView)
+            TiktokUtils.postRevenueTiktok(it, AdType.BANNER, bannerID, adView = adView)
         }
         adView.adListener = object : AdListener() {
             override fun onAdLoaded() {
@@ -557,6 +597,18 @@ object AdmobLib {
                     if (!activity.isDestroyed && !activity.isFinishing) {
                         admobBannerCollapsibleModel.adView?.setOnPaidEventListener {
                             FacebookUtils.adImpressionFacebookRevenue(activity, it)
+                            SolarUtils.postRevenueSolar(
+                                it,
+                                AdType.BANNER,
+                                admobBannerCollapsibleModel.adsID,
+                                adView = admobBannerCollapsibleModel.adView
+                            )
+                            TiktokUtils.postRevenueTiktok(
+                                it,
+                                AdType.BANNER,
+                                admobBannerCollapsibleModel.adsID,
+                                adView = admobBannerCollapsibleModel.adView
+                            )
                         }
                         shimmerFrameLayout.stopShimmer()
                         viewGroup.removeView(shimmerLoadingView)
@@ -677,6 +729,18 @@ object AdmobLib {
             viewGroup.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
+                SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
+                TiktokUtils.postRevenueTiktok(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoader.withAdListener(object : AdListener() {
@@ -772,6 +836,18 @@ object AdmobLib {
             viewGroup.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 FacebookUtils.adImpressionFacebookRevenue(context, adValue)
+                SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
+                TiktokUtils.postRevenueTiktok(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoader.withAdListener(object : AdListener() {
@@ -852,6 +928,18 @@ object AdmobLib {
             viewGroupCollapsed.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
+                SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID,
+                    nativeAd = nativeAd
+                )
+                TiktokUtils.postRevenueTiktok(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoaderCollapsed.withAdListener(object : AdListener() {
@@ -891,6 +979,18 @@ object AdmobLib {
             viewGroupExpanded.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
+                SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModelExpanded.adsID,
+                    nativeAd = nativeAd
+                )
+                TiktokUtils.postRevenueTiktok(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModelExpanded.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoaderExpanded.withAdListener(object : AdListener() {
@@ -982,6 +1082,18 @@ object AdmobLib {
                     viewGroupCollapsed.addView(adView)
                     nativeAd.setOnPaidEventListener { adValue: AdValue ->
                         FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
+                        SolarUtils.postRevenueSolar(
+                            adValue,
+                            AdType.NATIVE,
+                            admobNativeModel.adsID,
+                            nativeAd = nativeAd
+                        )
+                        TiktokUtils.postRevenueTiktok(
+                            adValue,
+                            AdType.NATIVE,
+                            admobNativeModel.adsID,
+                            nativeAd = nativeAd
+                        )
                     }
                 } else {
                     viewGroupCollapsed.visibility = View.GONE
@@ -1082,6 +1194,18 @@ object AdmobLib {
                     viewGroupCollapsed.addView(adView)
                     nativeAd.setOnPaidEventListener { adValue: AdValue ->
                         FacebookUtils.adImpressionFacebookRevenue(context, adValue)
+                        SolarUtils.postRevenueSolar(
+                            adValue,
+                            AdType.NATIVE,
+                            admobNativeModel.adsID,
+                            nativeAd = nativeAd
+                        )
+                        TiktokUtils.postRevenueTiktok(
+                            adValue,
+                            AdType.NATIVE,
+                            admobNativeModel.adsID,
+                            nativeAd = nativeAd
+                        )
                     }
                 } else {
                     viewGroupCollapsed.visibility = View.GONE
@@ -1154,6 +1278,18 @@ object AdmobLib {
             admobNativeModel.nativeAd.value = nativeAd
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
+                SolarUtils.postRevenueSolar(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
+                TiktokUtils.postRevenueTiktok(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoader.withAdListener(object : AdListener() {
@@ -1325,6 +1461,18 @@ object AdmobLib {
                     }
                     ad.onPaidEventListener = OnPaidEventListener { adValue ->
                         FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
+                        SolarUtils.postRevenueSolar(
+                            adValue,
+                            AdType.REWARDED,
+                            admobRewardedModel.adsID,
+                            rewardAd = ad
+                        )
+                        TiktokUtils.postRevenueTiktok(
+                            adValue,
+                            AdType.REWARDED,
+                            admobRewardedModel.adsID,
+                            rewardAd = ad
+                        )
                     }
                     ad.show(activity) { _ ->
                         isEarnedReward = true
@@ -1382,6 +1530,18 @@ object AdmobLib {
                     admobRewardedModel.isLoading.postValue(false)
                     rewardedAd.setOnPaidEventListener {
                         FacebookUtils.adImpressionFacebookRevenue(activity, it)
+                        SolarUtils.postRevenueSolar(
+                            it,
+                            AdType.REWARDED,
+                            admobRewardedModel.adsID,
+                            rewardAd = rewardedAd
+                        )
+                        TiktokUtils.postRevenueTiktok(
+                            it,
+                            AdType.REWARDED,
+                            admobRewardedModel.adsID,
+                            rewardAd = rewardedAd
+                        )
                     }
                 }
             })
