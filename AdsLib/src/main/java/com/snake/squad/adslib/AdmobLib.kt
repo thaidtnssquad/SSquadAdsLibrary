@@ -34,12 +34,16 @@ import com.google.android.gms.ads.MediaAspectRatio
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.OnPaidEventListener
 import com.google.android.gms.ads.RequestConfiguration
+import com.google.android.gms.ads.ResponseInfo
 import com.google.android.gms.ads.VideoOptions
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.interstitial.InterstitialAdPreloader
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.nativead.NativeAdView
+import com.google.android.gms.ads.preload.PreloadCallbackV2
+import com.google.android.gms.ads.preload.PreloadConfiguration
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
@@ -333,6 +337,35 @@ object AdmobLib {
         }
     }
 
+    fun loadInterstitialNewAPI(
+        activity: Activity,
+        admobInterModel: AdmobInterModel,
+        isShowOnTestDevice: Boolean = false,
+        onAdsLoaded: (() -> Unit)? = null,
+        onAdsFail: (() -> Unit)? = null
+    ) {
+        if (!isShowAds
+            || isShowInterAds
+            || !isNetworkConnected(activity)
+            || (!isShowOnTestDevice && isTestDevice)
+        ) {
+            onAdsFail?.invoke()
+            return
+        }
+        val configuration = PreloadConfiguration.Builder(admobInterModel.adsID).build()
+        InterstitialAdPreloader.start(admobInterModel.adsID, configuration, object : PreloadCallbackV2() {
+            override fun onAdPreloaded(preloadId: String, responseInfo: ResponseInfo?) {
+                onAdsLoaded?.invoke()
+                Log.d("TAG=====", "onAdPreloaded: AD LOADED")
+            }
+
+            override fun onAdFailedToPreload(preloadId: String, adError: AdError) {
+                onAdsFail?.invoke()
+                Log.d("TAG=====", "onAdPreloaded: AD FAILED")
+            }
+        })
+    }
+
     fun loadInterstitial(
         activity: Activity,
         admobInterModel: AdmobInterModel,
@@ -387,6 +420,100 @@ object AdmobLib {
                     }
                 }
             })
+    }
+
+    fun showInterstitialNewAPI(
+        activity: AppCompatActivity,
+        admobInterModel: AdmobInterModel,
+        isPreload: Boolean = true,
+        isShowOnTestDevice: Boolean = false,
+        onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
+        onAdsFail: (() -> Unit)? = null,
+        onAdsClose: (() -> Unit)? = null,
+        onAdsShowed: (() -> Unit)? = null,
+        onAdsClicked: (() -> Unit)? = null,
+        onAdsImpression: (() -> Unit)? = null
+    ) {
+        if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
+            if (!InterstitialAdPreloader.isAdAvailable(admobInterModel.adsID)) loadInterstitial(
+                activity,
+                admobInterModel
+            )
+            onAdsCloseOrFailed?.invoke(false)
+            onAdsFail?.invoke()
+            return
+        }
+        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+        if (InterstitialAdPreloader.isAdAvailable(admobInterModel.adsID)) {
+            val handle = Handler(Looper.getMainLooper())
+            val ad = InterstitialAdPreloader.pollAd(admobInterModel.adsID)
+            ad?.fullScreenContentCallback =
+                object : FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        isShowInterAds = false
+                        onAdsCloseOrFailed?.invoke(true)
+                        onAdsClose?.invoke()
+                        handle.removeCallbacksAndMessages(0)
+                        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                        if (!isPreload) {
+                            InterstitialAdPreloader.destroy(admobInterModel.adsID)
+                        }
+                    }
+
+                    override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                        isShowInterAds = false
+                        dismissDialogFullScreen()
+                        onAdsCloseOrFailed?.invoke(false)
+                        onAdsFail?.invoke()
+                        handle.removeCallbacksAndMessages(0)
+                        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                        if (!isPreload) {
+                            InterstitialAdPreloader.destroy(admobInterModel.adsID)
+                        }
+                    }
+
+                    override fun onAdClicked() {
+                        onAdsClicked?.invoke()
+                    }
+
+                    override fun onAdImpression() {
+                        onAdsImpression?.invoke()
+                    }
+
+                    override fun onAdShowedFullScreenContent() {
+                        isShowInterAds = true
+                        handle.postDelayed({
+                            dismissDialogFullScreen()
+                        }, 800)
+                        onAdsShowed?.invoke()
+                    }
+                }
+            ad?.setOnPaidEventListener {
+                FacebookUtils.adImpressionFacebookRevenue(activity, it)
+                SolarUtils.postRevenueSolar(
+                    it,
+                    AdType.INTERSTITIAL,
+                    admobInterModel.adsID,
+                    interAd = ad
+                )
+                TiktokUtils.postRevenueTiktok(
+                    it,
+                    AdType.INTERSTITIAL,
+                    admobInterModel.adsID,
+                    interAd = ad
+                )
+            }
+            ad?.show(activity)
+        } else {
+            isShowInterAds = false
+            dismissDialogFullScreen()
+            onAdsCloseOrFailed?.invoke(false)
+            onAdsFail?.invoke()
+            AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+            if (!isPreload) {
+                InterstitialAdPreloader.destroy(admobInterModel.adsID)
+            }
+        }
     }
 
     fun showInterstitial(

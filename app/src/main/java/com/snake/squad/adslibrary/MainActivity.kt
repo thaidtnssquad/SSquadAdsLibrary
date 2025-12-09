@@ -30,14 +30,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnLoadInter.setOnClickListener {
-            AdmobLib.loadInterstitial(
+            AdmobLib.loadInterstitialNewAPI(
                 this,
                 AdsConstants.admobInterModelTest
             )
         }
 
         binding.btnShowInter.setOnClickListener {
-            AdmobLib.showInterstitial(
+            AdmobLib.showInterstitialNewAPI(
                 this,
                 AdsConstants.admobInterModelTest,
                 onAdsCloseOrFailed = {
