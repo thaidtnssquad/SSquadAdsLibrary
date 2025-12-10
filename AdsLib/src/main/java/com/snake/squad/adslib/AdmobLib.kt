@@ -353,17 +353,18 @@ object AdmobLib {
             return
         }
         val configuration = PreloadConfiguration.Builder(admobInterModel.adsID).build()
-        InterstitialAdPreloader.start(admobInterModel.adsID, configuration, object : PreloadCallbackV2() {
-            override fun onAdPreloaded(preloadId: String, responseInfo: ResponseInfo?) {
-                onAdsLoaded?.invoke()
-                Log.d("TAG=====", "onAdPreloaded: AD LOADED")
-            }
+        InterstitialAdPreloader.start(
+            admobInterModel.adsID,
+            configuration,
+            object : PreloadCallbackV2() {
+                override fun onAdPreloaded(preloadId: String, responseInfo: ResponseInfo?) {
+                    onAdsLoaded?.invoke()
+                }
 
-            override fun onAdFailedToPreload(preloadId: String, adError: AdError) {
-                onAdsFail?.invoke()
-                Log.d("TAG=====", "onAdPreloaded: AD FAILED")
-            }
-        })
+                override fun onAdFailedToPreload(preloadId: String, adError: AdError) {
+                    onAdsFail?.invoke()
+                }
+            })
     }
 
     fun loadInterstitial(
@@ -603,6 +604,10 @@ object AdmobLib {
                 }
             }
         }
+    }
+
+    fun destroyAllPreloadAds() {
+        InterstitialAdPreloader.destroyAll()
     }
 
     fun loadAndShowBanner(

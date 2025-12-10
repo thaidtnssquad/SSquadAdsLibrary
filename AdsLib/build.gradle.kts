@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.snake.squad.adslib"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 28
@@ -47,7 +47,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.5.5"
+                version = "1.5.6"
             }
         }
     }
