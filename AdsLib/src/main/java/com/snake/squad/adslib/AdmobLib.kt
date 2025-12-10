@@ -352,9 +352,10 @@ object AdmobLib {
             onAdsFail?.invoke()
             return
         }
-        val configuration = PreloadConfiguration.Builder(admobInterModel.adsID).build()
+        val adsID = if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
+        val configuration = PreloadConfiguration.Builder(adsID).build()
         InterstitialAdPreloader.start(
-            admobInterModel.adsID,
+            adsID,
             configuration,
             object : PreloadCallbackV2() {
                 override fun onAdPreloaded(preloadId: String, responseInfo: ResponseInfo?) {
@@ -436,18 +437,15 @@ object AdmobLib {
         onAdsImpression: (() -> Unit)? = null
     ) {
         if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
-            if (!InterstitialAdPreloader.isAdAvailable(admobInterModel.adsID)) loadInterstitial(
-                activity,
-                admobInterModel
-            )
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
             return
         }
+        val adsID = if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
         AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
-        if (InterstitialAdPreloader.isAdAvailable(admobInterModel.adsID)) {
+        if (InterstitialAdPreloader.isAdAvailable(adsID)) {
             val handle = Handler(Looper.getMainLooper())
-            val ad = InterstitialAdPreloader.pollAd(admobInterModel.adsID)
+            val ad = InterstitialAdPreloader.pollAd(adsID)
             ad?.fullScreenContentCallback =
                 object : FullScreenContentCallback() {
                     override fun onAdDismissedFullScreenContent() {
@@ -457,7 +455,7 @@ object AdmobLib {
                         handle.removeCallbacksAndMessages(0)
                         AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                         if (!isPreload) {
-                            InterstitialAdPreloader.destroy(admobInterModel.adsID)
+                            InterstitialAdPreloader.destroy(adsID)
                         }
                     }
 
@@ -469,7 +467,7 @@ object AdmobLib {
                         handle.removeCallbacksAndMessages(0)
                         AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
                         if (!isPreload) {
-                            InterstitialAdPreloader.destroy(admobInterModel.adsID)
+                            InterstitialAdPreloader.destroy(adsID)
                         }
                     }
 
@@ -494,13 +492,13 @@ object AdmobLib {
                 SolarUtils.postRevenueSolar(
                     it,
                     AdType.INTERSTITIAL,
-                    admobInterModel.adsID,
+                    adsID,
                     interAd = ad
                 )
                 TiktokUtils.postRevenueTiktok(
                     it,
                     AdType.INTERSTITIAL,
-                    admobInterModel.adsID,
+                    adsID,
                     interAd = ad
                 )
             }
@@ -512,7 +510,7 @@ object AdmobLib {
             onAdsFail?.invoke()
             AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
             if (!isPreload) {
-                InterstitialAdPreloader.destroy(admobInterModel.adsID)
+                InterstitialAdPreloader.destroy(adsID)
             }
         }
     }

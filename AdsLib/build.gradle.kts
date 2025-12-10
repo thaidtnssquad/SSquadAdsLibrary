@@ -47,7 +47,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.5.6"
+                version = "1.5.7"
             }
         }
     }
@@ -63,14 +63,14 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     //Ads
-    implementation("com.applovin:applovin-sdk:13.2.0")
+    implementation("com.applovin:applovin-sdk:13.5.1")
     implementation("com.google.android.gms:play-services-ads:24.8.0")
 
-    implementation("androidx.lifecycle:lifecycle-process:2.9.4")
-    implementation("androidx.lifecycle:lifecycle-runtime:2.9.4")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.9.4")
-    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.9.4")
-    annotationProcessor("androidx.lifecycle:lifecycle-common-java8:2.9.4")
+    implementation("androidx.lifecycle:lifecycle-process:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-runtime:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.10.0")
+    annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.10.0")
+    annotationProcessor("androidx.lifecycle:lifecycle-common-java8:2.10.0")
 
     implementation("com.airbnb.android:lottie:6.6.10")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
@@ -85,14 +85,14 @@ dependencies {
     implementation("com.facebook.android:facebook-android-sdk:18.1.3")
 
     //mediation admob
-    implementation("com.google.ads.mediation:pangle:7.8.0.7.0")
+    implementation("com.google.ads.mediation:pangle:7.8.0.8.0")
     implementation("com.google.ads.mediation:applovin:13.5.1.0")
     implementation("com.google.ads.mediation:facebook:6.21.0.0")
     implementation("com.google.ads.mediation:vungle:7.6.1.0")
     implementation("com.google.ads.mediation:mintegral:17.0.31.0")
     implementation("com.google.ads.mediation:ironsource:9.2.0.0")
-    implementation("com.unity3d.ads:unity-ads:4.16.4")
-    implementation("com.google.ads.mediation:unity:4.16.4.0")
+    implementation("com.unity3d.ads:unity-ads:4.16.5")
+    implementation("com.google.ads.mediation:unity:4.16.5.0")
 
     //rating
     implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
