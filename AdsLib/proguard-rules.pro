@@ -22,16 +22,8 @@
 -keep class com.android.vending.billing.**
 -keep class com.vapp.admoblibrary.utils.SweetAlert.**
 
--keep class com.google.android.gms.common.ConnectionResult {
-   int SUCCESS;
-}
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-   com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
-}
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
-   java.lang.String getId();
-   boolean isLimitAdTrackingEnabled();
-}
+-keep public class com.google.android.gms.common.** { *; }
+-keep public class com.google.android.gms.ads.identifier.** { *; }
 -keep public class com.android.installreferrer.** { *; }
 
 -keep class com.reyun.** {*; }
@@ -45,3 +37,8 @@
 -keep class com.tiktok.** { *; }
 -keep class com.android.billingclient.api.** { *; }
 -keep class androidx.lifecycle.** { *; }
+
+-keep class com.tenjin.** { *; }
+-keep class * extends java.util.ListResourceBundle {
+    protected java.lang.Object[][] getContents();
+}

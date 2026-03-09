@@ -47,7 +47,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.5.7"
+                version = "1.5.8"
             }
         }
     }
@@ -100,5 +100,8 @@ dependencies {
 
     //Solar Engine
     implementation("com.reyun.solar.engine.oversea:solar-engine-core:1.3.0.5")
+
+    //Tenjin
+    implementation("com.tenjin:android-sdk:1.17.2")
 
 }
