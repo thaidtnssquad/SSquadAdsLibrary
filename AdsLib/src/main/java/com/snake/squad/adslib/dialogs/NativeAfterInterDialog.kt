@@ -26,7 +26,7 @@ class NativeAfterInterDialog(
     private var counter: Int = DEFAULT_COUNTER,
     private val onClose: () -> Unit,
     private val onFailure: () -> Unit
-): Dialog(mActivity) {
+): Dialog(mActivity, R.style.mTheme_Dialog) {
 
     private val binding by lazy { DialogNativeAfterInterBinding.inflate(layoutInflater) }
 

@@ -1804,6 +1804,12 @@ object AdmobLib {
         onInterCloseOrFailed: (isDone: Boolean) -> Unit = {},
         navAction: () -> Unit
     ) {
+        if (!isShowAds || (isTestDevice && !isShowOnTestDevice) || !isNetworkConnected(mActivity)) {
+            navAction()
+            onInterCloseOrFailed(false)
+            return
+        }
+
         vShowInterAds?.visibility = View.VISIBLE
         loadNativeFullScreen(mActivity, nativeModel, isShowNativeAfter)
         var nativeDialog: NativeAfterInterDialog? = null
@@ -1867,6 +1873,11 @@ object AdmobLib {
         vShowInterAds: View? = null,
         navAction: () -> Unit
     ) {
+        if (!isShowAds || !isNetworkConnected(mActivity)) {
+            navAction()
+            return
+        }
+
         vShowInterAds?.visibility = View.VISIBLE
         loadNativeFullScreen(mActivity, nativeModel, isShowNativeAfter)
         var nativeDialog: NativeAfterInterDialog? = null
@@ -2047,7 +2058,7 @@ object AdmobLib {
 
     private fun showDialogFullScreen(activity: Activity) {
         try {
-            dialogFullScreen = Dialog(activity)
+            dialogFullScreen = Dialog(activity, R.style.mTheme_Dialog)
             dialogFullScreen?.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialogFullScreen?.setContentView(R.layout.dialog_loading_ads_full_screen)
             dialogFullScreen?.setCancelable(false)
