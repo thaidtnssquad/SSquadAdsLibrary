@@ -6,4 +6,10 @@ import com.google.android.gms.ads.nativead.NativeAd
 data class AdmobNativeModel(val adsID: String) {
     var nativeAd: MutableLiveData<NativeAd?> = MutableLiveData()
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    fun releaseAndSetNativeAd(ad: NativeAd?) {
+        val old = nativeAd.value
+        nativeAd.value = ad
+        old?.destroy()
+    }
 }

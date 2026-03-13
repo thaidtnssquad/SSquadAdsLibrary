@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.applovin.sdk.AppLovinSdkUtils.runOnUiThread
@@ -120,6 +121,7 @@ object AdmobLib {
             .build()
     }
 
+    // region Inter
     fun loadAndShowInterstitialSplash(
         activity: AppCompatActivity,
         admobInterModel: AdmobInterModel,
@@ -607,7 +609,9 @@ object AdmobLib {
     fun destroyAllPreloadAds() {
         InterstitialAdPreloader.destroyAll()
     }
+    // endregion
 
+    // region Banner
     fun loadAndShowBanner(
         activity: Activity,
         bannerID: String,
@@ -781,7 +785,9 @@ object AdmobLib {
             AdRequest.Builder().addNetworkExtrasBundle(AdMobAdapter::class.java, extras).build()
         admobBannerCollapsibleModel.adView?.loadAd(adRequestCollapsible)
     }
+    // endregion
 
+    // region Native
     fun loadAndShowNative(
         activity: Activity,
         admobNativeModel: AdmobNativeModel,
@@ -814,6 +820,8 @@ object AdmobLib {
             false
         )
 
+        (viewGroup.children.firstOrNull() as? NativeAdView)?.destroy()
+
         viewGroup.removeAllViews()
         viewGroup.addView(shimmerLoadingView, 0)
         val shimmerFrameLayout =
@@ -840,6 +848,8 @@ object AdmobLib {
         }
         adLoader.forNativeAd { nativeAd ->
             if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
+            admobNativeModel.releaseAndSetNativeAd(nativeAd)
+
             val layoutNative = layout
                 ?: when (size) {
                     GoogleENative.UNIFIED_MEDIUM -> R.layout.admob_ad_template_medium
@@ -921,6 +931,8 @@ object AdmobLib {
             false
         )
 
+        (viewGroup.children.firstOrNull() as? NativeAdView)?.destroy()
+
         viewGroup.removeAllViews()
         viewGroup.addView(shimmerLoadingView, 0)
         val shimmerFrameLayout =
@@ -947,6 +959,8 @@ object AdmobLib {
         }
         adLoader.forNativeAd { nativeAd ->
             if (isCheckTestAds) checkTestDevice(context, isEnabledCheckTestDevice, nativeAd)
+            admobNativeModel.releaseAndSetNativeAd(nativeAd)
+
             val layoutNative = layout
                 ?: when (size) {
                     GoogleENative.UNIFIED_MEDIUM -> R.layout.admob_ad_template_medium
@@ -1028,6 +1042,9 @@ object AdmobLib {
         val nativeAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
 
+        (viewGroupExpanded.children.firstOrNull() as? NativeAdView)?.destroy()
+        (viewGroupCollapsed.children.firstOrNull() as? NativeAdView)?.destroy()
+
         viewGroupExpanded.removeAllViews()
         viewGroupCollapsed.removeAllViews()
 
@@ -1044,6 +1061,8 @@ object AdmobLib {
         adLoaderCollapsed.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderCollapsed.forNativeAd { nativeAd ->
             if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
+            admobNativeModelCollapsed?.releaseAndSetNativeAd(nativeAd) ?: admobNativeModelExpanded.releaseAndSetNativeAd(nativeAd)
+
             val layoutNativeCollapsed =
                 layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
             val adView =
@@ -1093,6 +1112,8 @@ object AdmobLib {
         adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderExpanded.forNativeAd { nativeAd ->
             if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
+            admobNativeModelExpanded.releaseAndSetNativeAd(nativeAd)
+
             val layoutNativeExpanded = layoutExpanded ?: R.layout.admob_ad_template_medium
             val adView = activity.layoutInflater.inflate(layoutNativeExpanded, null) as NativeAdView
             NativeUtils.populateNativeAdView(
@@ -1173,6 +1194,10 @@ object AdmobLib {
         val nativeAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
 
+        if ((viewGroupExpanded.children.firstOrNull() as? NativeAdView)?.destroy() == null) {
+            (viewGroupCollapsed.children.firstOrNull() as? NativeAdView)?.destroy()
+        }
+
         viewGroupExpanded.removeAllViews()
         viewGroupCollapsed.removeAllViews()
         viewGroupCollapsed.addView(shimmerLoadingView, 0)
@@ -1188,6 +1213,8 @@ object AdmobLib {
         adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderExpanded.forNativeAd { nativeAd ->
             if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
+            admobNativeModel.releaseAndSetNativeAd(nativeAd)
+
             val layoutNativeExpanded = layoutExpanded ?: R.layout.admob_ad_template_medium
             val adView = activity.layoutInflater.inflate(layoutNativeExpanded, null) as NativeAdView
             NativeUtils.populateNativeAdView(
@@ -1283,6 +1310,10 @@ object AdmobLib {
         val nativeAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
 
+        if ((viewGroupExpanded.children.firstOrNull() as? NativeAdView)?.destroy() == null) {
+            (viewGroupCollapsed.children.firstOrNull() as? NativeAdView)?.destroy()
+        }
+
         viewGroupExpanded.removeAllViews()
         viewGroupCollapsed.removeAllViews()
         viewGroupCollapsed.addView(shimmerLoadingView, 0)
@@ -1298,6 +1329,8 @@ object AdmobLib {
         adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderExpanded.forNativeAd { nativeAd ->
             if (isCheckTestAds) checkTestDevice(context, isEnabledCheckTestDevice, nativeAd)
+            admobNativeModel.releaseAndSetNativeAd(nativeAd)
+
             val layoutNativeExpanded = layoutExpanded ?: R.layout.admob_ad_template_medium
             val adView =
                 LayoutInflater.from(context).inflate(layoutNativeExpanded, null) as NativeAdView
@@ -1509,7 +1542,9 @@ object AdmobLib {
             }
         }
     }
+    // endregion
 
+    // region Reward
     fun loadAndShowRewarded(
         activity: AppCompatActivity,
         admobRewardedModel: AdmobRewardedModel,
@@ -1763,8 +1798,9 @@ object AdmobLib {
             }
         }
     }
+    // endregion
 
-    // region show inter with native after
+    // region Inter with native after
     private fun createNativeFullScreen(
         mActivity: AppCompatActivity,
         model: AdmobNativeModel,
@@ -1779,7 +1815,9 @@ object AdmobLib {
 
         return NativeAfterInterDialog(
             mActivity, model, layout, isStartNow, counter, navAction, onFailure
-        )
+        ).apply {
+            setOnDismissListener { model.releaseAndSetNativeAd(null) }
+        }
     }
 
     private fun loadNativeFullScreen(
@@ -1789,6 +1827,7 @@ object AdmobLib {
     ) {
         if (!isShowNative) return
 
+        model.releaseAndSetNativeAd(null)
         loadNative(mActivity, model, GoogleENative.UNIFIED_FULL_SCREEN, MediaAspectRatio.ANY)
     }
 
@@ -1931,6 +1970,7 @@ object AdmobLib {
 
     // endregion
 
+    // region Public get - set
     fun getInitAds(): Boolean {
         return isInitAds
     }
@@ -1996,7 +2036,7 @@ object AdmobLib {
             isInitAds = savedInstanceState.getBoolean("is_test_device")
         }
     }
-
+    // endregion
 
     private fun getAdSize(activity: Activity): AdSize {
         val display = activity.windowManager.defaultDisplay
