@@ -54,6 +54,7 @@ import com.snake.squad.adslib.models.AdmobInterModel
 import com.snake.squad.adslib.models.AdmobNativeModel
 import com.snake.squad.adslib.models.AdmobRewardedModel
 import com.snake.squad.adslib.solar.SolarUtils
+import com.snake.squad.adslib.tenjin.TenjinUtils
 import com.snake.squad.adslib.tiktok.TiktokUtils
 import com.snake.squad.adslib.utils.AdType
 import com.snake.squad.adslib.utils.AdsConstants
@@ -63,6 +64,7 @@ import com.snake.squad.adslib.utils.BannerCollapsibleType
 import com.snake.squad.adslib.utils.BannerType
 import com.snake.squad.adslib.utils.GoogleENative
 import com.snake.squad.adslib.utils.NativeUtils
+import com.tenjin.android.TenjinSDK
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -212,6 +214,13 @@ object AdmobLib {
                                 admobInterModel.adsID,
                                 interAd = interstitialAd
                             )
+                            TenjinUtils.postRevenueTenjin(
+                                activity,
+                                it,
+                                AdType.INTERSTITIAL,
+                                admobInterModel.adsID,
+                                interAd = interstitialAd
+                            )
                         }
                         interstitialAd.show(activity)
                     }, 800)
@@ -321,6 +330,13 @@ object AdmobLib {
                             admobInterModel.adsID,
                             interAd = interstitialAd
                         )
+                        TenjinUtils.postRevenueTenjin(
+                            activity,
+                            it,
+                            AdType.INTERSTITIAL,
+                            admobInterModel.adsID,
+                            interAd = interstitialAd
+                        )
                     }
                     interstitialAd.show(activity)
                 }
@@ -419,6 +435,13 @@ object AdmobLib {
                             admobInterModel.adsID,
                             interAd = interstitialAd
                         )
+                        TenjinUtils.postRevenueTenjin(
+                            activity,
+                            it,
+                            AdType.INTERSTITIAL,
+                            admobInterModel.adsID,
+                            interAd = interstitialAd
+                        )
                     }
                 }
             })
@@ -496,6 +519,13 @@ object AdmobLib {
                     interAd = ad
                 )
                 TiktokUtils.postRevenueTiktok(
+                    it,
+                    AdType.INTERSTITIAL,
+                    adsID,
+                    interAd = ad
+                )
+                TenjinUtils.postRevenueTenjin(
+                    activity,
                     it,
                     AdType.INTERSTITIAL,
                     adsID,
@@ -655,6 +685,7 @@ object AdmobLib {
             FacebookUtils.adImpressionFacebookRevenue(activity, it)
             SolarUtils.postRevenueSolar(it, AdType.BANNER, bannerID, adView = adView)
             TiktokUtils.postRevenueTiktok(it, AdType.BANNER, bannerID, adView = adView)
+            TenjinUtils.postRevenueTenjin(activity, it, AdType.BANNER, bannerID, adView = adView)
         }
         adView.adListener = object : AdListener() {
             override fun onAdLoaded() {
@@ -734,6 +765,13 @@ object AdmobLib {
                                 adView = admobBannerCollapsibleModel.adView
                             )
                             TiktokUtils.postRevenueTiktok(
+                                it,
+                                AdType.BANNER,
+                                admobBannerCollapsibleModel.adsID,
+                                adView = admobBannerCollapsibleModel.adView
+                            )
+                            TenjinUtils.postRevenueTenjin(
+                                activity,
                                 it,
                                 AdType.BANNER,
                                 admobBannerCollapsibleModel.adsID,
@@ -871,6 +909,13 @@ object AdmobLib {
                     admobNativeModel.adsID,
                     nativeAd = nativeAd
                 )
+                TenjinUtils.postRevenueTenjin(
+                    activity,
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoader.withAdListener(object : AdListener() {
@@ -978,6 +1023,13 @@ object AdmobLib {
                     admobNativeModel.adsID,
                     nativeAd = nativeAd
                 )
+                TenjinUtils.postRevenueTenjin(
+                    context,
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoader.withAdListener(object : AdListener() {
@@ -1070,6 +1122,13 @@ object AdmobLib {
                     admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID,
                     nativeAd = nativeAd
                 )
+                TenjinUtils.postRevenueTenjin(
+                    activity,
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID,
+                    nativeAd = nativeAd
+                )
             }
         }
         adLoaderCollapsed.withAdListener(object : AdListener() {
@@ -1116,6 +1175,13 @@ object AdmobLib {
                     nativeAd = nativeAd
                 )
                 TiktokUtils.postRevenueTiktok(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModelExpanded.adsID,
+                    nativeAd = nativeAd
+                )
+                TenjinUtils.postRevenueTenjin(
+                    activity,
                     adValue,
                     AdType.NATIVE,
                     admobNativeModelExpanded.adsID,
@@ -1219,6 +1285,13 @@ object AdmobLib {
                             nativeAd = nativeAd
                         )
                         TiktokUtils.postRevenueTiktok(
+                            adValue,
+                            AdType.NATIVE,
+                            admobNativeModel.adsID,
+                            nativeAd = nativeAd
+                        )
+                        TenjinUtils.postRevenueTenjin(
+                            activity,
                             adValue,
                             AdType.NATIVE,
                             admobNativeModel.adsID,
@@ -1336,6 +1409,13 @@ object AdmobLib {
                             admobNativeModel.adsID,
                             nativeAd = nativeAd
                         )
+                        TenjinUtils.postRevenueTenjin(
+                            context,
+                            adValue,
+                            AdType.NATIVE,
+                            admobNativeModel.adsID,
+                            nativeAd = nativeAd
+                        )
                     }
                 } else {
                     viewGroupCollapsed.visibility = View.GONE
@@ -1415,6 +1495,13 @@ object AdmobLib {
                     nativeAd = nativeAd
                 )
                 TiktokUtils.postRevenueTiktok(
+                    adValue,
+                    AdType.NATIVE,
+                    admobNativeModel.adsID,
+                    nativeAd = nativeAd
+                )
+                TenjinUtils.postRevenueTenjin(
+                    activity,
                     adValue,
                     AdType.NATIVE,
                     admobNativeModel.adsID,
@@ -1603,6 +1690,13 @@ object AdmobLib {
                             admobRewardedModel.adsID,
                             rewardAd = ad
                         )
+                        TenjinUtils.postRevenueTenjin(
+                            activity,
+                            adValue,
+                            AdType.REWARDED,
+                            admobRewardedModel.adsID,
+                            rewardAd = ad
+                        )
                     }
                     ad.show(activity) { _ ->
                         isEarnedReward = true
@@ -1667,6 +1761,13 @@ object AdmobLib {
                             rewardAd = rewardedAd
                         )
                         TiktokUtils.postRevenueTiktok(
+                            it,
+                            AdType.REWARDED,
+                            admobRewardedModel.adsID,
+                            rewardAd = rewardedAd
+                        )
+                        TenjinUtils.postRevenueTenjin(
+                            activity,
                             it,
                             AdType.REWARDED,
                             admobRewardedModel.adsID,
@@ -1914,6 +2015,71 @@ object AdmobLib {
                         nativeDialog?.isClosedOrFail = true
                     }
                 }
+            }
+        )
+    }
+
+    fun showInterNewAPIWithNativeAfter(
+        mActivity: AppCompatActivity,
+        interModel: AdmobInterModel,
+        nativeModel: AdmobNativeModel,
+        vShowInterAds: View?,
+        isShowNativeAfter: Boolean = true,
+        nativeLayout: Int = R.layout.admob_ad_template_full_screen,
+        counter: Int = NativeAfterInterDialog.DEFAULT_COUNTER,
+        isShowOnTestDevice: Boolean = false,
+        onInterCloseOrFailed: (isDone: Boolean) -> Unit = {},
+        navAction: () -> Unit
+    ) {
+        vShowInterAds?.visibility = View.VISIBLE
+        loadNativeFullScreen(mActivity, nativeModel, isShowNativeAfter)
+        var nativeDialog: NativeAfterInterDialog? = null
+        var isNativeFail = false
+        showInterstitialNewAPI(
+            mActivity,
+            interModel,
+            isShowOnTestDevice = isShowOnTestDevice,
+            onAdsShowed = {
+//            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
+                mActivity.lifecycleScope.launch {
+                    delay(1000)
+                    nativeDialog = createNativeFullScreen(
+                        mActivity,
+                        nativeModel,
+                        layout = nativeLayout,
+                        isShowNative = isShowNativeAfter,
+                        navAction = navAction,
+                        counter = counter,
+                        onFailure = {
+                            isNativeFail = true
+                        }
+                    )
+                    nativeDialog?.show()
+                }
+            },
+            onAdsFail = {
+//            Log.d("TAG", "loadAndShowInterWithNativeAfter: on fail")
+                mActivity.lifecycleScope.launch {
+                    createNativeFullScreen(
+                        mActivity,
+                        nativeModel,
+                        layout = nativeLayout,
+                        isShowNative = isShowNativeAfter,
+                        isStartNow = true,
+                        counter = counter,
+                        navAction = navAction
+                    )?.show()
+                }
+            },
+            onAdsCloseOrFailed = {
+                mActivity.lifecycleScope.launch {
+                    if (!isShowNativeAfter || isNativeFail) {
+                        navAction()
+                    } else {
+                        nativeDialog?.isClosedOrFail = true
+                    }
+                }
+                onInterCloseOrFailed(it)
             }
         )
     }

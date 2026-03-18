@@ -18,6 +18,7 @@ import com.snake.squad.adslib.AdmobLib
 import com.snake.squad.adslib.R
 import com.snake.squad.adslib.facebook.FacebookUtils
 import com.snake.squad.adslib.solar.SolarUtils
+import com.snake.squad.adslib.tenjin.TenjinUtils
 import com.snake.squad.adslib.tiktok.TiktokUtils
 import com.snake.squad.adslib.utils.AdType
 import com.snake.squad.adslib.utils.AdsConstants
@@ -86,6 +87,7 @@ class AppOpenAdsManager(
                             FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                             SolarUtils.postRevenueSolar(adValue, AdType.APP_OPEN, appOpenID, appOpenAd = ad)
                             TiktokUtils.postRevenueTiktok(adValue, AdType.APP_OPEN, appOpenID, appOpenAd = ad)
+                            TenjinUtils.postRevenueTenjin(activity, adValue, AdType.APP_OPEN, appOpenID, appOpenAd = ad)
                         }
                         job.cancel()
                         if (!isShowingAd) {
