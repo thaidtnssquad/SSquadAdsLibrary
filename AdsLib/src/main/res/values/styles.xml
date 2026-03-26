@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="mTheme.Dialog" parent="Theme.Material3.DayNight.NoActionBar"/>
+
     <style name="lib_material_rating_style" parent="Widget.AppCompat.RatingBar">
         <item name="android:progressDrawable">@drawable/lib_material_icon_ratingbar</item>
         <item name="android:indeterminateDrawable">@drawable/lib_material_icon_ratingbar</item>

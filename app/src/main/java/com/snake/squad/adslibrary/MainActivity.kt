@@ -2,19 +2,33 @@ package com.snake.squad.adslibrary
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.snake.squad.adslib.AdmobLib
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
+import com.snake.squad.adslib.models.AdmobNativeModel
 import com.snake.squad.adslib.rates.RatingDialog
 import com.snake.squad.adslib.utils.AdsConstants
 import com.snake.squad.adslib.utils.GoogleENative
 import com.snake.squad.adslibrary.databinding.ActivityMainBinding
+import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
+    private val mHandler = Handler(Looper.getMainLooper())
+    private val mReloadRunnable = object : Runnable {
+        override fun run() {
+            if (isFinishing || isDestroyed) return
+
+            showNativeReload()
+        }
+    }
+    private val isNativeCollLoading = AtomicBoolean(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,6 +145,34 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        binding.btnNativeWithReload.setOnClickListener {
+            showNativeReload()
+        }
+    }
+
+    private val nativeReloadModel = AdmobNativeModel(AdsConstants.admobNativeModelTest.adsID)
+    private fun showNativeReload() {
+        mHandler.removeCallbacks(mReloadRunnable)
+        if (isNativeCollLoading.get()) return
+
+        if (isDestroyed || isFinishing) return
+
+        isNativeCollLoading.set(true)
+        AdmobLib.loadAndShowNative(
+            this,
+            nativeReloadModel,
+            binding.frNative,
+            onAdsLoadFail = {
+                isNativeCollLoading.set(false)
+                mHandler.postDelayed(mReloadRunnable, 5000)
+                Unit
+            },
+            onAdsLoaded = {
+                isNativeCollLoading.set(false)
+                mHandler.postDelayed(mReloadRunnable, 5000)
+                Unit
+            }
+        )
     }
 
     private fun setupViewBannerOrNative(isBanner: Boolean) {
@@ -148,6 +190,11 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         AppOnResumeAdsManager.getInstance().enableForActivity(MainActivity::class.java)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mHandler.removeCallbacks(mReloadRunnable)
     }
 
 }
