@@ -1107,8 +1107,9 @@ object AdmobLib {
         shimmerFrameLayout.startShimmer()
         val adLoaderCollapsed = AdLoader.Builder(
             activity,
-            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelCollapsed?.adsID
-                ?: admobNativeModelExpanded.adsID
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else {
+                admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID
+            }
         )
         adLoaderCollapsed.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderCollapsed.forNativeAd { nativeAd ->
@@ -2081,6 +2082,12 @@ object AdmobLib {
         onInterCloseOrFailed: (isDone: Boolean) -> Unit = {},
         navAction: () -> Unit
     ) {
+        if (!isShowAds || (isTestDevice && !isShowOnTestDevice) || !isNetworkConnected(mActivity)) {
+            navAction()
+            onInterCloseOrFailed(false)
+            return
+        }
+
         vShowInterAds?.visibility = View.VISIBLE
         loadNativeFullScreen(mActivity, nativeModel, isShowNativeAfter)
         var nativeDialog: NativeAfterInterDialog? = null

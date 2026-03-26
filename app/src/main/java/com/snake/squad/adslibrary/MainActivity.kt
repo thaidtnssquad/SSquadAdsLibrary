@@ -51,10 +51,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnShowInter.setOnClickListener {
-            AdmobLib.showInterstitialNewAPI(
+            AdmobLib.showInterNewAPIWithNativeAfter(
                 this,
                 AdsConstants.admobInterModelTest,
-                onAdsCloseOrFailed = {
+                AdsConstants.admobNativeModelTest,
+                null,
+                navAction = {
                     startActivity(Intent(this@MainActivity, SecondActivity::class.java))
                 })
         }
