@@ -1979,32 +1979,36 @@ object AdmobLib {
 //            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
                 mActivity.lifecycleScope.launch {
                     delay(1000)
-                    nativeDialog = createNativeFullScreen(
-                        mActivity,
-                        nativeModel,
-                        layout = nativeLayout,
-                        isShowNative = isShowNativeAfter,
-                        navAction = navAction,
-                        counter = counter,
-                        onFailure = {
-                            isNativeFail = true
-                        }
-                    )
-                    nativeDialog?.show()
+                    if (!mActivity.isFinishing && !mActivity.isDestroyed) {
+                        nativeDialog = createNativeFullScreen(
+                            mActivity,
+                            nativeModel,
+                            layout = nativeLayout,
+                            isShowNative = isShowNativeAfter,
+                            navAction = navAction,
+                            counter = counter,
+                            onFailure = {
+                                isNativeFail = true
+                            }
+                        )
+                        nativeDialog?.show()
+                    }
                 }
             },
             onAdsFail = {
 //            Log.d("TAG", "loadAndShowInterWithNativeAfter: on fail")
                 mActivity.lifecycleScope.launch {
-                    createNativeFullScreen(
-                        mActivity,
-                        nativeModel,
-                        layout = nativeLayout,
-                        isShowNative = isShowNativeAfter,
-                        isStartNow = true,
-                        counter = counter,
-                        navAction = navAction
-                    )?.show()
+                    if (!mActivity.isFinishing && !mActivity.isDestroyed) {
+                        createNativeFullScreen(
+                            mActivity,
+                            nativeModel,
+                            layout = nativeLayout,
+                            isShowNative = isShowNativeAfter,
+                            isStartNow = true,
+                            counter = counter,
+                            navAction = navAction
+                        )?.show()
+                    }
                 }
             },
             onAdsCloseOrFailed = {
@@ -2046,32 +2050,36 @@ object AdmobLib {
 //            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
                 mActivity.lifecycleScope.launch {
                     delay(1000)
-                    nativeDialog = createNativeFullScreen(
-                        mActivity,
-                        nativeModel,
-                        layout = nativeLayout,
-                        isShowNative = isShowNativeAfter,
-                        counter = counter,
-                        navAction = navAction,
-                        onFailure = {
-                            isNativeFail = true
-                        }
-                    )
-                    nativeDialog?.show()
+                    if (!mActivity.isFinishing && !mActivity.isDestroyed) {
+                        nativeDialog = createNativeFullScreen(
+                            mActivity,
+                            nativeModel,
+                            layout = nativeLayout,
+                            isShowNative = isShowNativeAfter,
+                            counter = counter,
+                            navAction = navAction,
+                            onFailure = {
+                                isNativeFail = true
+                            }
+                        )
+                        nativeDialog?.show()
+                    }
                 }
             },
             onAdsFail = {
 //            Log.d("TAG", "loadAndShowInterWithNativeAfter: on fail")
                 mActivity.lifecycleScope.launch {
-                    createNativeFullScreen(
-                        mActivity,
-                        nativeModel,
-                        layout = nativeLayout,
-                        isShowNative = isShowNativeAfter,
-                        isStartNow = true,
-                        counter = counter,
-                        navAction = navAction
-                    )?.show()
+                    if (!mActivity.isFinishing && !mActivity.isDestroyed) {
+                        createNativeFullScreen(
+                            mActivity,
+                            nativeModel,
+                            layout = nativeLayout,
+                            isShowNative = isShowNativeAfter,
+                            isStartNow = true,
+                            counter = counter,
+                            navAction = navAction
+                        )?.show()
+                    }
                 }
             },
             onAdsCloseOrFailed = {
@@ -2116,32 +2124,36 @@ object AdmobLib {
 //            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
                 mActivity.lifecycleScope.launch {
                     delay(1000)
-                    nativeDialog = createNativeFullScreen(
-                        mActivity,
-                        nativeModel,
-                        layout = nativeLayout,
-                        isShowNative = isShowNativeAfter,
-                        navAction = navAction,
-                        counter = counter,
-                        onFailure = {
-                            isNativeFail = true
-                        }
-                    )
-                    nativeDialog?.show()
+                    if (!mActivity.isFinishing && !mActivity.isDestroyed) {
+                        nativeDialog = createNativeFullScreen(
+                            mActivity,
+                            nativeModel,
+                            layout = nativeLayout,
+                            isShowNative = isShowNativeAfter,
+                            navAction = navAction,
+                            counter = counter,
+                            onFailure = {
+                                isNativeFail = true
+                            }
+                        )
+                        nativeDialog?.show()
+                    }
                 }
             },
             onAdsFail = {
 //            Log.d("TAG", "loadAndShowInterWithNativeAfter: on fail")
                 mActivity.lifecycleScope.launch {
-                    createNativeFullScreen(
-                        mActivity,
-                        nativeModel,
-                        layout = nativeLayout,
-                        isShowNative = isShowNativeAfter,
-                        isStartNow = true,
-                        counter = counter,
-                        navAction = navAction
-                    )?.show()
+                    if (!mActivity.isFinishing && !mActivity.isDestroyed) {
+                        createNativeFullScreen(
+                            mActivity,
+                            nativeModel,
+                            layout = nativeLayout,
+                            isShowNative = isShowNativeAfter,
+                            isStartNow = true,
+                            counter = counter,
+                            navAction = navAction
+                        )?.show()
+                    }
                 }
             },
             onAdsCloseOrFailed = {
