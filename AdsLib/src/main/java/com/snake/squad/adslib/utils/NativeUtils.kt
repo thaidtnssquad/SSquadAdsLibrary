@@ -56,12 +56,7 @@ object NativeUtils {
             if (size == GoogleENative.UNIFIED_MEDIUM || size == GoogleENative.UNIFIED_MEDIUM_LIKE_BUTTON || size == GoogleENative.UNIFIED_FULL_SCREEN) {
                 adView.mediaView?.let {
                     it.setImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
-                    val mediaContent = nativeAd.mediaContent
-                    if (mediaContent != null && mediaContent.hasVideoContent()) {
-                        val mediaView = MediaView(it.context)
-                        mediaView.mediaContent = mediaContent
-                        it.addView(mediaView)
-                    }
+                    it.mediaContent = nativeAd.mediaContent
                 }
             }
         }
@@ -101,8 +96,8 @@ object NativeUtils {
 
         adView.setNativeAd(nativeAd)
 
-        val vc = nativeAd.mediaContent!!.videoController
-        if (vc.hasVideoContent()) {
+        val vc = nativeAd.mediaContent?.videoController
+        if (vc != null && vc.hasVideoContent()) {
             vc.videoLifecycleCallbacks = object : VideoController.VideoLifecycleCallbacks() {
             }
         }

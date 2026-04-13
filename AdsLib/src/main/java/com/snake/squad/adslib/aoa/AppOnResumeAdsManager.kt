@@ -101,6 +101,10 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
         isAppResumeEnabled = enabled
     }
 
+    fun isShowingAd(): Boolean {
+        return isShowingAd
+    }
+
     // get AdRequest
     private fun initAdRequest() {
         adRequest = AdRequest.Builder()
@@ -171,18 +175,17 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
             loadAd()
             return
         }
+        
         if (isShowingAd) {
-            dismissDialogFullScreen()
-            appOpenAd?.fullScreenContentCallback?.onAdDismissedFullScreenContent()
+            return
         }
-        showDialogFullScreen(activity)
+        
         appOpenAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
                 Log.d(logTag, "Ad dismissed")
                 appOpenAd = null
                 isShowingAd = false
                 loadAd()
-                dismissDialogFullScreen()
             }
 
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
@@ -190,13 +193,14 @@ class AppOnResumeAdsManager : ActivityLifecycleCallbacks {
                 appOpenAd = null
                 isShowingAd = false
                 loadAd()
-                dismissDialogFullScreen()
             }
 
             override fun onAdShowedFullScreenContent() {
                 Log.d(logTag, "Ad shown")
+                isShowingAd = true
             }
         }
+        isShowingAd = true
         appOpenAd?.show(activity)
     }
 
