@@ -160,7 +160,7 @@ object ApplovinLib {
                     isShowInterAds = false
                     dismissDialogFullScreen()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
             }
         }
@@ -189,7 +189,7 @@ object ApplovinLib {
         }
         showDialogFullScreen(activity)
         val handle = Handler(Looper.getMainLooper())
-        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+        AppOnResumeAdsManager.setAppResumeEnabled(false)
         maxInterModel.interstitialAd.postValue(MaxInterstitialAd(maxInterModel.adsID, activity))
         maxInterModel.interstitialAd.value?.let {
             it.setRevenueListener { ad ->
@@ -215,7 +215,7 @@ object ApplovinLib {
                     onAdsCloseOrFailed?.invoke(true)
                     onAdsClose?.invoke()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
 
                 override fun onAdClicked(ad: MaxAd) {
@@ -227,7 +227,7 @@ object ApplovinLib {
                     onAdsCloseOrFailed?.invoke(false)
                     onAdsFail?.invoke()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
 
                 override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
@@ -235,7 +235,7 @@ object ApplovinLib {
                     onAdsCloseOrFailed?.invoke(false)
                     onAdsFail?.invoke()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
 
             })
@@ -246,7 +246,7 @@ object ApplovinLib {
                     isShowInterAds = false
                     dismissDialogFullScreen()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
             }
         }
@@ -338,7 +338,7 @@ object ApplovinLib {
         maxInterModel.interstitialAd.value?.let {
             showDialogFullScreen(activity)
             val handle = Handler(Looper.getMainLooper())
-            AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+            AppOnResumeAdsManager.setAppResumeEnabled(false)
             it.setRevenueListener { ad ->
             }
             it.setListener(object : MaxAdListener {
@@ -361,7 +361,7 @@ object ApplovinLib {
                     onAdsClose?.invoke()
                     maxInterModel.interstitialAd.postValue(null)
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                     if (isPreload) {
                         loadInterstitial(activity, maxInterModel)
                     }
@@ -377,7 +377,7 @@ object ApplovinLib {
                     onAdsFail?.invoke()
                     maxInterModel.interstitialAd.postValue(null)
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                     if (isPreload) {
                         loadInterstitial(activity, maxInterModel)
                     }
@@ -389,7 +389,7 @@ object ApplovinLib {
                     onAdsFail?.invoke()
                     maxInterModel.interstitialAd.postValue(null)
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                     if (isPreload) {
                         loadInterstitial(activity, maxInterModel)
                     }
@@ -405,7 +405,7 @@ object ApplovinLib {
                     isShowInterAds = false
                     dismissDialogFullScreen()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
             }
         }
@@ -717,7 +717,7 @@ object ApplovinLib {
         var isEarned = false
         showDialogFullScreen(activity)
         val handle = Handler(Looper.getMainLooper())
-        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+        AppOnResumeAdsManager.setAppResumeEnabled(false)
         rewardedModel.rewardAd = MaxRewardedAd.getInstance(rewardedModel.adsID, activity)
         rewardedModel.rewardAd?.let {
             it.setRevenueListener { ad ->
@@ -743,7 +743,7 @@ object ApplovinLib {
                     onAdsCloseOrFailed.invoke(isEarned)
                     onAdsClose?.invoke()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
 
                 override fun onAdClicked(maxAd: MaxAd) {
@@ -755,7 +755,7 @@ object ApplovinLib {
                     onAdsCloseOrFailed.invoke(false)
                     onAdsFail?.invoke()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
 
                 override fun onAdDisplayFailed(maxAd: MaxAd, maxError: MaxError) {
@@ -763,7 +763,7 @@ object ApplovinLib {
                     onAdsCloseOrFailed.invoke(false)
                     onAdsFail?.invoke()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
 
                 override fun onUserRewarded(maxAd: MaxAd, maxError: MaxReward) {
@@ -778,7 +778,7 @@ object ApplovinLib {
                     isShowRewardAds = false
                     dismissDialogFullScreen()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
             }
         }
@@ -876,7 +876,7 @@ object ApplovinLib {
             }
             var isEarned = false
             showDialogFullScreen(activity)
-            AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+            AppOnResumeAdsManager.setAppResumeEnabled(false)
             it.setRevenueListener { ad ->
             }
             it.setListener(object : MaxRewardedAdListener {
@@ -900,7 +900,7 @@ object ApplovinLib {
                     onAdsCloseOrFailed.invoke(isEarned)
                     onAdsClose?.invoke()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                     if (isPreload) {
                         loadRewarded(activity, rewardedModel)
                     }
@@ -916,7 +916,7 @@ object ApplovinLib {
                     onAdsCloseOrFailed.invoke(false)
                     onAdsFail?.invoke()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
 
                 override fun onAdDisplayFailed(maxAd: MaxAd, maxError: MaxError) {
@@ -925,7 +925,7 @@ object ApplovinLib {
                     onAdsCloseOrFailed.invoke(false)
                     onAdsFail?.invoke()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
 
                 override fun onUserRewarded(maxAd: MaxAd, maxError: MaxReward) {
@@ -943,7 +943,7 @@ object ApplovinLib {
                 isShowRewardAds = false
                 dismissDialogFullScreen()
                 handle.removeCallbacksAndMessages(0)
-                AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                AppOnResumeAdsManager.setAppResumeEnabled(true)
             }
         }
     }

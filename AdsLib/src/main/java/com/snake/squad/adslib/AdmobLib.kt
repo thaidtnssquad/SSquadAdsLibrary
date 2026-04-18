@@ -66,7 +66,6 @@ import com.snake.squad.adslib.utils.BannerCollapsibleType
 import com.snake.squad.adslib.utils.BannerType
 import com.snake.squad.adslib.utils.GoogleENative
 import com.snake.squad.adslib.utils.NativeUtils
-import com.tenjin.android.TenjinSDK
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -155,14 +154,13 @@ object AdmobLib {
                     onAdsCloseOrFailed?.invoke(false)
                     onAdsFail?.invoke()
                     admobInterModel.interstitialAd.value = null
-                    AppOnResumeAdsManager.getInstance()
-                        .setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
 
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
                     onAdsLoaded?.invoke()
                     showDialogFullScreen(activity)
-                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+                    AppOnResumeAdsManager.setAppResumeEnabled(false)
                     handle.postDelayed({
                         if (activity.isFinishing || activity.isDestroyed) return@postDelayed
                         interstitialAd.fullScreenContentCallback =
@@ -173,8 +171,7 @@ object AdmobLib {
                                     onAdsClose?.invoke()
                                     admobInterModel.interstitialAd.value = null
                                     handle.removeCallbacksAndMessages(0)
-                                    AppOnResumeAdsManager.getInstance()
-                                        .setAppResumeEnabled(true)
+                                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                                 }
 
                                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
@@ -184,8 +181,7 @@ object AdmobLib {
                                     onAdsFail?.invoke()
                                     admobInterModel.interstitialAd.value = null
                                     handle.removeCallbacksAndMessages(0)
-                                    AppOnResumeAdsManager.getInstance()
-                                        .setAppResumeEnabled(true)
+                                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                                 }
 
                                 override fun onAdClicked() {
@@ -237,7 +233,7 @@ object AdmobLib {
                 dismissDialogFullScreen()
                 admobInterModel.interstitialAd.value = null
                 handle.removeCallbacksAndMessages(0)
-                AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                AppOnResumeAdsManager.setAppResumeEnabled(true)
             }
         }
     }
@@ -262,7 +258,7 @@ object AdmobLib {
         }
         showDialogFullScreen(activity)
         val handle = Handler(Looper.getMainLooper())
-        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+        AppOnResumeAdsManager.setAppResumeEnabled(false)
         val interAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         InterstitialAd.load(
@@ -275,8 +271,7 @@ object AdmobLib {
                     onAdsCloseOrFailed?.invoke(false)
                     onAdsFail?.invoke()
                     admobInterModel.interstitialAd.value = null
-                    AppOnResumeAdsManager.getInstance()
-                        .setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
 
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
@@ -289,8 +284,7 @@ object AdmobLib {
                                 onAdsClose?.invoke()
                                 admobInterModel.interstitialAd.value = null
                                 handle.removeCallbacksAndMessages(0)
-                                AppOnResumeAdsManager.getInstance()
-                                    .setAppResumeEnabled(true)
+                                AppOnResumeAdsManager.setAppResumeEnabled(true)
                             }
 
                             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
@@ -300,8 +294,7 @@ object AdmobLib {
                                 onAdsFail?.invoke()
                                 admobInterModel.interstitialAd.value = null
                                 handle.removeCallbacksAndMessages(0)
-                                AppOnResumeAdsManager.getInstance()
-                                    .setAppResumeEnabled(true)
+                                AppOnResumeAdsManager.setAppResumeEnabled(true)
                             }
 
                             override fun onAdClicked() {
@@ -352,7 +345,7 @@ object AdmobLib {
                 dismissDialogFullScreen()
                 admobInterModel.interstitialAd.value = null
                 handle.removeCallbacksAndMessages(0)
-                AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                AppOnResumeAdsManager.setAppResumeEnabled(true)
             }
         }
     }
@@ -472,7 +465,7 @@ object AdmobLib {
             return
         }
         val adsID = if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
-        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+        AppOnResumeAdsManager.setAppResumeEnabled(false)
         if (InterstitialAdPreloader.isAdAvailable(adsID)) {
             val handle = Handler(Looper.getMainLooper())
             val ad = InterstitialAdPreloader.pollAd(adsID)
@@ -486,7 +479,7 @@ object AdmobLib {
                         onAdsCloseOrFailed?.invoke(true)
                         onAdsClose?.invoke()
                         handle.removeCallbacksAndMessages(0)
-                        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                        AppOnResumeAdsManager.setAppResumeEnabled(true)
                     }
 
                     override fun onAdFailedToShowFullScreenContent(adError: AdError) {
@@ -495,7 +488,7 @@ object AdmobLib {
                         onAdsCloseOrFailed?.invoke(false)
                         onAdsFail?.invoke()
                         handle.removeCallbacksAndMessages(0)
-                        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                        AppOnResumeAdsManager.setAppResumeEnabled(true)
                     }
 
                     override fun onAdClicked() {
@@ -542,7 +535,7 @@ object AdmobLib {
             dismissDialogFullScreen()
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
-            AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+            AppOnResumeAdsManager.setAppResumeEnabled(true)
             if (!isPreload) {
                 InterstitialAdPreloader.destroy(adsID)
             }
@@ -570,13 +563,13 @@ object AdmobLib {
             onAdsFail?.invoke()
             return
         }
-        if (AppOnResumeAdsManager.getInstance().isShowingAd()) {
+        if (AppOnResumeAdsManager.isShowingAd()) {
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
             return
         }
 
-        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+        AppOnResumeAdsManager.setAppResumeEnabled(false)
         val observer = object : Observer<Boolean> {
             override fun onChanged(isLoading: Boolean) {
                 if (isLoading) {
@@ -593,7 +586,7 @@ object AdmobLib {
                                     onAdsClose?.invoke()
                                     admobInterModel.interstitialAd.value = null
                                     handle.removeCallbacksAndMessages(0)
-                                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                                     if (isPreload) {
                                         loadInterstitial(activity, admobInterModel, isShowOnTestDevice)
                                     }
@@ -606,7 +599,7 @@ object AdmobLib {
                                     onAdsFail?.invoke()
                                     admobInterModel.interstitialAd.value = null
                                     handle.removeCallbacksAndMessages(0)
-                                    AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                                     if (isPreload) {
                                         loadInterstitial(activity, admobInterModel, isShowOnTestDevice)
                                     }
@@ -634,7 +627,7 @@ object AdmobLib {
                         dismissDialogFullScreen()
                         onAdsCloseOrFailed?.invoke(false)
                         onAdsFail?.invoke()
-                        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                        AppOnResumeAdsManager.setAppResumeEnabled(true)
                         if (isPreload) {
                             loadInterstitial(activity, admobInterModel, isShowOnTestDevice)
                         }
@@ -1663,7 +1656,7 @@ object AdmobLib {
         var isEarnedReward = false
         showDialogFullScreen(activity)
         val handle = Handler(Looper.getMainLooper())
-        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+        AppOnResumeAdsManager.setAppResumeEnabled(false)
         val rewardedAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         RewardedAd.load(
@@ -1678,8 +1671,7 @@ object AdmobLib {
                     onAdsCloseOrFailed?.invoke(isEarnedReward)
                     onAdsFail?.invoke()
                     handle.removeCallbacksAndMessages(0)
-                    AppOnResumeAdsManager.getInstance()
-                        .setAppResumeEnabled(true)
+                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                 }
 
                 override fun onAdLoaded(ad: RewardedAd) {
@@ -1695,8 +1687,7 @@ object AdmobLib {
                             onAdsCloseOrFailed?.invoke(isEarnedReward)
                             onAdsClose?.invoke()
                             handle.removeCallbacksAndMessages(0)
-                            AppOnResumeAdsManager.getInstance()
-                                .setAppResumeEnabled(true)
+                            AppOnResumeAdsManager.setAppResumeEnabled(true)
                         }
 
                         override fun onAdFailedToShowFullScreenContent(adError: AdError) {
@@ -1705,8 +1696,7 @@ object AdmobLib {
                             onAdsCloseOrFailed?.invoke(isEarnedReward)
                             onAdsFail?.invoke()
                             handle.removeCallbacksAndMessages(0)
-                            AppOnResumeAdsManager.getInstance()
-                                .setAppResumeEnabled(true)
+                            AppOnResumeAdsManager.setAppResumeEnabled(true)
                         }
 
                         override fun onAdImpression() {
@@ -1755,7 +1745,7 @@ object AdmobLib {
                 dismissDialogFullScreen()
                 admobRewardedModel.rewardAd.value = null
                 handle.removeCallbacksAndMessages(0)
-                AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                AppOnResumeAdsManager.setAppResumeEnabled(true)
             }
         }
     }
@@ -1840,14 +1830,14 @@ object AdmobLib {
             onAdsFail?.invoke()
             return
         }
-        if (AppOnResumeAdsManager.getInstance().isShowingAd()) {
+        if (AppOnResumeAdsManager.isShowingAd()) {
             onAdsCloseOrFailed.invoke(false)
             onAdsFail?.invoke()
             return
         }
 
         var isEarnedReward = false
-        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(false)
+        AppOnResumeAdsManager.setAppResumeEnabled(false)
 
         val observer = object : Observer<Boolean> {
             override fun onChanged(isLoading: Boolean) {
@@ -1865,8 +1855,7 @@ object AdmobLib {
                                     onAdsCloseOrFailed.invoke(isEarnedReward)
                                     onAdsClose?.invoke()
                                     handle.removeCallbacksAndMessages(0)
-                                    AppOnResumeAdsManager.getInstance()
-                                        .setAppResumeEnabled(true)
+                                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                                     if (isPreload) {
                                         loadRewarded(activity, admobRewardedModel)
                                     }
@@ -1878,8 +1867,7 @@ object AdmobLib {
                                     onAdsCloseOrFailed.invoke(isEarnedReward)
                                     onAdsFail?.invoke()
                                     handle.removeCallbacksAndMessages(0)
-                                    AppOnResumeAdsManager.getInstance()
-                                        .setAppResumeEnabled(true)
+                                    AppOnResumeAdsManager.setAppResumeEnabled(true)
                                 }
 
                                 override fun onAdShowedFullScreenContent() {
@@ -1906,7 +1894,7 @@ object AdmobLib {
                         dismissDialogFullScreen()
                         onAdsCloseOrFailed.invoke(false)
                         onAdsFail?.invoke()
-                        AppOnResumeAdsManager.getInstance().setAppResumeEnabled(true)
+                        AppOnResumeAdsManager.setAppResumeEnabled(true)
                         if (isPreload) {
                             loadRewarded(activity, admobRewardedModel)
                         }

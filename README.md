@@ -49,7 +49,7 @@ In build.gradle :app
           if(it) {
                 //AppOnResumeInitialized
                 AppOnResumeAdsManager.initialize(application, "ADS_ID")
-                AppOnResumeAdsManager.getInstance().disableForActivity(SplashActivity::class.java)
+                AppOnResumeAdsManager.disableForActivity(SplashActivity::class.java)
                 //Next Step Logic Ads
           } else {
             //NextActivity

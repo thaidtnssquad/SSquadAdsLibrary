@@ -81,7 +81,7 @@ class RatingDialog : DialogFragment() {
     }
 
     private val registerRated = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        AppOnResumeAdsManager.getInstance().disableForActivity(requireActivity().javaClass)
+        AppOnResumeAdsManager.disableForActivity(requireActivity().javaClass)
     }
 
     companion object {
@@ -92,7 +92,7 @@ class RatingDialog : DialogFragment() {
         fun showRateAppDialog(activity: Activity, fragmentManager: FragmentManager, email: String) {
             EMAIL_FEEDBACK = email
             RatingDialog().show(fragmentManager, "RatingDialog")
-            AppOnResumeAdsManager.getInstance().disableForActivity(activity.javaClass)
+            AppOnResumeAdsManager.disableForActivity(activity.javaClass)
         }
 
         fun showRateAppDialogAuto(activity: Activity, fragmentManager: FragmentManager, time: Int, email: String) {

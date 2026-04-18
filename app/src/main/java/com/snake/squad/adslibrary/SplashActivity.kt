@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.snake.squad.adslib.AdmobLib
-import com.snake.squad.adslib.ApplovinLib
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
 import com.snake.squad.adslib.aoa.AppOpenAdsManager
 import com.snake.squad.adslib.utils.AdsConstants
@@ -26,8 +25,13 @@ class SplashActivity : AppCompatActivity() {
     private fun initAds() {
 
         AdmobLib.initialize(this, isDebug = true, isShowAds = true) {
-            AppOnResumeAdsManager.initialize(application, AdsConstants.APP_OPEN_TEST)
-            AppOnResumeAdsManager.getInstance().disableForActivity(SplashActivity::class.java)
+            AppOnResumeAdsManager.initialize(
+                application,
+                AdsConstants.admobInterModelTest.adsID,
+                AppOnResumeAdsManager.INTER
+            )
+            AppOnResumeAdsManager.disableForActivity(SplashActivity::class.java)
+
             loadAndShowInter()
             AdmobLib.setEnabledCheckTestDevice(false)
         }

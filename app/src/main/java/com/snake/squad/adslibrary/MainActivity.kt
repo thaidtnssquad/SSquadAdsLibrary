@@ -191,7 +191,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        AppOnResumeAdsManager.getInstance().enableForActivity(MainActivity::class.java)
+        AppOnResumeAdsManager.enableForActivity(MainActivity::class.java)
     }
 
     override fun onStop() {
