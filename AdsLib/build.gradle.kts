@@ -53,6 +53,7 @@ publishing {
     }
 }
 
+//noinspection UseTomlInstead
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -97,6 +98,9 @@ dependencies {
     //rating
     implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
     implementation ("com.google.code.gson:gson:2.13.2")
+
+    // Billing
+    implementation("com.android.billingclient:billing-ktx:8.3.0")
 
     //Solar Engine
     implementation("com.reyun.solar.engine.oversea:solar-engine-core:1.3.0.5")
