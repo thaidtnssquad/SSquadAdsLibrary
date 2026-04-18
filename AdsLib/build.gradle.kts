@@ -47,7 +47,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.6.2"
+                version = "1.6.4"
             }
         }
     }
@@ -65,7 +65,7 @@ dependencies {
 
     //Ads
     implementation("com.applovin:applovin-sdk:13.6.0")
-    implementation("com.google.android.gms:play-services-ads:25.1.0")
+    implementation("com.google.android.gms:play-services-ads:25.2.0")
 
     implementation("androidx.lifecycle:lifecycle-process:2.10.0")
     implementation("androidx.lifecycle:lifecycle-runtime:2.10.0")
@@ -73,7 +73,7 @@ dependencies {
     annotationProcessor("androidx.lifecycle:lifecycle-compiler:2.10.0")
     annotationProcessor("androidx.lifecycle:lifecycle-common-java8:2.10.0")
 
-    implementation("com.airbnb.android:lottie:6.6.10")
+    implementation("com.airbnb.android:lottie:6.7.1")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
 
     implementation("com.android.installreferrer:installreferrer:2.2")
@@ -83,15 +83,15 @@ dependencies {
     implementation("com.google.android.ump:user-messaging-platform:4.0.0")
 
     //facebook sdk
-    implementation("com.facebook.android:facebook-android-sdk:18.1.3")
+    implementation("com.facebook.android:facebook-android-sdk:18.2.3")
 
     //mediation admob
-    implementation("com.google.ads.mediation:pangle:7.9.1.1.0")
-    implementation("com.google.ads.mediation:applovin:13.6.0.0")
-    implementation("com.google.ads.mediation:facebook:6.21.0.1")
-    implementation("com.google.ads.mediation:vungle:7.7.1.0")
-    implementation("com.google.ads.mediation:mintegral:17.0.91.0")
-    implementation("com.google.ads.mediation:ironsource:9.3.0.1")
+    implementation("com.google.ads.mediation:pangle:7.9.1.3.0")
+    implementation("com.google.ads.mediation:applovin:13.6.2.0")
+    implementation("com.google.ads.mediation:facebook:6.21.0.2")
+    implementation("com.google.ads.mediation:vungle:7.7.2.0")
+    implementation("com.google.ads.mediation:mintegral:17.1.41.0")
+    implementation("com.google.ads.mediation:ironsource:9.4.0.0")
     implementation("com.unity3d.ads:unity-ads:4.17.0")
     implementation("com.google.ads.mediation:unity:4.17.0.0")
 
