@@ -135,13 +135,31 @@
         android:text="Show Rating"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnShowRewarded" />
+        app:layout_constraintTop_toBottomOf="@+id/btnShowRewarded"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnPictureInPicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Picture In Picture"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnNativeWithReload" />
+
+    <Button
+        android:id="@+id/btnSqueezeBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SqueezeBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/btnNativeWithReload" />
 
     <Button
         android:id="@+id/btnNativeWithReload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="Native With Reload"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

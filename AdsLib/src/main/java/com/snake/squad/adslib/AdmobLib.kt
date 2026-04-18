@@ -23,6 +23,10 @@ import androidx.lifecycle.lifecycleScope
 import com.applovin.sdk.AppLovinSdkUtils.runOnUiThread
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.ads.mediation.admob.AdMobAdapter
+import com.google.ads.noninterruptive.pictureinpicturead.PictureInPictureAd
+import com.google.ads.noninterruptive.pictureinpicturead.PictureInPictureAdEventCallback
+import com.google.ads.noninterruptive.pictureinpicturead.PictureInPictureAdLoadCallback
+import com.google.ads.noninterruptive.squeezebackad.SqueezeBackAd
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
@@ -54,7 +58,9 @@ import com.snake.squad.adslib.facebook.FacebookUtils
 import com.snake.squad.adslib.models.AdmobBannerCollapsibleModel
 import com.snake.squad.adslib.models.AdmobInterModel
 import com.snake.squad.adslib.models.AdmobNativeModel
+import com.snake.squad.adslib.models.AdmobPictureInPictureModel
 import com.snake.squad.adslib.models.AdmobRewardedModel
+import com.snake.squad.adslib.models.AdmobSqueezeBackModel
 import com.snake.squad.adslib.solar.SolarUtils
 import com.snake.squad.adslib.tenjin.TenjinUtils
 import com.snake.squad.adslib.tiktok.TiktokUtils
@@ -64,7 +70,9 @@ import com.snake.squad.adslib.utils.AdsHelper
 import com.snake.squad.adslib.utils.AdsHelper.isNetworkConnected
 import com.snake.squad.adslib.utils.BannerCollapsibleType
 import com.snake.squad.adslib.utils.BannerType
+import com.snake.squad.adslib.utils.EventCallback
 import com.snake.squad.adslib.utils.GoogleENative
+import com.snake.squad.adslib.utils.LoadCallback
 import com.snake.squad.adslib.utils.NativeUtils
 import com.tenjin.android.TenjinSDK
 import kotlinx.coroutines.CoroutineScope
@@ -833,6 +841,160 @@ object AdmobLib {
         admobBannerCollapsibleModel.adView?.loadAd(adRequestCollapsible)
     }
     // endregion
+
+    fun loadAndShowPictureInPictureAds(
+        activity: Activity,
+        admobPictureInPictureModel: AdmobPictureInPictureModel,
+        adPosition: PictureInPictureAd.AdPosition = PictureInPictureAd.AdPosition.BOTTOM_RIGHT,
+        isShowOnTestDevice: Boolean = false,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: ((String) -> Unit?)? = null,
+        onAdsOpened: (() -> Unit?)? = null,
+        onAdsImpression: (() -> Unit)? = null,
+        onAdsClicked: (() -> Unit)? = null,
+        onAdsClosed: (() -> Unit)? = null,
+        onAdsHidden: (() -> Unit)? = null,
+        onAdsDestroy: (() -> Unit)? = null,
+        onAdPaid: ((AdValue) -> Unit)? = null
+    ) {
+        if (!isShowAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
+            onAdsLoadFail?.invoke("Fail from check!")
+            return
+        }
+
+        if (admobPictureInPictureModel.pipAd.value?.isShown == true) {
+            admobPictureInPictureModel.pipAd.value?.destroy()
+        }
+
+        admobPictureInPictureModel.pipAd.value = PictureInPictureAd(activity)
+        val pipAdRequest = adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+        val adsID = if (isDebug) AdsConstants.admobPictureInPictureModel.adsID else admobPictureInPictureModel.adsID
+        admobPictureInPictureModel.pipAd.value?.load(
+            adsID,
+            pipAdRequest,
+            object : PictureInPictureAdLoadCallback {
+                override fun onAdLoaded() {
+                    onAdsLoaded?.invoke()
+                }
+
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    onAdsLoadFail?.invoke(loadAdError.message)
+                }
+            },
+            object : PictureInPictureAdEventCallback {
+                override fun onAdHidden() {
+                    onAdsHidden?.invoke()
+                }
+
+                override fun onAdDestroyed() {
+                    onAdsDestroy?.invoke()
+                }
+
+                override fun onAdClicked() {
+                    onAdsClicked?.invoke()
+                }
+
+                override fun onAdOpened() {
+                    onAdsOpened?.invoke()
+                }
+
+                override fun onAdClosed() {
+                    onAdsClosed?.invoke()
+                }
+
+                override fun onAdImpression() {
+                    onAdsImpression?.invoke()
+                }
+
+                override fun onAdPaid(value: AdValue) {
+                    onAdPaid?.invoke(value)
+                }
+            }
+        )
+        admobPictureInPictureModel.pipAd.value?.show(activity, adPosition)
+    }
+
+    fun loadAndShowSqueezeBackAds(
+        activity: Activity,
+        admobSqueezeBackModel: AdmobSqueezeBackModel,
+        isShowOnTestDevice: Boolean = false,
+        onAdsLoaded: (() -> Unit?)? = null,
+        onAdsLoadFail: ((String) -> Unit?)? = null,
+        onAdsShown: (() -> Unit)? = null,
+        onAdsImpression: (() -> Unit)? = null,
+        onAdsClicked: (() -> Unit)? = null,
+        onAdsHidden: (() -> Unit)? = null,
+        onAdsDestroy: (() -> Unit)? = null,
+        onAdPaid: ((AdValue?) -> Unit)? = null
+    ) {
+        if (!isShowAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
+            onAdsLoadFail?.invoke("Fail from check!")
+            return
+        }
+
+        val loadCallback = object : LoadCallback {
+            override fun onAdLoaded(squeezeBackAd: SqueezeBackAd) {
+                super.onAdLoaded(squeezeBackAd)
+                onAdsLoaded?.invoke()
+                admobSqueezeBackModel.squeezeBackAd.value = squeezeBackAd
+                admobSqueezeBackModel.squeezeBackAd.value?.show()
+            }
+
+            override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                super.onAdFailedToLoad(loadAdError)
+                onAdsLoadFail?.invoke(loadAdError.message)
+            }
+        }
+        val eventCallback = object : EventCallback {
+
+            override fun onAdShown() {
+                super.onAdShown()
+                onAdsShown?.invoke()
+            }
+
+            override fun onAdImpression() {
+                super.onAdImpression()
+                onAdsImpression?.invoke()
+            }
+
+            override fun onAdClicked() {
+                super.onAdClicked()
+                onAdsClicked?.invoke()
+            }
+
+            override fun onAdHidden() {
+                super.onAdHidden()
+                onAdsHidden?.invoke()
+            }
+
+            override fun onAdDestroyed() {
+                super.onAdDestroyed()
+                onAdsDestroy?.invoke()
+            }
+
+            override fun onAdPaid(adValue: AdValue?) {
+                super.onAdPaid(adValue)
+                onAdPaid?.invoke(adValue)
+            }
+        }
+
+        if (admobSqueezeBackModel.squeezeBackAd.value != null) {
+            admobSqueezeBackModel.squeezeBackAd.value?.destroy()
+            admobSqueezeBackModel.squeezeBackAd.value = null
+        }
+
+        val squeezeBackAdRequest = adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+        val adsID = if (isDebug) AdsConstants.admobSqueezeBackModel.adsID else admobSqueezeBackModel.adsID
+
+        SqueezeBackAd.load(
+            activity,
+            adsID,
+            squeezeBackAdRequest,
+            NativeAdOptions.Builder().build(),
+            loadCallback,
+            eventCallback
+        )
+    }
 
     // region Native
     fun loadAndShowNative(
