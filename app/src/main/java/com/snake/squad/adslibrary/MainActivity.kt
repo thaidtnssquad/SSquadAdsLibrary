@@ -10,8 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.snake.squad.adslib.AdmobLib
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
 import com.snake.squad.adslib.models.AdmobNativeModel
-import com.snake.squad.adslib.models.AdmobPictureInPictureModel
-import com.snake.squad.adslib.models.AdmobSqueezeBackModel
 import com.snake.squad.adslib.rates.RatingDialog
 import com.snake.squad.adslib.utils.AdsConstants
 import com.snake.squad.adslib.utils.GoogleENative
@@ -147,16 +145,6 @@ class MainActivity : AppCompatActivity() {
                 supportFragmentManager,
                 "john.tyler@examplepetstore.com"
             )
-        }
-
-        val admobPictureInPictureModel = AdmobPictureInPictureModel(AdsConstants.ADMOB_BANNER_TEST)
-        binding.btnPictureInPicture.setOnClickListener {
-            AdmobLib.loadAndShowPictureInPictureAds(this, admobPictureInPictureModel)
-        }
-
-        val admobSqueezeBackModel = AdmobSqueezeBackModel(AdsConstants.admobSqueezeBackModel.adsID)
-        binding.btnSqueezeBack.setOnClickListener {
-            AdmobLib.loadAndShowSqueezeBackAds(this, admobSqueezeBackModel)
         }
 
         binding.btnNativeWithReload.setOnClickListener {
