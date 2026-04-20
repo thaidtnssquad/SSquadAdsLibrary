@@ -52,8 +52,6 @@ internal abstract class BaseOnResumeManager(application: Application): ActivityL
     }
 
     init {
-        validAndLoadAd()
-
         application.registerActivityLifecycleCallbacks(this)
         ProcessLifecycleOwner.get()
             .lifecycle
@@ -64,6 +62,7 @@ internal abstract class BaseOnResumeManager(application: Application): ActivityL
         ProcessLifecycleOwner.get()
             .lifecycle
             .removeObserver(lifecycleEventObserver)
+        (context as Application).unregisterActivityLifecycleCallbacks(this)
     }
 
     fun disableForActivity(activityClass: Class<*>) {
@@ -84,7 +83,7 @@ internal abstract class BaseOnResumeManager(application: Application): ActivityL
         return isShowingAd
     }
 
-    private fun validAndLoadAd() {
+    protected fun validAndLoadAd() {
         if (isLoadingAd || isAdAvailable() || !AdmobLib.getShowAds() || AdmobLib.getCheckTestDevice()) {
             return
         }
@@ -163,6 +162,9 @@ internal abstract class BaseOnResumeManager(application: Application): ActivityL
     override fun onActivityPaused(activity: Activity) {}
     override fun onActivityStopped(activity: Activity) {}
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-    override fun onActivityDestroyed(activity: Activity) {}
-
+    override fun onActivityDestroyed(activity: Activity) {
+        if (currentActivity == activity) {
+            currentActivity = null
+        }
+    }
 }

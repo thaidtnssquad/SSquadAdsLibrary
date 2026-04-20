@@ -26,8 +26,12 @@ internal class OnResumeManager(
     private var appOpenAd: AppOpenAd? = null
     private var loadTime: Long = 0
 
+    init {
+        validAndLoadAd()
+    }
+
     override fun loadAd() {
-        val id = if (AdmobLib.getDebugAds()) AdsConstants.admobInterModelTest.adsID else adsId
+        val id = if (AdmobLib.getDebugAds()) AdsConstants.APP_OPEN_TEST else adsId
 
         isLoadingAd = true
         AppOpenAd.load(

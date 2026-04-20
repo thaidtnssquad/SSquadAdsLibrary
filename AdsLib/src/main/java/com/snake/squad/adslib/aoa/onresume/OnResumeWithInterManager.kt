@@ -25,6 +25,10 @@ internal class OnResumeWithInterManager(
 
     private var interstitialAd: InterstitialAd? = null
 
+    init {
+        validAndLoadAd()
+    }
+
     override fun loadAd() {
         val id = if (AdmobLib.getDebugAds()) AdsConstants.admobInterModelTest.adsID else adsId
 

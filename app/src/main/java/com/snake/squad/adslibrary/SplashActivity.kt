@@ -30,6 +30,11 @@ class SplashActivity : AppCompatActivity() {
                 AdsConstants.admobInterModelTest.adsID,
                 AppOnResumeAdsManager.INTER
             )
+//            AppOnResumeAdsManager.initialize(
+//                application,
+//                AdsConstants.APP_OPEN_TEST,
+//                AppOnResumeAdsManager.AOA
+//            )
             AppOnResumeAdsManager.disableForActivity(SplashActivity::class.java)
 
             loadAndShowInter()
