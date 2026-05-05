@@ -24,12 +24,7 @@ internal abstract class BaseOnResumeManager(application: Application): ActivityL
     protected abstract val logTag: String
 
     protected val context: Context = application
-    private var _adRequest: AdRequest? = null
-    protected val adRequest = _adRequest ?: synchronized(this) {
-        AdRequest.Builder()
-            .setHttpTimeoutMillis(5000)
-            .build()
-    }
+
     protected var isLoadingAd = false
     protected var currentActivity: Activity? = null
         private set

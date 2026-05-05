@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.util.Log
 import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -18,6 +19,8 @@ import com.snake.squad.adslib.utils.AdsConstants
 
 internal class OnResumeWithInterManager(
     private val adsId: String,
+    private val adRequest: AdRequest? = null,
+    private val timeout: Long = 10000,
     application: Application
 ) : BaseOnResumeManager(application) {
 
@@ -31,12 +34,13 @@ internal class OnResumeWithInterManager(
 
     override fun loadAd() {
         val id = if (AdmobLib.getDebugAds()) AdsConstants.admobInterModelTest.adsID else adsId
-
+        val interAdRequest =
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         isLoadingAd = true
         InterstitialAd.load(
             context,
             id,
-            adRequest,
+            interAdRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
                     Log.d(logTag, "Ad loaded successfully")

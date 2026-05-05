@@ -1970,18 +1970,29 @@ object AdmobLib {
     private fun loadNativeFullScreen(
         mActivity: AppCompatActivity,
         model: AdmobNativeModel,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         isShowNative: Boolean = true,
     ) {
         if (!isShowNative) return
 
         model.releaseAndSetNativeAd(null)
-        loadNative(mActivity, model, GoogleENative.UNIFIED_FULL_SCREEN, MediaAspectRatio.ANY)
+        loadNative(
+            mActivity,
+            model,
+            GoogleENative.UNIFIED_FULL_SCREEN,
+            MediaAspectRatio.ANY,
+            adRequest,
+            timeout
+        )
     }
 
     fun loadAndShowInterWithNativeAfter(
         mActivity: AppCompatActivity,
         interModel: AdmobInterModel,
         nativeModel: AdmobNativeModel,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         vShowInterAds: View?,
         isShowNativeAfter: Boolean = true,
         nativeLayout: Int = R.layout.admob_ad_template_full_screen,
@@ -1997,12 +2008,13 @@ object AdmobLib {
         }
 
         vShowInterAds?.visibility = View.VISIBLE
-        loadNativeFullScreen(mActivity, nativeModel, isShowNativeAfter)
+        loadNativeFullScreen(mActivity, nativeModel, adRequest, timeout,isShowNativeAfter)
         var nativeDialog: NativeAfterInterDialog? = null
         var isNativeFail = false
         loadAndShowInterstitial(
             mActivity,
             interModel,
+            adRequest,
             isShowOnTestDevice = isShowOnTestDevice,
             onAdsShowed = {
 //            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
@@ -2057,6 +2069,8 @@ object AdmobLib {
         mActivity: AppCompatActivity,
         interModel: AdmobInterModel,
         nativeModel: AdmobNativeModel,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         isShowNativeAfter: Boolean = true,
         nativeLayout: Int = R.layout.admob_ad_template_full_screen,
         counter: Int = NativeAfterInterDialog.DEFAULT_COUNTER,
@@ -2069,7 +2083,7 @@ object AdmobLib {
         }
 
         vShowInterAds?.visibility = View.VISIBLE
-        loadNativeFullScreen(mActivity, nativeModel, isShowNativeAfter)
+        loadNativeFullScreen(mActivity, nativeModel, adRequest, timeout, isShowNativeAfter)
         var nativeDialog: NativeAfterInterDialog? = null
         var isNativeFail = false
         loadAndShowInterstitialSplash(
@@ -2127,6 +2141,8 @@ object AdmobLib {
         mActivity: AppCompatActivity,
         interModel: AdmobInterModel,
         nativeModel: AdmobNativeModel,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         vShowInterAds: View?,
         isShowNativeAfter: Boolean = true,
         nativeLayout: Int = R.layout.admob_ad_template_full_screen,
@@ -2142,7 +2158,7 @@ object AdmobLib {
         }
 
         vShowInterAds?.visibility = View.VISIBLE
-        loadNativeFullScreen(mActivity, nativeModel, isShowNativeAfter)
+        loadNativeFullScreen(mActivity, nativeModel, adRequest, timeout, isShowNativeAfter)
         var nativeDialog: NativeAfterInterDialog? = null
         var isNativeFail = false
         showInterstitialNewAPI(

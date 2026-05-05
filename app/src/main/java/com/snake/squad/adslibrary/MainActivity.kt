@@ -65,6 +65,8 @@ class MainActivity : AppCompatActivity() {
                 this,
                 AdsConstants.admobInterModelTest,
                 AdsConstants.admobNativeModelTest,
+                homeAdRequest,
+                10000,
                 null,
                 navAction = {
                     startActivity(Intent(this@MainActivity, SecondActivity::class.java))
@@ -76,6 +78,8 @@ class MainActivity : AppCompatActivity() {
                 this,
                 AdsConstants.admobInterModelTest,
                 AdsConstants.admobNativeModelTest,
+                homeAdRequest,
+                10000,
                 null,
             ) {
                 startActivity(Intent(this@MainActivity, SecondActivity::class.java))

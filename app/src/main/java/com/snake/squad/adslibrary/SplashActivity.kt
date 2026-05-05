@@ -28,7 +28,7 @@ class SplashActivity : AppCompatActivity() {
             AppOnResumeAdsManager.initialize(
                 application,
                 AdsConstants.admobInterModelTest.adsID,
-                AppOnResumeAdsManager.INTER
+                type = AppOnResumeAdsManager.INTER
             )
 //            AppOnResumeAdsManager.initialize(
 //                application,

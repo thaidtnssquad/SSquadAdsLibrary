@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.util.Log
 import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.appopen.AppOpenAd
@@ -18,6 +19,8 @@ import com.snake.squad.adslib.utils.AdsConstants
 
 internal class OnResumeManager(
     private val adsId: String,
+    private val adRequest: AdRequest? = null,
+    private val timeout: Long = 10000,
     application: Application
 ) : BaseOnResumeManager(application) {
 
@@ -32,12 +35,13 @@ internal class OnResumeManager(
 
     override fun loadAd() {
         val id = if (AdmobLib.getDebugAds()) AdsConstants.APP_OPEN_TEST else adsId
-
+        val appOpenAdRequest =
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         isLoadingAd = true
         AppOpenAd.load(
             context,
             id,
-            adRequest,
+            appOpenAdRequest,
             object : AppOpenAdLoadCallback() {
                 override fun onAdLoaded(ad: AppOpenAd) {
                     Log.d(logTag, "Ad loaded successfully")

@@ -3,6 +3,7 @@ package com.snake.squad.adslib.aoa
 import android.annotation.SuppressLint
 import android.app.Application
 import androidx.annotation.IntDef
+import com.google.android.gms.ads.AdRequest
 import com.snake.squad.adslib.aoa.onresume.BaseOnResumeManager
 import com.snake.squad.adslib.aoa.onresume.OnResumeManager
 import com.snake.squad.adslib.aoa.onresume.OnResumeWithInterManager
@@ -22,6 +23,8 @@ object AppOnResumeAdsManager {
     fun initialize(
         application: Application,
         adsId: String,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         @Type type: Int
     ) {
         val old = instance
@@ -29,8 +32,8 @@ object AppOnResumeAdsManager {
         instance = null
 
         instance = when(type) {
-            AOA -> OnResumeManager(adsId, application)
-            INTER -> OnResumeWithInterManager(adsId, application)
+            AOA -> OnResumeManager(adsId, adRequest, timeout, application)
+            INTER -> OnResumeWithInterManager(adsId, adRequest, timeout, application)
             else -> null
         }
     }
