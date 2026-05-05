@@ -20,7 +20,6 @@ import androidx.core.view.children
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.applovin.sdk.AppLovinSdkUtils.runOnUiThread
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdError
@@ -66,7 +65,6 @@ import com.snake.squad.adslib.utils.BannerCollapsibleType
 import com.snake.squad.adslib.utils.BannerType
 import com.snake.squad.adslib.utils.GoogleENative
 import com.snake.squad.adslib.utils.NativeUtils
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -78,56 +76,57 @@ object AdmobLib {
     private var isShowAds = true
     private var isShowInterAds = false
     private var isShowRewardAds = false
-    private var adRequest: AdRequest? = null
     private var dialogFullScreen: Dialog? = null
     private var isTestDevice = false
     private var isEnabledCheckTestDevice = false
 
     fun initialize(
         context: Context,
-        timeout: Int = 10000,
         isDebug: Boolean = true,
         isShowAds: Boolean = true,
         onInitializedAds: (Boolean) -> Unit
     ) {
-        CoroutineScope(Dispatchers.Main).launch {
-            try {
-                this@AdmobLib.isDebug = isDebug
-                this@AdmobLib.isShowAds = isShowAds
-                MobileAds.initialize(context) {
-                    Log.d("TAG=====", "initAds")
-                    val requestConfiguration = RequestConfiguration.Builder()
-                        .setTestDeviceIds(listOf())
-                        .build()
-                    MobileAds.setRequestConfiguration(requestConfiguration)
-                    initAdRequest(timeout)
-                    runOnUiThread {
-                        this@AdmobLib.isInitAds = true
-                        onInitializedAds.invoke(true)
-                    }
-                }
-            } catch (e: Exception) {
-                e.message
-                this@AdmobLib.isInitAds = false
-                this@AdmobLib.isShowAds = false
-                runOnUiThread {
-                    onInitializedAds.invoke(false)
-                }
+        this@AdmobLib.isDebug = isDebug
+        this@AdmobLib.isShowAds = isShowAds
+        if (!isShowAds) {
+            onInitializedAds.invoke(false)
+            return
+        }
+        try {
+            MobileAds.initialize(context) {
+                Log.d("TAG=====", "initAds")
+                val requestConfiguration = RequestConfiguration.Builder()
+                    .setTestDeviceIds(if (isDebug) listOf("YOUR_DEVICE_HASH") else emptyList())
+                    .build()
+                MobileAds.setRequestConfiguration(requestConfiguration)
+                this@AdmobLib.isInitAds = true
+                onInitializedAds.invoke(true)
             }
+        } catch (e: Exception) {
+            Log.e("TAG=====", "${e.message}")
+            this@AdmobLib.isInitAds = false
+            this@AdmobLib.isShowAds = false
+            onInitializedAds.invoke(false)
         }
     }
 
-    private fun initAdRequest(timeOut: Int) {
-        adRequest = AdRequest.Builder()
-            .setHttpTimeoutMillis(timeOut)
-            .build()
+    fun getAdRequestWithKeywords(keywords: List<String>, timeout: Int = 10000): AdRequest {
+        val builder = AdRequest.Builder()
+            .setHttpTimeoutMillis(timeout)
+
+        keywords.forEach { keyword ->
+            builder.addKeyword(keyword)
+        }
+
+        return builder.build()
     }
 
     // region Inter
     fun loadAndShowInterstitialSplash(
         activity: AppCompatActivity,
         admobInterModel: AdmobInterModel,
-        timeout: Long = 15000,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
         onAdsLoaded: (() -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null,
@@ -241,7 +240,8 @@ object AdmobLib {
     fun loadAndShowInterstitial(
         activity: AppCompatActivity,
         admobInterModel: AdmobInterModel,
-        timeout: Long = 15000,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         isShowOnTestDevice: Boolean = false,
         onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
         onAdsLoaded: (() -> Unit)? = null,
@@ -353,6 +353,7 @@ object AdmobLib {
     fun loadInterstitialNewAPI(
         activity: Activity,
         admobInterModel: AdmobInterModel,
+        adRequest: AdRequest? = null,
         timeout: Long = 10000,
         isShowOnTestDevice: Boolean = false,
         onAdsLoaded: (() -> Unit)? = null,
@@ -387,6 +388,8 @@ object AdmobLib {
     fun loadInterstitial(
         activity: Activity,
         admobInterModel: AdmobInterModel,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         isShowOnTestDevice: Boolean = false,
         onAdsLoaded: (() -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null
@@ -403,7 +406,7 @@ object AdmobLib {
         }
         admobInterModel.isLoading.postValue(true)
         val interAdRequest =
-            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         InterstitialAd.load(
             activity,
             if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID,
@@ -545,6 +548,8 @@ object AdmobLib {
     fun showInterstitial(
         activity: AppCompatActivity,
         admobInterModel: AdmobInterModel,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         isPreload: Boolean = true,
         isShowOnTestDevice: Boolean = false,
         onAdsCloseOrFailed: ((Boolean) -> Unit)? = null,
@@ -571,8 +576,8 @@ object AdmobLib {
 
         AppOnResumeAdsManager.setAppResumeEnabled(false)
         val observer = object : Observer<Boolean> {
-            override fun onChanged(isLoading: Boolean) {
-                if (isLoading) {
+            override fun onChanged(value: Boolean) {
+                if (value) {
                     showDialogFullScreen(activity)
                 } else {
                     admobInterModel.isLoading.removeObserver(this)
@@ -588,7 +593,13 @@ object AdmobLib {
                                     handle.removeCallbacksAndMessages(0)
                                     AppOnResumeAdsManager.setAppResumeEnabled(true)
                                     if (isPreload) {
-                                        loadInterstitial(activity, admobInterModel, isShowOnTestDevice)
+                                        loadInterstitial(
+                                            activity,
+                                            admobInterModel,
+                                            adRequest,
+                                            timeout,
+                                            isShowOnTestDevice
+                                        )
                                     }
                                 }
 
@@ -601,7 +612,13 @@ object AdmobLib {
                                     handle.removeCallbacksAndMessages(0)
                                     AppOnResumeAdsManager.setAppResumeEnabled(true)
                                     if (isPreload) {
-                                        loadInterstitial(activity, admobInterModel, isShowOnTestDevice)
+                                        loadInterstitial(
+                                            activity,
+                                            admobInterModel,
+                                            adRequest,
+                                            timeout,
+                                            isShowOnTestDevice
+                                        )
                                     }
                                 }
 
@@ -629,7 +646,13 @@ object AdmobLib {
                         onAdsFail?.invoke()
                         AppOnResumeAdsManager.setAppResumeEnabled(true)
                         if (isPreload) {
-                            loadInterstitial(activity, admobInterModel, isShowOnTestDevice)
+                            loadInterstitial(
+                                activity,
+                                admobInterModel,
+                                adRequest,
+                                timeout,
+                                isShowOnTestDevice
+                            )
                         }
                     }
                 }
@@ -647,6 +670,8 @@ object AdmobLib {
     fun loadAndShowBanner(
         activity: Activity,
         bannerID: String,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         viewGroup: ViewGroup,
         viewLine: View,
         bannerType: BannerType? = null,
@@ -712,7 +737,7 @@ object AdmobLib {
             override fun onAdClicked() {}
             override fun onAdClosed() {}
         }
-        (adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()).let {
+        (adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()).let {
             adView.loadAd(it)
         }
     }
@@ -831,6 +856,8 @@ object AdmobLib {
     fun loadAndShowNative(
         activity: Activity,
         admobNativeModel: AdmobNativeModel,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         viewGroup: ViewGroup,
         size: GoogleENative = GoogleENative.UNIFIED_MEDIUM,
         layout: Int? = null,
@@ -869,7 +896,7 @@ object AdmobLib {
         shimmerFrameLayout.startShimmer()
 
         val nativeAdRequest =
-            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         val adLoader = AdLoader.Builder(
             activity,
             if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
@@ -954,6 +981,8 @@ object AdmobLib {
         layout: Int? = null,
         shimmerLayout: Int? = null,
         mediaViewRatio: Int = MediaAspectRatio.SQUARE,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         isShowOnTestDevice: Boolean = false,
         isCheckTestAds: Boolean = false,
         onAdsLoaded: (() -> Unit?)? = null,
@@ -987,7 +1016,7 @@ object AdmobLib {
         shimmerFrameLayout.startShimmer()
 
         val nativeAdRequest =
-            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         val adLoader = AdLoader.Builder(
             context,
             if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
@@ -1073,6 +1102,8 @@ object AdmobLib {
         layoutExpanded: Int? = null,
         layoutCollapsed: Int? = null,
         shimmerLayout: Int? = null,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         isShowOnTestDevice: Boolean = false,
         isCheckTestAds: Boolean = false,
         onAdsLoaded: (() -> Unit?)? = null,
@@ -1094,7 +1125,7 @@ object AdmobLib {
         )
 
         val nativeAdRequest =
-            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
 
         (viewGroupExpanded.children.firstOrNull() as? NativeAdView)?.destroy()
         (viewGroupCollapsed.children.firstOrNull() as? NativeAdView)?.destroy()
@@ -1116,7 +1147,8 @@ object AdmobLib {
         adLoaderCollapsed.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderCollapsed.forNativeAd { nativeAd ->
             if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
-            admobNativeModelCollapsed?.releaseAndSetNativeAd(nativeAd) ?: admobNativeModelExpanded.releaseAndSetNativeAd(nativeAd)
+            admobNativeModelCollapsed?.releaseAndSetNativeAd(nativeAd)
+                ?: admobNativeModelExpanded.releaseAndSetNativeAd(nativeAd)
 
             val layoutNativeCollapsed =
                 layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
@@ -1239,6 +1271,8 @@ object AdmobLib {
         layoutExpanded: Int? = null,
         layoutCollapsed: Int? = null,
         shimmerLayout: Int? = null,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         isShowOnTestDevice: Boolean = false,
         isCheckTestAds: Boolean = false,
         isShowNativeLikeBanner: Boolean? = true,
@@ -1261,7 +1295,7 @@ object AdmobLib {
         )
 
         val nativeAdRequest =
-            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
 
         if ((viewGroupExpanded.children.firstOrNull() as? NativeAdView)?.destroy() == null) {
             (viewGroupCollapsed.children.firstOrNull() as? NativeAdView)?.destroy()
@@ -1362,6 +1396,8 @@ object AdmobLib {
         layoutExpanded: Int? = null,
         layoutCollapsed: Int? = null,
         shimmerLayout: Int? = null,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         isShowOnTestDevice: Boolean = false,
         isCheckTestAds: Boolean = false,
         isShowNativeLikeBanner: Boolean? = true,
@@ -1384,7 +1420,7 @@ object AdmobLib {
         )
 
         val nativeAdRequest =
-            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
 
         if ((viewGroupExpanded.children.firstOrNull() as? NativeAdView)?.destroy() == null) {
             (viewGroupCollapsed.children.firstOrNull() as? NativeAdView)?.destroy()
@@ -1484,6 +1520,8 @@ object AdmobLib {
         admobNativeModel: AdmobNativeModel,
         size: GoogleENative = GoogleENative.UNIFIED_MEDIUM,
         mediaViewRatio: Int = MediaAspectRatio.SQUARE,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null,
         isCheckTestAds: Boolean = false,
@@ -1502,7 +1540,7 @@ object AdmobLib {
         }
         admobNativeModel.isLoading.postValue(true)
         val nativeAdRequest =
-            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         val adLoader = AdLoader.Builder(
             activity,
             if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
@@ -1638,7 +1676,8 @@ object AdmobLib {
     fun loadAndShowRewarded(
         activity: AppCompatActivity,
         admobRewardedModel: AdmobRewardedModel,
-        timeout: Long = 15000L,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         isShowOnTestDevice: Boolean = false,
         onAdsCloseOrFailed: ((isEarned: Boolean) -> Unit)? = null,
         onAdsLoaded: (() -> Unit)? = null,
@@ -1753,6 +1792,8 @@ object AdmobLib {
     fun loadRewarded(
         activity: Activity,
         admobRewardedModel: AdmobRewardedModel,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
         isShowOnTestDevice: Boolean = false,
         onAdsLoaded: (() -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null
@@ -1769,7 +1810,7 @@ object AdmobLib {
         }
         admobRewardedModel.isLoading.postValue(true)
         val rewardedAdRequest =
-            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(10000).build()
+            adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         RewardedAd.load(
             activity,
             if (isDebug) AdsConstants.admobRewardedModelTest.adsID else admobRewardedModel.adsID,
@@ -1840,8 +1881,8 @@ object AdmobLib {
         AppOnResumeAdsManager.setAppResumeEnabled(false)
 
         val observer = object : Observer<Boolean> {
-            override fun onChanged(isLoading: Boolean) {
-                if (isLoading) {
+            override fun onChanged(value: Boolean) {
+                if (value) {
                     showDialogFullScreen(activity)
                 } else {
                     admobRewardedModel.isLoading.removeObserver(this)

@@ -18,7 +18,12 @@ class ThirdActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        AdmobLib.loadAndShowNative(this, AdsConstants.admobNativeModelTest, binding.frNative, GoogleENative.UNIFIED_FULL_SCREEN)
+        AdmobLib.loadAndShowNative(
+            activity = this,
+            admobNativeModel = AdsConstants.admobNativeModelTest,
+            viewGroup = binding.frNative,
+            size = GoogleENative.UNIFIED_FULL_SCREEN
+        )
 
     }
 }

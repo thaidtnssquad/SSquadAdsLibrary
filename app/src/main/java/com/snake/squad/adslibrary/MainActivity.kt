@@ -34,10 +34,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        val homeAdRequest = AdmobLib.getAdRequestWithKeywords(
+            keywords = listOf(
+                "ecommerce",
+                "shopping",
+                "deals",
+                "coupons"
+            )
+        )
+
         binding.btnLoadAndShowInter.setOnClickListener {
             AdmobLib.loadAndShowInterstitial(
                 this,
                 AdsConstants.admobInterModelTest,
+                adRequest = homeAdRequest,
                 onAdsCloseOrFailed = {
                     startActivity(Intent(this@MainActivity, SecondActivity::class.java))
                 })
@@ -101,10 +111,10 @@ class MainActivity : AppCompatActivity() {
         binding.btnLoadAndShowBanner.setOnClickListener {
             setupViewBannerOrNative(true)
             AdmobLib.loadAndShowBanner(
-                this,
-                AdsConstants.ADMOB_BANNER_TEST,
-                binding.frBanner,
-                binding.viewLine
+                activity = this,
+                bannerID = AdsConstants.ADMOB_BANNER_TEST,
+                viewGroup = binding.frBanner,
+                viewLine = binding.viewLine
             )
         }
 
@@ -161,9 +171,9 @@ class MainActivity : AppCompatActivity() {
 
         isNativeCollLoading.set(true)
         AdmobLib.loadAndShowNative(
-            this,
-            nativeReloadModel,
-            binding.frNative,
+            activity = this,
+            admobNativeModel = nativeReloadModel,
+            viewGroup = binding.frNative,
             onAdsLoadFail = {
                 isNativeCollLoading.set(false)
                 mHandler.postDelayed(mReloadRunnable, 5000)
