@@ -143,9 +143,11 @@ object AdmobLib {
         val handle = Handler(Looper.getMainLooper())
         val interAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
+        val interAdID =
+            if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
         InterstitialAd.load(
             activity,
-            if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID,
+            interAdID,
             interAdRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -204,20 +206,20 @@ object AdmobLib {
                             SolarUtils.postRevenueSolar(
                                 it,
                                 AdType.INTERSTITIAL,
-                                admobInterModel.adsID,
+                                interAdID,
                                 interAd = interstitialAd
                             )
                             TiktokUtils.postRevenueTiktok(
                                 it,
                                 AdType.INTERSTITIAL,
-                                admobInterModel.adsID,
+                                interAdID,
                                 interAd = interstitialAd
                             )
                             TenjinUtils.postRevenueTenjin(
                                 activity,
                                 it,
                                 AdType.INTERSTITIAL,
-                                admobInterModel.adsID,
+                                interAdID,
                                 interAd = interstitialAd
                             )
                         }
@@ -261,9 +263,11 @@ object AdmobLib {
         AppOnResumeAdsManager.setAppResumeEnabled(false)
         val interAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
+        val interAdID =
+            if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
         InterstitialAd.load(
             activity,
-            if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID,
+            interAdID,
             interAdRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -318,20 +322,20 @@ object AdmobLib {
                         SolarUtils.postRevenueSolar(
                             it,
                             AdType.INTERSTITIAL,
-                            admobInterModel.adsID,
+                            interAdID,
                             interAd = interstitialAd
                         )
                         TiktokUtils.postRevenueTiktok(
                             it,
                             AdType.INTERSTITIAL,
-                            admobInterModel.adsID,
+                            interAdID,
                             interAd = interstitialAd
                         )
                         TenjinUtils.postRevenueTenjin(
                             activity,
                             it,
                             AdType.INTERSTITIAL,
-                            admobInterModel.adsID,
+                            interAdID,
                             interAd = interstitialAd
                         )
                     }
@@ -407,9 +411,11 @@ object AdmobLib {
         admobInterModel.isLoading.postValue(true)
         val interAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
+        val interAdID =
+            if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
         InterstitialAd.load(
             activity,
-            if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID,
+            interAdID,
             interAdRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -429,20 +435,20 @@ object AdmobLib {
                         SolarUtils.postRevenueSolar(
                             it,
                             AdType.INTERSTITIAL,
-                            admobInterModel.adsID,
+                            interAdID,
                             interAd = interstitialAd
                         )
                         TiktokUtils.postRevenueTiktok(
                             it,
                             AdType.INTERSTITIAL,
-                            admobInterModel.adsID,
+                            interAdID,
                             interAd = interstitialAd
                         )
                         TenjinUtils.postRevenueTenjin(
                             activity,
                             it,
                             AdType.INTERSTITIAL,
-                            admobInterModel.adsID,
+                            interAdID,
                             interAd = interstitialAd
                         )
                     }
@@ -467,13 +473,14 @@ object AdmobLib {
             onAdsFail?.invoke()
             return
         }
-        val adsID = if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
+        val interAdID =
+            if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
         AppOnResumeAdsManager.setAppResumeEnabled(false)
-        if (InterstitialAdPreloader.isAdAvailable(adsID)) {
+        if (InterstitialAdPreloader.isAdAvailable(interAdID)) {
             val handle = Handler(Looper.getMainLooper())
-            val ad = InterstitialAdPreloader.pollAd(adsID)
+            val ad = InterstitialAdPreloader.pollAd(interAdID)
             if (!isPreload) {
-                InterstitialAdPreloader.destroy(adsID)
+                InterstitialAdPreloader.destroy(interAdID)
             }
             ad?.fullScreenContentCallback =
                 object : FullScreenContentCallback() {
@@ -515,20 +522,20 @@ object AdmobLib {
                 SolarUtils.postRevenueSolar(
                     it,
                     AdType.INTERSTITIAL,
-                    adsID,
+                    interAdID,
                     interAd = ad
                 )
                 TiktokUtils.postRevenueTiktok(
                     it,
                     AdType.INTERSTITIAL,
-                    adsID,
+                    interAdID,
                     interAd = ad
                 )
                 TenjinUtils.postRevenueTenjin(
                     activity,
                     it,
                     AdType.INTERSTITIAL,
-                    adsID,
+                    interAdID,
                     interAd = ad
                 )
             }
@@ -540,7 +547,7 @@ object AdmobLib {
             onAdsFail?.invoke()
             AppOnResumeAdsManager.setAppResumeEnabled(true)
             if (!isPreload) {
-                InterstitialAdPreloader.destroy(adsID)
+                InterstitialAdPreloader.destroy(interAdID)
             }
         }
     }
@@ -686,7 +693,8 @@ object AdmobLib {
             return
         }
         val adView = AdView(activity)
-        adView.adUnitId = if (isDebug) AdsConstants.ADMOB_BANNER_TEST else bannerID
+        val bannerAdID = if (isDebug) AdsConstants.ADMOB_BANNER_TEST else bannerID
+        adView.adUnitId = bannerAdID
         adView.setAdSize(
             when (bannerType) {
                 BannerType.BANNER -> AdSize.BANNER
@@ -714,9 +722,9 @@ object AdmobLib {
         shimmerFrameLayout.startShimmer()
         adView.setOnPaidEventListener {
             FacebookUtils.adImpressionFacebookRevenue(activity, it)
-            SolarUtils.postRevenueSolar(it, AdType.BANNER, bannerID, adView = adView)
-            TiktokUtils.postRevenueTiktok(it, AdType.BANNER, bannerID, adView = adView)
-            TenjinUtils.postRevenueTenjin(activity, it, AdType.BANNER, bannerID, adView = adView)
+            SolarUtils.postRevenueSolar(it, AdType.BANNER, bannerAdID, adView = adView)
+            TiktokUtils.postRevenueTiktok(it, AdType.BANNER, bannerAdID, adView = adView)
+            TenjinUtils.postRevenueTenjin(activity, it, AdType.BANNER, bannerAdID, adView = adView)
         }
         adView.adListener = object : AdListener() {
             override fun onAdLoaded() {
@@ -766,8 +774,9 @@ object AdmobLib {
             viewGroup.removeView(it)
         }
         admobBannerCollapsibleModel.adView = AdView(activity)
-        admobBannerCollapsibleModel.adView?.adUnitId =
+        val bannerAdID =
             if (isDebug) AdsConstants.admobBannerCollapsibleModel.adsID else admobBannerCollapsibleModel.adsID
+        admobBannerCollapsibleModel.adView?.adUnitId = bannerAdID
         val adSize = getAdSize(activity)
         admobBannerCollapsibleModel.adView?.setAdSize(adSize)
         val shimmerLoadingView =
@@ -792,20 +801,20 @@ object AdmobLib {
                             SolarUtils.postRevenueSolar(
                                 it,
                                 AdType.BANNER,
-                                admobBannerCollapsibleModel.adsID,
+                                bannerAdID,
                                 adView = admobBannerCollapsibleModel.adView
                             )
                             TiktokUtils.postRevenueTiktok(
                                 it,
                                 AdType.BANNER,
-                                admobBannerCollapsibleModel.adsID,
+                                bannerAdID,
                                 adView = admobBannerCollapsibleModel.adView
                             )
                             TenjinUtils.postRevenueTenjin(
                                 activity,
                                 it,
                                 AdType.BANNER,
-                                admobBannerCollapsibleModel.adsID,
+                                bannerAdID,
                                 adView = admobBannerCollapsibleModel.adView
                             )
                         }
@@ -897,9 +906,11 @@ object AdmobLib {
 
         val nativeAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
+        val nativeAdID =
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
         val adLoader = AdLoader.Builder(
             activity,
-            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
+            nativeAdID
         )
         if (size == GoogleENative.UNIFIED_FULL_SCREEN) {
             val videoOptions =
@@ -939,20 +950,20 @@ object AdmobLib {
                 SolarUtils.postRevenueSolar(
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModel.adsID,
+                    nativeAdID,
                     nativeAd = nativeAd
                 )
                 TiktokUtils.postRevenueTiktok(
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModel.adsID,
+                    nativeAdID,
                     nativeAd = nativeAd
                 )
                 TenjinUtils.postRevenueTenjin(
                     activity,
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModel.adsID,
+                    nativeAdID,
                     nativeAd = nativeAd
                 )
             }
@@ -1017,9 +1028,11 @@ object AdmobLib {
 
         val nativeAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
+        val nativeAdID =
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
         val adLoader = AdLoader.Builder(
             context,
-            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
+            nativeAdID
         )
         if (size == GoogleENative.UNIFIED_FULL_SCREEN) {
             val videoOptions =
@@ -1059,20 +1072,20 @@ object AdmobLib {
                 SolarUtils.postRevenueSolar(
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModel.adsID,
+                    nativeAdID,
                     nativeAd = nativeAd
                 )
                 TiktokUtils.postRevenueTiktok(
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModel.adsID,
+                    nativeAdID,
                     nativeAd = nativeAd
                 )
                 TenjinUtils.postRevenueTenjin(
                     context,
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModel.adsID,
+                    nativeAdID,
                     nativeAd = nativeAd
                 )
             }
@@ -1138,11 +1151,11 @@ object AdmobLib {
         val shimmerFrameLayout =
             shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
         shimmerFrameLayout.startShimmer()
+        val nativeCollapsedAdID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelCollapsed?.adsID
+            ?: admobNativeModelExpanded.adsID
         val adLoaderCollapsed = AdLoader.Builder(
             activity,
-            if (isDebug) AdsConstants.admobNativeModelTest.adsID else {
-                admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID
-            }
+            nativeCollapsedAdID
         )
         adLoaderCollapsed.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderCollapsed.forNativeAd { nativeAd ->
@@ -1167,20 +1180,20 @@ object AdmobLib {
                 SolarUtils.postRevenueSolar(
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID,
+                    nativeCollapsedAdID,
                     nativeAd = nativeAd
                 )
                 TiktokUtils.postRevenueTiktok(
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID,
+                    nativeCollapsedAdID,
                     nativeAd = nativeAd
                 )
                 TenjinUtils.postRevenueTenjin(
                     activity,
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID,
+                    nativeCollapsedAdID,
                     nativeAd = nativeAd
                 )
             }
@@ -1199,9 +1212,10 @@ object AdmobLib {
             }
         })
 
+        val nativeAdExpandedID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelExpanded.adsID
         val adLoaderExpanded = AdLoader.Builder(
             activity,
-            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelExpanded.adsID
+            nativeAdExpandedID
         )
         adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderExpanded.forNativeAd { nativeAd ->
@@ -1227,20 +1241,20 @@ object AdmobLib {
                 SolarUtils.postRevenueSolar(
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModelExpanded.adsID,
+                    nativeAdExpandedID,
                     nativeAd = nativeAd
                 )
                 TiktokUtils.postRevenueTiktok(
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModelExpanded.adsID,
+                    nativeAdExpandedID,
                     nativeAd = nativeAd
                 )
                 TenjinUtils.postRevenueTenjin(
                     activity,
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModelExpanded.adsID,
+                    nativeAdExpandedID,
                     nativeAd = nativeAd
                 )
             }
@@ -1308,10 +1322,10 @@ object AdmobLib {
         val shimmerFrameLayout =
             shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
         shimmerFrameLayout.startShimmer()
-
+        val nativeAdID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
         val adLoaderExpanded = AdLoader.Builder(
             activity,
-            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
+            nativeAdID
         )
         adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderExpanded.forNativeAd { nativeAd ->
@@ -1345,20 +1359,20 @@ object AdmobLib {
                         SolarUtils.postRevenueSolar(
                             adValue,
                             AdType.NATIVE,
-                            admobNativeModel.adsID,
+                            nativeAdID,
                             nativeAd = nativeAd
                         )
                         TiktokUtils.postRevenueTiktok(
                             adValue,
                             AdType.NATIVE,
-                            admobNativeModel.adsID,
+                            nativeAdID,
                             nativeAd = nativeAd
                         )
                         TenjinUtils.postRevenueTenjin(
                             activity,
                             adValue,
                             AdType.NATIVE,
-                            admobNativeModel.adsID,
+                            nativeAdID,
                             nativeAd = nativeAd
                         )
                     }
@@ -1433,10 +1447,10 @@ object AdmobLib {
         val shimmerFrameLayout =
             shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
         shimmerFrameLayout.startShimmer()
-
+        val nativeAdID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
         val adLoaderExpanded = AdLoader.Builder(
             context,
-            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
+            nativeAdID
         )
         adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
         adLoaderExpanded.forNativeAd { nativeAd ->
@@ -1472,20 +1486,20 @@ object AdmobLib {
                         SolarUtils.postRevenueSolar(
                             adValue,
                             AdType.NATIVE,
-                            admobNativeModel.adsID,
+                            nativeAdID,
                             nativeAd = nativeAd
                         )
                         TiktokUtils.postRevenueTiktok(
                             adValue,
                             AdType.NATIVE,
-                            admobNativeModel.adsID,
+                            nativeAdID,
                             nativeAd = nativeAd
                         )
                         TenjinUtils.postRevenueTenjin(
                             context,
                             adValue,
                             AdType.NATIVE,
-                            admobNativeModel.adsID,
+                            nativeAdID,
                             nativeAd = nativeAd
                         )
                     }
@@ -1541,9 +1555,10 @@ object AdmobLib {
         admobNativeModel.isLoading.postValue(true)
         val nativeAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
+        val nativeAdID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
         val adLoader = AdLoader.Builder(
             activity,
-            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
+            nativeAdID
         )
         if (size == GoogleENative.UNIFIED_FULL_SCREEN) {
             val videoOptions =
@@ -1565,20 +1580,20 @@ object AdmobLib {
                 SolarUtils.postRevenueSolar(
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModel.adsID,
+                    nativeAdID,
                     nativeAd = nativeAd
                 )
                 TiktokUtils.postRevenueTiktok(
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModel.adsID,
+                    nativeAdID,
                     nativeAd = nativeAd
                 )
                 TenjinUtils.postRevenueTenjin(
                     activity,
                     adValue,
                     AdType.NATIVE,
-                    admobNativeModel.adsID,
+                    nativeAdID,
                     nativeAd = nativeAd
                 )
             }
@@ -1698,9 +1713,10 @@ object AdmobLib {
         AppOnResumeAdsManager.setAppResumeEnabled(false)
         val rewardedAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
+        val rewardAdID = if (isDebug) AdsConstants.admobRewardedModelTest.adsID else admobRewardedModel.adsID
         RewardedAd.load(
             activity,
-            if (isDebug) AdsConstants.admobRewardedModelTest.adsID else admobRewardedModel.adsID,
+            rewardAdID,
             rewardedAdRequest,
             object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -1755,20 +1771,20 @@ object AdmobLib {
                         SolarUtils.postRevenueSolar(
                             adValue,
                             AdType.REWARDED,
-                            admobRewardedModel.adsID,
+                            rewardAdID,
                             rewardAd = ad
                         )
                         TiktokUtils.postRevenueTiktok(
                             adValue,
                             AdType.REWARDED,
-                            admobRewardedModel.adsID,
+                            rewardAdID,
                             rewardAd = ad
                         )
                         TenjinUtils.postRevenueTenjin(
                             activity,
                             adValue,
                             AdType.REWARDED,
-                            admobRewardedModel.adsID,
+                            rewardAdID,
                             rewardAd = ad
                         )
                     }
@@ -1811,9 +1827,10 @@ object AdmobLib {
         admobRewardedModel.isLoading.postValue(true)
         val rewardedAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
+        val rewardAdID = if (isDebug) AdsConstants.admobRewardedModelTest.adsID else admobRewardedModel.adsID
         RewardedAd.load(
             activity,
-            if (isDebug) AdsConstants.admobRewardedModelTest.adsID else admobRewardedModel.adsID,
+            rewardAdID,
             rewardedAdRequest,
             object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -1833,20 +1850,20 @@ object AdmobLib {
                         SolarUtils.postRevenueSolar(
                             it,
                             AdType.REWARDED,
-                            admobRewardedModel.adsID,
+                            rewardAdID,
                             rewardAd = rewardedAd
                         )
                         TiktokUtils.postRevenueTiktok(
                             it,
                             AdType.REWARDED,
-                            admobRewardedModel.adsID,
+                            rewardAdID,
                             rewardAd = rewardedAd
                         )
                         TenjinUtils.postRevenueTenjin(
                             activity,
                             it,
                             AdType.REWARDED,
-                            admobRewardedModel.adsID,
+                            rewardAdID,
                             rewardAd = rewardedAd
                         )
                     }
@@ -2008,7 +2025,7 @@ object AdmobLib {
         }
 
         vShowInterAds?.visibility = View.VISIBLE
-        loadNativeFullScreen(mActivity, nativeModel, adRequest, timeout,isShowNativeAfter)
+        loadNativeFullScreen(mActivity, nativeModel, adRequest, timeout, isShowNativeAfter)
         var nativeDialog: NativeAfterInterDialog? = null
         var isNativeFail = false
         loadAndShowInterstitial(

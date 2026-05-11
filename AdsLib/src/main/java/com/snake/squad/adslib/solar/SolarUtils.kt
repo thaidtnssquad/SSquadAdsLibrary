@@ -41,17 +41,26 @@ object SolarUtils {
         adView: AdView? = null
     ) {
         val valueMicros: Double = adValue.valueMicros.toDouble()
-        val currencyCode: String? = adValue.currencyCode
+        val currencyCode: String = adValue.currencyCode
 
         val loadedAdapterResponseInfo: AdapterResponseInfo? = when(adType) {
-            AdType.INTERSTITIAL -> interAd?.responseInfo?.loadedAdapterResponseInfo
-            AdType.NATIVE -> nativeAd?.responseInfo?.loadedAdapterResponseInfo
-            AdType.REWARDED -> rewardAd?.responseInfo?.loadedAdapterResponseInfo
-            AdType.APP_OPEN -> appOpenAd?.responseInfo?.loadedAdapterResponseInfo
-            AdType.BANNER -> adView?.responseInfo?.loadedAdapterResponseInfo
+            AdType.INTERSTITIAL -> interAd?.responseInfo
+            AdType.NATIVE -> nativeAd?.responseInfo
+            AdType.REWARDED -> rewardAd?.responseInfo
+            AdType.APP_OPEN -> appOpenAd?.responseInfo
+            AdType.BANNER -> adView?.responseInfo
+        }?.loadedAdapterResponseInfo
+
+        val adFormat: Int = when(adType) {
+            AdType.INTERSTITIAL -> com.reyun.solar.engine.AdType.Interstitial.value
+            AdType.NATIVE -> com.reyun.solar.engine.AdType.Native.value
+            AdType.REWARDED -> com.reyun.solar.engine.AdType.RewardVideo.value
+            AdType.APP_OPEN -> com.reyun.solar.engine.AdType.OTHER.value
+            AdType.BANNER -> com.reyun.solar.engine.AdType.Banner.value
         }
-        val adSourceName = loadedAdapterResponseInfo?.adSourceName
-        val adSourceId = loadedAdapterResponseInfo?.adSourceId
+
+        val adSourceName = loadedAdapterResponseInfo?.adSourceName ?: "admob"
+        val adSourceId = loadedAdapterResponseInfo?.adSourceId ?: ""
 
         //SE SDK processing logic
         val seAdImpEventModel = SEAdImpEventModel()
@@ -63,7 +72,7 @@ object SolarUtils {
         seAdImpEventModel.setMediationPlatform("admob")
 
         //Displayed Ad Type (Taking Rewarded Ad as an example, adType = 1)
-        seAdImpEventModel.setAdType(1)
+        seAdImpEventModel.setAdType(adFormat)
 
         //Monetization Platform App ID
         seAdImpEventModel.setAdNetworkAppID(adSourceId)
