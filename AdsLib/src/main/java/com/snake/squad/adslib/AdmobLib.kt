@@ -376,7 +376,7 @@ object AdmobLib {
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         val configuration = PreloadConfiguration.Builder(adsID).setAdRequest(interAdRequest).build()
         InterstitialAdPreloader.start(
-            adsID,
+            admobInterModel.adsID,
             configuration,
             object : PreloadCallbackV2() {
                 override fun onAdPreloaded(preloadId: String, responseInfo: ResponseInfo?) {
@@ -476,7 +476,7 @@ object AdmobLib {
         val interAdID =
             if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
         AppOnResumeAdsManager.setAppResumeEnabled(false)
-        if (InterstitialAdPreloader.isAdAvailable(interAdID)) {
+        if (InterstitialAdPreloader.isAdAvailable(admobInterModel.adsID)) {
             val handle = Handler(Looper.getMainLooper())
             val ad = InterstitialAdPreloader.pollAd(interAdID)
             if (!isPreload) {
