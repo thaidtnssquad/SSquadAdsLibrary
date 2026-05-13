@@ -47,7 +47,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.6.9"
+                version = "1.7.0"
             }
         }
     }
@@ -88,11 +88,11 @@ dependencies {
     //mediation admob
     implementation("com.google.ads.mediation:pangle:8.0.0.4.0")
     implementation("com.google.ads.mediation:applovin:13.6.2.0")
-    implementation("com.google.ads.mediation:facebook:6.21.0.2")
-    implementation("com.google.ads.mediation:vungle:7.7.2.0")
+    implementation("com.google.ads.mediation:facebook:6.21.0.3")
+    implementation("com.google.ads.mediation:vungle:7.7.3.0")
     implementation("com.google.ads.mediation:mintegral:17.1.51.0")
-    implementation("com.google.ads.mediation:ironsource:9.4.0.0")
-    implementation("com.unity3d.ads:unity-ads:4.17.0")
+    implementation("com.google.ads.mediation:ironsource:9.4.1.0")
+    implementation("com.unity3d.ads:unity-ads:4.18.0")
     implementation("com.google.ads.mediation:unity:4.17.0.0")
     implementation("com.google.ads.mediation:inmobi:11.2.0.0")
 
@@ -104,7 +104,7 @@ dependencies {
     implementation("com.android.billingclient:billing-ktx:8.3.0")
 
     //Solar Engine
-    implementation("com.reyun.solar.engine.oversea:solar-engine-core:1.3.0.5")
+    implementation("com.reyun.solar.engine.oversea:solar-engine-core:1.3.1.2")
 
     //Tenjin
     implementation("com.tenjin:android-sdk:1.18.0")

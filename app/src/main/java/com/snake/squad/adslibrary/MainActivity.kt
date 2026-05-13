@@ -62,12 +62,12 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnShowInter.setOnClickListener {
             AdmobLib.showInterNewAPIWithNativeAfter(
-                this,
-                AdsConstants.admobInterModelTest,
-                AdsConstants.admobNativeModelTest,
-                homeAdRequest,
-                10000,
-                null,
+                mActivity = this,
+                interModel = AdsConstants.admobInterModelTest,
+                nativeModel = AdsConstants.admobNativeModelTest,
+                adRequest = homeAdRequest,
+                timeout = 10000,
+                vShowInterAds = null,
                 navAction = {
                     startActivity(Intent(this@MainActivity, SecondActivity::class.java))
                 })

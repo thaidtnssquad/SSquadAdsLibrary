@@ -478,9 +478,9 @@ object AdmobLib {
         AppOnResumeAdsManager.setAppResumeEnabled(false)
         if (InterstitialAdPreloader.isAdAvailable(admobInterModel.adsID)) {
             val handle = Handler(Looper.getMainLooper())
-            val ad = InterstitialAdPreloader.pollAd(interAdID)
+            val ad = InterstitialAdPreloader.pollAd(admobInterModel.adsID)
             if (!isPreload) {
-                InterstitialAdPreloader.destroy(interAdID)
+                InterstitialAdPreloader.destroy(admobInterModel.adsID)
             }
             ad?.fullScreenContentCallback =
                 object : FullScreenContentCallback() {
@@ -2162,6 +2162,7 @@ object AdmobLib {
         timeout: Long = 10000,
         vShowInterAds: View?,
         isShowNativeAfter: Boolean = true,
+        isPreload: Boolean = true,
         nativeLayout: Int = R.layout.admob_ad_template_full_screen,
         counter: Int = NativeAfterInterDialog.DEFAULT_COUNTER,
         isShowOnTestDevice: Boolean = false,
@@ -2182,6 +2183,7 @@ object AdmobLib {
             mActivity,
             interModel,
             isShowOnTestDevice = isShowOnTestDevice,
+            isPreload = isPreload,
             onAdsShowed = {
 //            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
                 mActivity.lifecycleScope.launch {
