@@ -29,9 +29,6 @@ internal class OnResumeManager(
     private var appOpenAd: AppOpenAd? = null
     private var loadTime: Long = 0
 
-    init {
-        validAndLoadAd()
-    }
 
     override fun loadAd() {
         val id = if (AdmobLib.getDebugAds()) AdsConstants.APP_OPEN_TEST else adsId
@@ -90,7 +87,6 @@ internal class OnResumeManager(
 
                 onCloseOrFail()
                 appOpenAd = null
-                loadAd()
             }
 
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
@@ -99,7 +95,6 @@ internal class OnResumeManager(
                 onCloseOrFail()
                 if (adError.code != 3) {
                     appOpenAd = null
-                    loadAd()
                 }
             }
 

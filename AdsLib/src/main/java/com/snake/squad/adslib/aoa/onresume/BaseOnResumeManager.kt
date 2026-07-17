@@ -14,9 +14,7 @@ import android.widget.LinearLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.google.android.gms.ads.AdRequest
 import com.snake.squad.adslib.AdmobLib
-import com.snake.squad.adslib.ApplovinLib
 import com.snake.squad.adslib.R
 
 internal abstract class BaseOnResumeManager(application: Application): ActivityLifecycleCallbacks {
@@ -38,6 +36,8 @@ internal abstract class BaseOnResumeManager(application: Application): ActivityL
         LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START && isAppResumeEnabled) {
                 onStartEvent()
+            } else if (event == Lifecycle.Event.ON_STOP) {
+                validAndLoadAd()
             }
         }
     }
@@ -95,14 +95,11 @@ internal abstract class BaseOnResumeManager(application: Application): ActivityL
             !AdmobLib.getShowAds()
             || AdmobLib.getShowInterAds()
             || AdmobLib.getShowRewardAds()
-            || ApplovinLib.getShowInterAds()
-            || ApplovinLib.getShowRewardAds()
             || disabledActivities.contains(activity.javaClass)
             || AdmobLib.getCheckTestDevice()
         ) return
 
         if (!isAdAvailable()) {
-            loadAd()
             return
         }
 

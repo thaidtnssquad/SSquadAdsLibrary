@@ -26,14 +26,14 @@ class SplashActivity : AppCompatActivity() {
 
         AdmobLib.initialize(this, isDebug = true, isShowAds = true) {
             AppOnResumeAdsManager.initialize(
-                application,
-                AdsConstants.admobInterModelTest.adsID,
+                application = application,
+                adsId = AdsConstants.admobInterModelTest.adsID,
                 type = AppOnResumeAdsManager.INTER
             )
 //            AppOnResumeAdsManager.initialize(
-//                application,
-//                AdsConstants.APP_OPEN_TEST,
-//                AppOnResumeAdsManager.AOA
+//                application = application,
+//                adsId = AdsConstants.APP_OPEN_TEST,
+//                type = AppOnResumeAdsManager.AOA
 //            )
             AppOnResumeAdsManager.disableForActivity(SplashActivity::class.java)
 

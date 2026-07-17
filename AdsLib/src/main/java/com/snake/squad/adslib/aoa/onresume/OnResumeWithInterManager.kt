@@ -28,10 +28,6 @@ internal class OnResumeWithInterManager(
 
     private var interstitialAd: InterstitialAd? = null
 
-    init {
-        validAndLoadAd()
-    }
-
     override fun loadAd() {
         val id = if (AdmobLib.getDebugAds()) AdsConstants.admobInterModelTest.adsID else adsId
         val interAdRequest =
@@ -88,7 +84,6 @@ internal class OnResumeWithInterManager(
 
                 onCloseOrFail()
                 interstitialAd = null
-                loadAd()
             }
 
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
@@ -97,7 +92,6 @@ internal class OnResumeWithInterManager(
                 onCloseOrFail()
                 if (adError.code != 3) {
                     interstitialAd = null
-                    loadAd()
                 }
             }
 

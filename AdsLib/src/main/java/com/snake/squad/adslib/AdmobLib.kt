@@ -58,6 +58,7 @@ import com.snake.squad.adslib.solar.SolarUtils
 import com.snake.squad.adslib.tenjin.TenjinUtils
 import com.snake.squad.adslib.tiktok.TiktokUtils
 import com.snake.squad.adslib.utils.AdType
+import com.snake.squad.adslib.utils.AdmobCacheManager
 import com.snake.squad.adslib.utils.AdsConstants
 import com.snake.squad.adslib.utils.AdsHelper
 import com.snake.squad.adslib.utils.AdsHelper.isNetworkConnected
@@ -68,6 +69,7 @@ import com.snake.squad.adslib.utils.NativeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 object AdmobLib {
 
@@ -228,7 +230,7 @@ object AdmobLib {
                 }
             })
         activity.lifecycleScope.launch(Dispatchers.Main) {
-            delay(timeout)
+            delay(timeout.milliseconds)
             if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                 isShowInterAds = false
                 dismissDialogFullScreen()
@@ -265,6 +267,45 @@ object AdmobLib {
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         val interAdID =
             if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
+
+        if (AdmobCacheManager.interCache[admobInterModel.adsID] != null) {
+            admobInterModel.interstitialAd.value = AdmobCacheManager.interCache[admobInterModel.adsID]
+            admobInterModel.isLoading.value = false
+            showInterstitial(
+                activity,
+                admobInterModel,
+                adRequest,
+                timeout,
+                isPreload = false,
+                isShowOnTestDevice = isShowOnTestDevice,
+                onAdsCloseOrFailed = onAdsCloseOrFailed,
+                onAdsFail = onAdsFail,
+                onAdsClose = onAdsClose,
+                onAdsShowed = onAdsShowed,
+                onAdsClicked = onAdsClicked,
+                onAdsImpression = onAdsImpression
+            )
+            return
+        }
+
+        if (AdmobCacheManager.interLoading[admobInterModel.adsID] == true) {
+            admobInterModel.isLoading.value = true
+            showInterstitial(
+                activity,
+                admobInterModel,
+                adRequest,
+                timeout,
+                isPreload = false,
+                isShowOnTestDevice = isShowOnTestDevice,
+                onAdsCloseOrFailed = onAdsCloseOrFailed,
+                onAdsFail = onAdsFail,
+                onAdsClose = onAdsClose,
+                onAdsShowed = onAdsShowed,
+                onAdsClicked = onAdsClicked,
+                onAdsImpression = onAdsImpression
+            )
+            return
+        }
         InterstitialAd.load(
             activity,
             interAdID,
@@ -343,7 +384,7 @@ object AdmobLib {
                 }
             })
         activity.lifecycleScope.launch(Dispatchers.Main) {
-            delay(timeout)
+            delay(timeout.milliseconds)
             if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                 isShowInterAds = false
                 dismissDialogFullScreen()
@@ -375,15 +416,18 @@ object AdmobLib {
         val interAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         val configuration = PreloadConfiguration.Builder(adsID).setAdRequest(interAdRequest).build()
+        AdmobCacheManager.interLoading[admobInterModel.adsID] = true
         InterstitialAdPreloader.start(
             admobInterModel.adsID,
             configuration,
             object : PreloadCallbackV2() {
                 override fun onAdPreloaded(preloadId: String, responseInfo: ResponseInfo?) {
+                    AdmobCacheManager.interLoading[admobInterModel.adsID] = false
                     onAdsLoaded?.invoke()
                 }
 
                 override fun onAdFailedToPreload(preloadId: String, adError: AdError) {
+                    AdmobCacheManager.interLoading[admobInterModel.adsID] = false
                     onAdsFail?.invoke()
                 }
             })
@@ -398,21 +442,34 @@ object AdmobLib {
         onAdsLoaded: (() -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null
     ) {
+        val interAdID =
+            if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
+
+        if (AdmobCacheManager.interCache[admobInterModel.adsID] != null) {
+            admobInterModel.interstitialAd.value = AdmobCacheManager.interCache[admobInterModel.adsID]
+            admobInterModel.isLoading.postValue(false)
+            onAdsLoaded?.invoke()
+            return
+        }
+
+        if (AdmobCacheManager.interLoading[admobInterModel.adsID] == true) {
+            admobInterModel.isLoading.postValue(true)
+            return
+        }
+
         if (!isShowAds
             || isShowInterAds
             || !isNetworkConnected(activity)
-            || admobInterModel.interstitialAd.value != null
-            || admobInterModel.isLoading.value == true
             || (!isShowOnTestDevice && isTestDevice)
         ) {
             onAdsFail?.invoke()
             return
         }
+        
+        AdmobCacheManager.interLoading[admobInterModel.adsID] = true
         admobInterModel.isLoading.postValue(true)
         val interAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
-        val interAdID =
-            if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
         InterstitialAd.load(
             activity,
             interAdID,
@@ -422,6 +479,7 @@ object AdmobLib {
                     isShowInterAds = false
                     admobInterModel.interstitialAd.value = null
                     admobInterModel.isLoading.postValue(false)
+                    AdmobCacheManager.interLoading[admobInterModel.adsID] = false
                     onAdsFail?.invoke()
                 }
 
@@ -429,6 +487,8 @@ object AdmobLib {
                     isShowInterAds = false
                     admobInterModel.interstitialAd.value = interstitialAd
                     admobInterModel.isLoading.postValue(false)
+                    AdmobCacheManager.interCache[admobInterModel.adsID] = interstitialAd
+                    AdmobCacheManager.interLoading[admobInterModel.adsID] = false
                     onAdsLoaded?.invoke()
                     interstitialAd.setOnPaidEventListener {
                         FacebookUtils.adImpressionFacebookRevenue(activity, it)
@@ -476,10 +536,19 @@ object AdmobLib {
         val interAdID =
             if (isDebug) AdsConstants.admobInterModelTest.adsID else admobInterModel.adsID
         AppOnResumeAdsManager.setAppResumeEnabled(false)
-        if (InterstitialAdPreloader.isAdAvailable(admobInterModel.adsID)) {
+        val isAdAvailableInPreloader = InterstitialAdPreloader.isAdAvailable(admobInterModel.adsID)
+        val isAdAvailableInCache = AdmobCacheManager.interCache[admobInterModel.adsID] != null
+
+        if (isAdAvailableInPreloader || isAdAvailableInCache) {
             val handle = Handler(Looper.getMainLooper())
-            val ad = InterstitialAdPreloader.pollAd(admobInterModel.adsID)
-            if (!isPreload) {
+            val ad = if (isAdAvailableInPreloader) {
+                InterstitialAdPreloader.pollAd(admobInterModel.adsID)
+            } else {
+                val cached = AdmobCacheManager.interCache[admobInterModel.adsID]
+                AdmobCacheManager.interCache.remove(admobInterModel.adsID)
+                cached
+            }
+            if (!isPreload && isAdAvailableInPreloader) {
                 InterstitialAdPreloader.destroy(admobInterModel.adsID)
             }
             ad?.fullScreenContentCallback =
@@ -547,7 +616,7 @@ object AdmobLib {
             onAdsFail?.invoke()
             AppOnResumeAdsManager.setAppResumeEnabled(true)
             if (!isPreload) {
-                InterstitialAdPreloader.destroy(interAdID)
+                InterstitialAdPreloader.destroy(admobInterModel.adsID)
             }
         }
     }
@@ -566,10 +635,20 @@ object AdmobLib {
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
+        if (admobInterModel.interstitialAd.value == null) {
+            admobInterModel.interstitialAd.value = AdmobCacheManager.interCache[admobInterModel.adsID]
+            if (AdmobCacheManager.interLoading[admobInterModel.adsID] == true) {
+                admobInterModel.isLoading.value = true
+            }
+        }
+
         if (!isShowAds || isShowInterAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
-            if (admobInterModel.interstitialAd.value == null) loadInterstitial(
+            if (admobInterModel.interstitialAd.value == null && AdmobCacheManager.interLoading[admobInterModel.adsID] != true) loadInterstitial(
                 activity,
-                admobInterModel
+                admobInterModel,
+                adRequest,
+                timeout,
+                isShowOnTestDevice
             )
             onAdsCloseOrFailed?.invoke(false)
             onAdsFail?.invoke()
@@ -589,6 +668,7 @@ object AdmobLib {
                 } else {
                     admobInterModel.isLoading.removeObserver(this)
                     if (admobInterModel.interstitialAd.value != null) {
+                        AdmobCacheManager.interCache.remove(admobInterModel.adsID)
                         val handle = Handler(Looper.getMainLooper())
                         admobInterModel.interstitialAd.value?.fullScreenContentCallback =
                             object : FullScreenContentCallback() {
@@ -668,8 +748,14 @@ object AdmobLib {
         admobInterModel.isLoading.observe(activity as LifecycleOwner, observer)
     }
 
-    fun destroyAllPreloadAds() {
+    fun destroyAllPreloadInter() {
         InterstitialAdPreloader.destroyAll()
+        AdmobCacheManager.clearInterCache()
+    }
+
+    fun destroyAllPreloadAds() {
+        destroyAllPreloadInter()
+        AdmobCacheManager.clearCache()
     }
     // endregion
 
@@ -877,6 +963,22 @@ object AdmobLib {
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null
     ) {
+        val nativeAdID =
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
+
+        if (AdmobCacheManager.nativeCache[admobNativeModel.adsID] != null) {
+            admobNativeModel.nativeAd.value = AdmobCacheManager.nativeCache[admobNativeModel.adsID]
+            admobNativeModel.isLoading.value = false
+            showNative(activity, admobNativeModel, viewGroup, size, layout, shimmerLayout, onAdsLoaded, onAdsLoadFail)
+            return
+        }
+
+        if (AdmobCacheManager.nativeLoading[admobNativeModel.adsID] == true) {
+            admobNativeModel.isLoading.value = true
+            showNative(activity, admobNativeModel, viewGroup, size, layout, shimmerLayout, onAdsLoaded, onAdsLoadFail)
+            return
+        }
+
         if (!isShowAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
             onAdsLoadFail?.invoke()
             viewGroup.visibility = View.GONE
@@ -906,8 +1008,6 @@ object AdmobLib {
 
         val nativeAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
-        val nativeAdID =
-            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
         val adLoader = AdLoader.Builder(
             activity,
             nativeAdID
@@ -999,6 +1099,19 @@ object AdmobLib {
         onAdsLoaded: (() -> Unit?)? = null,
         onAdsLoadFail: (() -> Unit?)? = null
     ) {
+        val nativeAdID =
+            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
+
+        if (AdmobCacheManager.nativeCache[admobNativeModel.adsID] != null) {
+            admobNativeModel.nativeAd.value = AdmobCacheManager.nativeCache[admobNativeModel.adsID]
+            admobNativeModel.isLoading.value = false
+            // Note: showNative requires Activity, but here we have Context. Since context might not be activity,
+            // we will not use showNative directly here if it cannot cast, but actually NativeAds don't strictly require Activity to show.
+            // But showNative is defined with Activity. If this is a problem we will fall back to standard load.
+            // Let's just do standard load if we can't cache-show easily. Actually, in Android, if it's not activity, we can't use showNative.
+            // To be safe, let's just do it inline here for context.
+        }
+
         if (!isShowAds || !isNetworkConnected(context) || (!isShowOnTestDevice && isTestDevice)) {
             onAdsLoadFail?.invoke()
             viewGroup.visibility = View.GONE
@@ -1028,8 +1141,6 @@ object AdmobLib {
 
         val nativeAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
-        val nativeAdID =
-            if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
         val adLoader = AdLoader.Builder(
             context,
             nativeAdID
@@ -1151,85 +1262,67 @@ object AdmobLib {
         val shimmerFrameLayout =
             shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
         shimmerFrameLayout.startShimmer()
-        val nativeCollapsedAdID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelCollapsed?.adsID
-            ?: admobNativeModelExpanded.adsID
-        val adLoaderCollapsed = AdLoader.Builder(
-            activity,
-            nativeCollapsedAdID
-        )
-        adLoaderCollapsed.withNativeAdOptions(NativeAdOptions.Builder().build())
-        adLoaderCollapsed.forNativeAd { nativeAd ->
+        
+        val nativeCollapsedAdID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID
+        val nativeAdExpandedID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelExpanded.adsID
+
+        val handleCollapsedAd: (NativeAd) -> Unit = { nativeAd ->
             if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
             admobNativeModelCollapsed?.releaseAndSetNativeAd(nativeAd)
                 ?: admobNativeModelExpanded.releaseAndSetNativeAd(nativeAd)
 
-            val layoutNativeCollapsed =
-                layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
-            val adView =
-                activity.layoutInflater.inflate(layoutNativeCollapsed, null) as NativeAdView
-            NativeUtils.populateNativeAdView(
-                nativeAd,
-                adView,
-                GoogleENative.UNIFIED_SMALL_LIKE_BANNER
-            )
+            val layoutNativeCollapsed = layoutCollapsed ?: R.layout.admob_ad_template_small_like_banner
+            val adView = activity.layoutInflater.inflate(layoutNativeCollapsed, null) as NativeAdView
+            NativeUtils.populateNativeAdView(nativeAd, adView, GoogleENative.UNIFIED_SMALL_LIKE_BANNER)
             shimmerFrameLayout.stopShimmer()
             viewGroupCollapsed.removeAllViews()
             viewGroupCollapsed.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                SolarUtils.postRevenueSolar(
-                    adValue,
-                    AdType.NATIVE,
-                    nativeCollapsedAdID,
-                    nativeAd = nativeAd
-                )
-                TiktokUtils.postRevenueTiktok(
-                    adValue,
-                    AdType.NATIVE,
-                    nativeCollapsedAdID,
-                    nativeAd = nativeAd
-                )
-                TenjinUtils.postRevenueTenjin(
-                    activity,
-                    adValue,
-                    AdType.NATIVE,
-                    nativeCollapsedAdID,
-                    nativeAd = nativeAd
-                )
+                SolarUtils.postRevenueSolar(adValue, AdType.NATIVE, nativeCollapsedAdID, nativeAd = nativeAd)
+                TiktokUtils.postRevenueTiktok(adValue, AdType.NATIVE, nativeCollapsedAdID, nativeAd = nativeAd)
+                TenjinUtils.postRevenueTenjin(activity, adValue, AdType.NATIVE, nativeCollapsedAdID, nativeAd = nativeAd)
             }
         }
-        adLoaderCollapsed.withAdListener(object : AdListener() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
+
+        val loadCollapsedLogic = {
+            if (AdmobCacheManager.nativeCache[admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID] != null) {
+                val nativeAd = AdmobCacheManager.nativeCache[admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID]!!
+                handleCollapsedAd(nativeAd)
+                AdmobCacheManager.nativeCache.remove(admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID)
+                viewGroupCollapsed.visibility = View.VISIBLE
+                onAdsLoaded?.invoke()
+            } else if (AdmobCacheManager.nativeLoading[admobNativeModelCollapsed?.adsID ?: admobNativeModelExpanded.adsID] == true) {
                 shimmerFrameLayout.stopShimmer()
                 viewGroupCollapsed.visibility = View.GONE
                 onAdsLoadFail?.invoke()
+            } else {
+                val adLoaderCollapsed = AdLoader.Builder(activity, nativeCollapsedAdID)
+                adLoaderCollapsed.withNativeAdOptions(NativeAdOptions.Builder().build())
+                adLoaderCollapsed.forNativeAd { nativeAd -> handleCollapsedAd(nativeAd) }
+                adLoaderCollapsed.withAdListener(object : AdListener() {
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        shimmerFrameLayout.stopShimmer()
+                        viewGroupCollapsed.visibility = View.GONE
+                        onAdsLoadFail?.invoke()
+                    }
+                    override fun onAdLoaded() {
+                        super.onAdLoaded()
+                        viewGroupCollapsed.visibility = View.VISIBLE
+                        onAdsLoaded?.invoke()
+                    }
+                })
+                adLoaderCollapsed.build().loadAd(nativeAdRequest)
             }
+        }
 
-            override fun onAdLoaded() {
-                super.onAdLoaded()
-                viewGroupCollapsed.visibility = View.VISIBLE
-                onAdsLoaded?.invoke()
-            }
-        })
-
-        val nativeAdExpandedID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModelExpanded.adsID
-        val adLoaderExpanded = AdLoader.Builder(
-            activity,
-            nativeAdExpandedID
-        )
-        adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
-        adLoaderExpanded.forNativeAd { nativeAd ->
+        val handleExpandedAd: (NativeAd) -> Unit = { nativeAd ->
             if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
             admobNativeModelExpanded.releaseAndSetNativeAd(nativeAd)
 
             val layoutNativeExpanded = layoutExpanded ?: R.layout.admob_ad_template_medium
             val adView = activity.layoutInflater.inflate(layoutNativeExpanded, null) as NativeAdView
-            NativeUtils.populateNativeAdView(
-                nativeAd,
-                adView,
-                GoogleENative.UNIFIED_MEDIUM,
-                true
-            ) {
+            NativeUtils.populateNativeAdView(nativeAd, adView, GoogleENative.UNIFIED_MEDIUM, true) {
                 viewGroupExpanded.visibility = View.GONE
                 onAdsClosed?.invoke()
             }
@@ -1238,43 +1331,44 @@ object AdmobLib {
             viewGroupExpanded.addView(adView)
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
-                SolarUtils.postRevenueSolar(
-                    adValue,
-                    AdType.NATIVE,
-                    nativeAdExpandedID,
-                    nativeAd = nativeAd
-                )
-                TiktokUtils.postRevenueTiktok(
-                    adValue,
-                    AdType.NATIVE,
-                    nativeAdExpandedID,
-                    nativeAd = nativeAd
-                )
-                TenjinUtils.postRevenueTenjin(
-                    activity,
-                    adValue,
-                    AdType.NATIVE,
-                    nativeAdExpandedID,
-                    nativeAd = nativeAd
-                )
+                SolarUtils.postRevenueSolar(adValue, AdType.NATIVE, nativeAdExpandedID, nativeAd = nativeAd)
+                TiktokUtils.postRevenueTiktok(adValue, AdType.NATIVE, nativeAdExpandedID, nativeAd = nativeAd)
+                TenjinUtils.postRevenueTenjin(activity, adValue, AdType.NATIVE, nativeAdExpandedID, nativeAd = nativeAd)
             }
         }
-        adLoaderExpanded.withAdListener(object : AdListener() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                shimmerFrameLayout.stopShimmer()
-                viewGroupExpanded.visibility = View.GONE
-                onAdsLoadFail?.invoke()
-                adLoaderCollapsed.build().loadAd(nativeAdRequest)
-            }
 
-            override fun onAdLoaded() {
-                super.onAdLoaded()
-                viewGroupExpanded.visibility = View.VISIBLE
-                onAdsLoaded?.invoke()
-                adLoaderCollapsed.build().loadAd(nativeAdRequest)
-            }
-        })
-        adLoaderExpanded.build().loadAd(nativeAdRequest)
+        if (AdmobCacheManager.nativeCache[admobNativeModelExpanded.adsID] != null) {
+            val nativeAd = AdmobCacheManager.nativeCache[admobNativeModelExpanded.adsID]!!
+            handleExpandedAd(nativeAd)
+            AdmobCacheManager.nativeCache.remove(admobNativeModelExpanded.adsID)
+            viewGroupExpanded.visibility = View.VISIBLE
+            onAdsLoaded?.invoke()
+            loadCollapsedLogic()
+        } else if (AdmobCacheManager.nativeLoading[admobNativeModelExpanded.adsID] == true) {
+            shimmerFrameLayout.stopShimmer()
+            viewGroupExpanded.visibility = View.GONE
+            onAdsLoadFail?.invoke()
+            loadCollapsedLogic()
+        } else {
+            val adLoaderExpanded = AdLoader.Builder(activity, nativeAdExpandedID)
+            adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
+            adLoaderExpanded.forNativeAd { nativeAd -> handleExpandedAd(nativeAd) }
+            adLoaderExpanded.withAdListener(object : AdListener() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    shimmerFrameLayout.stopShimmer()
+                    viewGroupExpanded.visibility = View.GONE
+                    onAdsLoadFail?.invoke()
+                    loadCollapsedLogic()
+                }
+                override fun onAdLoaded() {
+                    super.onAdLoaded()
+                    viewGroupExpanded.visibility = View.VISIBLE
+                    onAdsLoaded?.invoke()
+                    loadCollapsedLogic()
+                }
+            })
+            adLoaderExpanded.build().loadAd(nativeAdRequest)
+        }
     }
 
     fun loadAndShowNativeCollapsibleSingle(
@@ -1323,12 +1417,8 @@ object AdmobLib {
             shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
         shimmerFrameLayout.startShimmer()
         val nativeAdID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
-        val adLoaderExpanded = AdLoader.Builder(
-            activity,
-            nativeAdID
-        )
-        adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
-        adLoaderExpanded.forNativeAd { nativeAd ->
+        
+        val handleNativeAd: (NativeAd) -> Unit = { nativeAd ->
             if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
             admobNativeModel.releaseAndSetNativeAd(nativeAd)
 
@@ -1383,6 +1473,32 @@ object AdmobLib {
             shimmerFrameLayout.stopShimmer()
             viewGroupExpanded.removeAllViews()
             viewGroupExpanded.addView(adView)
+        }
+
+        if (AdmobCacheManager.nativeCache[admobNativeModel.adsID] != null) {
+            val nativeAd = AdmobCacheManager.nativeCache[admobNativeModel.adsID]!!
+            handleNativeAd(nativeAd)
+            AdmobCacheManager.nativeCache.remove(admobNativeModel.adsID)
+            viewGroupExpanded.visibility = View.VISIBLE
+            viewGroupCollapsed.visibility = View.VISIBLE
+            onAdsLoaded?.invoke()
+            return
+        }
+
+        if (AdmobCacheManager.nativeLoading[admobNativeModel.adsID] == true) {
+            viewGroupExpanded.visibility = View.GONE
+            viewGroupCollapsed.visibility = View.GONE
+            onAdsLoadFail?.invoke()
+            return
+        }
+
+        val adLoaderExpanded = AdLoader.Builder(
+            activity,
+            nativeAdID
+        )
+        adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
+        adLoaderExpanded.forNativeAd { nativeAd ->
+            handleNativeAd(nativeAd)
         }
         adLoaderExpanded.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -1448,12 +1564,8 @@ object AdmobLib {
             shimmerLoadingView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
         shimmerFrameLayout.startShimmer()
         val nativeAdID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
-        val adLoaderExpanded = AdLoader.Builder(
-            context,
-            nativeAdID
-        )
-        adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
-        adLoaderExpanded.forNativeAd { nativeAd ->
+        
+        val handleNativeAd: (NativeAd) -> Unit = { nativeAd ->
             if (isCheckTestAds) checkTestDevice(context, isEnabledCheckTestDevice, nativeAd)
             admobNativeModel.releaseAndSetNativeAd(nativeAd)
 
@@ -1511,6 +1623,32 @@ object AdmobLib {
             viewGroupExpanded.removeAllViews()
             viewGroupExpanded.addView(adView)
         }
+
+        if (AdmobCacheManager.nativeCache[admobNativeModel.adsID] != null) {
+            val nativeAd = AdmobCacheManager.nativeCache[admobNativeModel.adsID]!!
+            handleNativeAd(nativeAd)
+            AdmobCacheManager.nativeCache.remove(admobNativeModel.adsID)
+            viewGroupExpanded.visibility = View.VISIBLE
+            viewGroupCollapsed.visibility = View.VISIBLE
+            onAdsLoaded?.invoke()
+            return
+        }
+
+        if (AdmobCacheManager.nativeLoading[admobNativeModel.adsID] == true) {
+            viewGroupExpanded.visibility = View.GONE
+            viewGroupCollapsed.visibility = View.GONE
+            onAdsLoadFail?.invoke()
+            return
+        }
+
+        val adLoaderExpanded = AdLoader.Builder(
+            context,
+            nativeAdID
+        )
+        adLoaderExpanded.withNativeAdOptions(NativeAdOptions.Builder().build())
+        adLoaderExpanded.forNativeAd { nativeAd ->
+            handleNativeAd(nativeAd)
+        }
         adLoaderExpanded.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 shimmerFrameLayout.stopShimmer()
@@ -1540,10 +1678,22 @@ object AdmobLib {
         onAdsLoadFail: (() -> Unit?)? = null,
         isCheckTestAds: Boolean = false,
     ) {
+        val nativeAdID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
+
+        if (AdmobCacheManager.nativeCache[admobNativeModel.adsID] != null) {
+            admobNativeModel.nativeAd.value = AdmobCacheManager.nativeCache[admobNativeModel.adsID]
+            admobNativeModel.isLoading.postValue(false)
+            onAdsLoaded?.invoke()
+            return
+        }
+
+        if (AdmobCacheManager.nativeLoading[admobNativeModel.adsID] == true) {
+            admobNativeModel.isLoading.postValue(true)
+            return
+        }
+
         if (!isShowAds
             || !isNetworkConnected(activity)
-            || admobNativeModel.nativeAd.value != null
-            || admobNativeModel.isLoading.value == true
         ) {
             onAdsLoadFail?.invoke()
             return
@@ -1552,10 +1702,10 @@ object AdmobLib {
             onAdsLoadFail?.invoke()
             return
         }
+        AdmobCacheManager.nativeLoading[admobNativeModel.adsID] = true
         admobNativeModel.isLoading.postValue(true)
         val nativeAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
-        val nativeAdID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
         val adLoader = AdLoader.Builder(
             activity,
             nativeAdID
@@ -1575,6 +1725,8 @@ object AdmobLib {
         adLoader.forNativeAd { nativeAd ->
             if (isCheckTestAds) checkTestDevice(activity, isEnabledCheckTestDevice, nativeAd)
             admobNativeModel.nativeAd.value = nativeAd
+            AdmobCacheManager.nativeCache[admobNativeModel.adsID] = nativeAd
+            AdmobCacheManager.nativeLoading[admobNativeModel.adsID] = false
             nativeAd.setOnPaidEventListener { adValue: AdValue ->
                 FacebookUtils.adImpressionFacebookRevenue(activity, adValue)
                 SolarUtils.postRevenueSolar(
@@ -1600,6 +1752,7 @@ object AdmobLib {
         }
         adLoader.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
+                AdmobCacheManager.nativeLoading[admobNativeModel.adsID] = false
                 onAdsLoadFail?.invoke()
                 admobNativeModel.nativeAd.value = null
                 admobNativeModel.isLoading.postValue(false)
@@ -1624,6 +1777,14 @@ object AdmobLib {
         onAdsShowed: (() -> Unit?)? = null,
         onAdsShowFail: (() -> Unit?)? = null
     ) {
+        val nativeAdID = if (isDebug) AdsConstants.admobNativeModelTest.adsID else admobNativeModel.adsID
+        if (admobNativeModel.nativeAd.value == null) {
+            admobNativeModel.nativeAd.value = AdmobCacheManager.nativeCache[admobNativeModel.adsID]
+            if (AdmobCacheManager.nativeLoading[admobNativeModel.adsID] == true) {
+                admobNativeModel.isLoading.value = true
+            }
+        }
+
         if (!isShowAds || !isNetworkConnected(activity) || isTestDevice) {
             viewGroup.visibility = View.GONE
             onAdsShowFail?.invoke()
@@ -1661,6 +1822,7 @@ object AdmobLib {
                     shimmerFrameLayout.startShimmer()
                 } else {
                     if (admobNativeModel.nativeAd.value != null) {
+                        AdmobCacheManager.nativeCache.remove(admobNativeModel.adsID)
                         val adView =
                             activity.layoutInflater.inflate(layoutNative, null) as NativeAdView
                         NativeUtils.populateNativeAdView(
@@ -1714,6 +1876,41 @@ object AdmobLib {
         val rewardedAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         val rewardAdID = if (isDebug) AdsConstants.admobRewardedModelTest.adsID else admobRewardedModel.adsID
+
+        if (AdmobCacheManager.rewardedCache[admobRewardedModel.adsID] != null) {
+            admobRewardedModel.rewardAd.value = AdmobCacheManager.rewardedCache[admobRewardedModel.adsID]
+            admobRewardedModel.isLoading.value = false
+            showRewarded(
+                activity,
+                admobRewardedModel,
+                isPreload = false,
+                isShowOnTestDevice = isShowOnTestDevice,
+                onAdsCloseOrFailed = onAdsCloseOrFailed ?: {},
+                onAdsFail = onAdsFail,
+                onAdsClose = onAdsClose,
+                onAdsShowed = onAdsShowed,
+                onAdsClicked = onAdsClicked,
+                onAdsImpression = onAdsImpression
+            )
+            return
+        }
+
+        if (AdmobCacheManager.rewardedLoading[admobRewardedModel.adsID] == true) {
+            admobRewardedModel.isLoading.value = true
+            showRewarded(
+                activity,
+                admobRewardedModel,
+                isPreload = false,
+                isShowOnTestDevice = isShowOnTestDevice,
+                onAdsCloseOrFailed = onAdsCloseOrFailed ?: {},
+                onAdsFail = onAdsFail,
+                onAdsClose = onAdsClose,
+                onAdsShowed = onAdsShowed,
+                onAdsClicked = onAdsClicked,
+                onAdsImpression = onAdsImpression
+            )
+            return
+        }
         RewardedAd.load(
             activity,
             rewardAdID,
@@ -1794,7 +1991,7 @@ object AdmobLib {
                 }
             })
         activity.lifecycleScope.launch(Dispatchers.Main) {
-            delay(timeout)
+            delay(timeout.milliseconds)
             if (dialogFullScreen != null && dialogFullScreen?.isShowing == true) {
                 isShowRewardAds = false
                 dismissDialogFullScreen()
@@ -1814,20 +2011,33 @@ object AdmobLib {
         onAdsLoaded: (() -> Unit)? = null,
         onAdsFail: (() -> Unit)? = null
     ) {
+        val rewardAdID = if (isDebug) AdsConstants.admobRewardedModelTest.adsID else admobRewardedModel.adsID
+
+        if (AdmobCacheManager.rewardedCache[admobRewardedModel.adsID] != null) {
+            admobRewardedModel.rewardAd.value = AdmobCacheManager.rewardedCache[admobRewardedModel.adsID]
+            admobRewardedModel.isLoading.postValue(false)
+            onAdsLoaded?.invoke()
+            return
+        }
+
+        if (AdmobCacheManager.rewardedLoading[admobRewardedModel.adsID] == true) {
+            admobRewardedModel.isLoading.postValue(true)
+            return
+        }
+
         if (!isShowAds
             || isShowRewardAds
             || !isNetworkConnected(activity)
-            || admobRewardedModel.rewardAd.value != null
-            || admobRewardedModel.isLoading.value == true
             || (!isShowOnTestDevice && isTestDevice)
         ) {
             onAdsFail?.invoke()
             return
         }
+
+        AdmobCacheManager.rewardedLoading[admobRewardedModel.adsID] = true
         admobRewardedModel.isLoading.postValue(true)
         val rewardedAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
-        val rewardAdID = if (isDebug) AdsConstants.admobRewardedModelTest.adsID else admobRewardedModel.adsID
         RewardedAd.load(
             activity,
             rewardAdID,
@@ -1838,6 +2048,7 @@ object AdmobLib {
                     isShowRewardAds = false
                     admobRewardedModel.rewardAd.value = null
                     admobRewardedModel.isLoading.postValue(false)
+                    AdmobCacheManager.rewardedLoading[admobRewardedModel.adsID] = false
                 }
 
                 override fun onAdLoaded(rewardedAd: RewardedAd) {
@@ -1845,6 +2056,8 @@ object AdmobLib {
                     isShowRewardAds = false
                     admobRewardedModel.rewardAd.value = rewardedAd
                     admobRewardedModel.isLoading.postValue(false)
+                    AdmobCacheManager.rewardedCache[admobRewardedModel.adsID] = rewardedAd
+                    AdmobCacheManager.rewardedLoading[admobRewardedModel.adsID] = false
                     rewardedAd.setOnPaidEventListener {
                         FacebookUtils.adImpressionFacebookRevenue(activity, it)
                         SolarUtils.postRevenueSolar(
@@ -1876,14 +2089,26 @@ object AdmobLib {
         admobRewardedModel: AdmobRewardedModel,
         isPreload: Boolean = true,
         isShowOnTestDevice: Boolean = false,
-        onAdsCloseOrFailed: (isEarned: Boolean) -> Unit,
+        onAdsCloseOrFailed: ((Boolean) -> Unit),
         onAdsFail: (() -> Unit)? = null,
         onAdsClose: (() -> Unit)? = null,
         onAdsShowed: (() -> Unit)? = null,
         onAdsClicked: (() -> Unit)? = null,
         onAdsImpression: (() -> Unit)? = null
     ) {
+        if (admobRewardedModel.rewardAd.value == null) {
+            admobRewardedModel.rewardAd.value = AdmobCacheManager.rewardedCache[admobRewardedModel.adsID]
+            if (AdmobCacheManager.rewardedLoading[admobRewardedModel.adsID] == true) {
+                admobRewardedModel.isLoading.value = true
+            }
+        }
+
         if (!isShowAds || isShowRewardAds || !isNetworkConnected(activity) || (!isShowOnTestDevice && isTestDevice)) {
+            if (admobRewardedModel.rewardAd.value == null && AdmobCacheManager.rewardedLoading[admobRewardedModel.adsID] != true) loadRewarded(
+                activity,
+                admobRewardedModel,
+                isShowOnTestDevice = isShowOnTestDevice
+            )
             onAdsCloseOrFailed.invoke(false)
             onAdsFail?.invoke()
             return
@@ -1904,6 +2129,7 @@ object AdmobLib {
                 } else {
                     admobRewardedModel.isLoading.removeObserver(this)
                     if (admobRewardedModel.rewardAd.value != null) {
+                        AdmobCacheManager.rewardedCache.remove(admobRewardedModel.adsID)
                         val handle = Handler(Looper.getMainLooper())
                         admobRewardedModel.rewardAd.value?.fullScreenContentCallback =
                             object : FullScreenContentCallback() {
@@ -2036,7 +2262,7 @@ object AdmobLib {
             onAdsShowed = {
 //            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
                 mActivity.lifecycleScope.launch {
-                    delay(1000)
+                    delay(1000.milliseconds)
                     if (!mActivity.isFinishing && !mActivity.isDestroyed) {
                         nativeDialog = createNativeFullScreen(
                             mActivity,
@@ -2109,7 +2335,7 @@ object AdmobLib {
             onAdsShowed = {
 //            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
                 mActivity.lifecycleScope.launch {
-                    delay(1000)
+                    delay(1000.milliseconds)
                     if (!mActivity.isFinishing && !mActivity.isDestroyed) {
                         nativeDialog = createNativeFullScreen(
                             mActivity,
@@ -2187,7 +2413,86 @@ object AdmobLib {
             onAdsShowed = {
 //            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
                 mActivity.lifecycleScope.launch {
-                    delay(1000)
+                    delay(1000.milliseconds)
+                    if (!mActivity.isFinishing && !mActivity.isDestroyed) {
+                        nativeDialog = createNativeFullScreen(
+                            mActivity,
+                            nativeModel,
+                            layout = nativeLayout,
+                            isShowNative = isShowNativeAfter,
+                            navAction = navAction,
+                            counter = counter,
+                            onFailure = {
+                                isNativeFail = true
+                            }
+                        )
+                        nativeDialog?.show()
+                    }
+                }
+            },
+            onAdsFail = {
+//            Log.d("TAG", "loadAndShowInterWithNativeAfter: on fail")
+                mActivity.lifecycleScope.launch {
+                    if (!mActivity.isFinishing && !mActivity.isDestroyed) {
+                        createNativeFullScreen(
+                            mActivity,
+                            nativeModel,
+                            layout = nativeLayout,
+                            isShowNative = isShowNativeAfter,
+                            isStartNow = true,
+                            counter = counter,
+                            navAction = navAction
+                        )?.show()
+                    }
+                }
+            },
+            onAdsCloseOrFailed = {
+                mActivity.lifecycleScope.launch {
+                    if (!isShowNativeAfter || isNativeFail) {
+                        navAction()
+                    } else {
+                        nativeDialog?.isClosedOrFail = true
+                    }
+                }
+                onInterCloseOrFailed(it)
+            }
+        )
+    }
+
+    fun showInterWithNativeAfter(
+        mActivity: AppCompatActivity,
+        interModel: AdmobInterModel,
+        nativeModel: AdmobNativeModel,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
+        vShowInterAds: View?,
+        isShowNativeAfter: Boolean = true,
+        isPreload: Boolean = true,
+        nativeLayout: Int = R.layout.admob_ad_template_full_screen,
+        counter: Int = NativeAfterInterDialog.DEFAULT_COUNTER,
+        isShowOnTestDevice: Boolean = false,
+        onInterCloseOrFailed: (isDone: Boolean) -> Unit = {},
+        navAction: () -> Unit
+    ) {
+        if (!isShowAds || (isTestDevice && !isShowOnTestDevice) || !isNetworkConnected(mActivity)) {
+            navAction()
+            onInterCloseOrFailed(false)
+            return
+        }
+
+        vShowInterAds?.visibility = View.VISIBLE
+        loadNativeFullScreen(mActivity, nativeModel, adRequest, timeout, isShowNativeAfter)
+        var nativeDialog: NativeAfterInterDialog? = null
+        var isNativeFail = false
+        showInterstitial(
+            mActivity,
+            interModel,
+            isShowOnTestDevice = isShowOnTestDevice,
+            isPreload = isPreload,
+            onAdsShowed = {
+//            Log.d("TAG", "loadAndShowInterWithNativeAfter: on showed")
+                mActivity.lifecycleScope.launch {
+                    delay(1000.milliseconds)
                     if (!mActivity.isFinishing && !mActivity.isDestroyed) {
                         nativeDialog = createNativeFullScreen(
                             mActivity,
