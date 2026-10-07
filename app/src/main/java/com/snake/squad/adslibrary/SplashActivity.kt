@@ -23,22 +23,22 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun initAds() {
-
+        AdmobLib.setEnabledCheckTestDevice(false)
         AdmobLib.initialize(this, isDebug = true, isShowAds = true) {
             AppOnResumeAdsManager.initialize(
                 application = application,
                 adsId = AdsConstants.admobInterModelTest.adsID,
                 type = AppOnResumeAdsManager.INTER
             )
+            AppOnResumeAdsManager.disableForActivity(SplashActivity::class.java)
 //            AppOnResumeAdsManager.initialize(
 //                application = application,
 //                adsId = AdsConstants.APP_OPEN_TEST,
 //                type = AppOnResumeAdsManager.AOA
 //            )
-            AppOnResumeAdsManager.disableForActivity(SplashActivity::class.java)
 
-            loadAndShowInter()
-            AdmobLib.setEnabledCheckTestDevice(false)
+//            loadAndShowInter()
+            replaceActivity()
         }
 //        ApplovinLib.initialize(
 //            application,

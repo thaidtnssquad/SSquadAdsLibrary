@@ -47,6 +47,7 @@ import com.google.android.gms.ads.preload.PreloadCallbackV2
 import com.google.android.gms.ads.preload.PreloadConfiguration
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.inmobi.media.th
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
 import com.snake.squad.adslib.dialogs.NativeAfterInterDialog
 import com.snake.squad.adslib.facebook.FacebookUtils
@@ -54,6 +55,7 @@ import com.snake.squad.adslib.models.AdmobBannerCollapsibleModel
 import com.snake.squad.adslib.models.AdmobInterModel
 import com.snake.squad.adslib.models.AdmobNativeModel
 import com.snake.squad.adslib.models.AdmobRewardedModel
+import com.snake.squad.adslib.models.nativee.sequence.NativeSequenceAds
 import com.snake.squad.adslib.solar.SolarUtils
 import com.snake.squad.adslib.tenjin.TenjinUtils
 import com.snake.squad.adslib.tiktok.TiktokUtils
@@ -1682,13 +1684,13 @@ object AdmobLib {
 
         if (AdmobCacheManager.nativeCache[admobNativeModel.adsID] != null) {
             admobNativeModel.nativeAd.value = AdmobCacheManager.nativeCache[admobNativeModel.adsID]
-            admobNativeModel.isLoading.postValue(false)
+            admobNativeModel.isLoading.value = false
             onAdsLoaded?.invoke()
             return
         }
 
         if (AdmobCacheManager.nativeLoading[admobNativeModel.adsID] == true) {
-            admobNativeModel.isLoading.postValue(true)
+            admobNativeModel.isLoading.value = true
             return
         }
 
@@ -1703,7 +1705,7 @@ object AdmobLib {
             return
         }
         AdmobCacheManager.nativeLoading[admobNativeModel.adsID] = true
-        admobNativeModel.isLoading.postValue(true)
+        admobNativeModel.isLoading.value = true
         val nativeAdRequest =
             adRequest ?: AdRequest.Builder().setHttpTimeoutMillis(timeout.toInt()).build()
         val adLoader = AdLoader.Builder(
@@ -1754,14 +1756,25 @@ object AdmobLib {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 AdmobCacheManager.nativeLoading[admobNativeModel.adsID] = false
                 onAdsLoadFail?.invoke()
-                admobNativeModel.nativeAd.value = null
-                admobNativeModel.isLoading.postValue(false)
+                val myLooper = Looper.myLooper()
+                if (myLooper != null && Handler(Looper.getMainLooper()) == Handler(myLooper)) {
+                    admobNativeModel.nativeAd.value = null
+                    admobNativeModel.isLoading.value = false
+                } else {
+                    admobNativeModel.nativeAd.postValue(null)
+                    admobNativeModel.isLoading.postValue(false)
+                }
             }
 
             override fun onAdLoaded() {
                 super.onAdLoaded()
                 onAdsLoaded?.invoke()
-                admobNativeModel.isLoading.postValue(false)
+                val myLooper = Looper.myLooper()
+                if (myLooper != null && Handler(Looper.getMainLooper()) == Handler(myLooper)) {
+                    admobNativeModel.isLoading.value = false
+                } else {
+                    admobNativeModel.isLoading.postValue(false)
+                }
             }
         })
         adLoader.build().loadAd(nativeAdRequest)
@@ -2538,6 +2551,88 @@ object AdmobLib {
         )
     }
 
+    // endregion
+
+    // region Native Sequence
+    fun load(
+        activity: AppCompatActivity,
+        model: NativeSequenceAds,
+        showOnTestDevice: Boolean = false,
+    ) {
+        if (!isShowAds) return
+        if (!isNetworkConnected(activity)) return
+        if (!showOnTestDevice && isTestDevice) return
+
+        model.load(activity)
+    }
+
+    fun show(
+        activity: AppCompatActivity,
+        model: NativeSequenceAds,
+        layout: Int? = null,
+        showOnTestDevice: Boolean = false,
+        onAdsCloseOrFailed: (Boolean, Throwable?) -> Boolean = { _, _ -> false },
+        onAdsFail: (error: Throwable?) -> Unit = {},
+        onAdsClosed: () -> Unit = {},
+    ) {
+        if (!isShowAds) {
+            if (!onAdsCloseOrFailed(false, Exception("Ads disabled!"))) onAdsFail(Exception("Ads disabled!"))
+            return
+        }
+
+        if (!isNetworkConnected(activity)) {
+            if (!onAdsCloseOrFailed(false, Exception("No connection!"))) onAdsFail(Exception("No connection!"))
+            return
+        }
+
+        if (!showOnTestDevice && isTestDevice) {
+            if (!onAdsCloseOrFailed(false, Exception("Hidden on test device!"))) onAdsFail(Exception("Hidden on test device!"))
+            return
+        }
+
+        model.show(
+            activity = activity,
+            layout = layout ?: R.layout.admob_ad_template_full_screen
+        ) { showed, th ->
+            if (!onAdsCloseOrFailed(showed, th)) {
+                if (showed) onAdsClosed() else onAdsFail(th)
+            }
+        }
+    }
+
+    fun loadAndShow(
+        activity: AppCompatActivity,
+        model: NativeSequenceAds,
+        layout: Int? = null,
+        showOnTestDevice: Boolean = false,
+        onAdsCloseOrFailed: (Boolean, Throwable?) -> Boolean = { _, _ -> false },
+        onAdsFail: (Throwable?) -> Unit = {},
+        onAdsClosed: () -> Unit = {},
+    ) {
+        if (!isShowAds) {
+            if (!onAdsCloseOrFailed(false, Exception("Ads disabled!"))) onAdsFail(Exception("Ads disabled!"))
+            return
+        }
+
+        if (!isNetworkConnected(activity)) {
+            if (!onAdsCloseOrFailed(false, Exception("No connection!"))) onAdsFail(Exception("No connection!"))
+            return
+        }
+
+        if (!showOnTestDevice && isTestDevice) {
+            if (!onAdsCloseOrFailed(false, Exception("Hidden on test device!"))) onAdsFail(Exception("Hidden on test device!"))
+            return
+        }
+
+        model.loadAndShow(
+            activity = activity,
+            layout = layout ?: R.layout.admob_ad_template_full_screen
+        ) { showed, th ->
+            if (!onAdsCloseOrFailed(showed, th)) {
+                if (showed) onAdsClosed() else onAdsFail(th)
+            }
+        }
+    }
     // endregion
 
     // region Public get - set

@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.snake.squad.adslib.AdmobLib
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
 import com.snake.squad.adslib.models.AdmobNativeModel
+import com.snake.squad.adslib.models.nativee.sequence.NativeSequenceAds
+import com.snake.squad.adslib.models.nativee.sequence.NativeSequenceConfig
 import com.snake.squad.adslib.rates.RatingDialog
 import com.snake.squad.adslib.utils.AdsConstants
 import com.snake.squad.adslib.utils.GoogleENative
@@ -164,6 +166,20 @@ class MainActivity : AppCompatActivity() {
         binding.btnNativeWithReload.setOnClickListener {
             showNativeReload()
         }
+
+        nativeSequenceActions()
+    }
+
+    private val nativeSequenceModel = NativeSequenceAds(
+        "test 00",
+        "test 01",
+        NativeSequenceConfig()
+    )
+    private fun nativeSequenceActions() {
+        binding.btnLoadAndShowNativeSequence.setOnClickListener { AdmobLib.loadAndShow(this, nativeSequenceModel) }
+
+        binding.btnLoadNativeSequence.setOnClickListener { AdmobLib.load(this, nativeSequenceModel) }
+        binding.btnShowNativeSequence.setOnClickListener { AdmobLib.show(this, nativeSequenceModel) }
     }
 
     private val nativeReloadModel = AdmobNativeModel(AdsConstants.admobNativeModelTest.adsID)
