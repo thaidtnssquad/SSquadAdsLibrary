@@ -83,7 +83,7 @@
         android:background="@drawable/oval"
         android:importantForAccessibility="no"
         android:padding="6dp"
-        android:src="@drawable/ic_close"
+        android:src="@drawable/ic_next_sequence"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

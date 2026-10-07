@@ -148,13 +148,15 @@ class NativeSequenceDialog(
     }
 
     private fun doneCountdown() {
-        binding.btnNext.visibility = View.VISIBLE
         binding.tvCountdown.visibility = View.INVISIBLE
         if (index == 0) {
+            binding.btnNext.setImageResource(R.drawable.ic_next_sequence)
             binding.pbNative00.progress = 100
         } else {
+            binding.btnNext.setImageResource(R.drawable.ic_close)
             binding.pbNative01.progress = 100
         }
+        binding.btnNext.visibility = View.VISIBLE
     }
     // endregion
 
