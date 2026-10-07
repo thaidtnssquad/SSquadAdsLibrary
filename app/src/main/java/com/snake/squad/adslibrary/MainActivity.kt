@@ -66,9 +66,7 @@ class MainActivity : AppCompatActivity() {
             AdmobLib.showInterWithNativeAfter(
                 mActivity = this,
                 interModel = AdsConstants.admobInterModelTest,
-                nativeModel = AdsConstants.admobNativeModelTest,
-                adRequest = homeAdRequest,
-                timeout = 10000,
+                nativeModel = nativeSequenceModel,
                 vShowInterAds = null,
                 navAction = {
                     startActivity(Intent(this@MainActivity, SecondActivity::class.java))
@@ -79,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             AdmobLib.loadAndShowInterWithNativeAfter(
                 this,
                 AdsConstants.admobInterModelTest,
-                AdsConstants.admobNativeModelTest,
+                nativeSequenceModel,
                 homeAdRequest,
                 10000,
                 null,

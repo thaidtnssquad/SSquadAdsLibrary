@@ -47,7 +47,6 @@ import com.google.android.gms.ads.preload.PreloadCallbackV2
 import com.google.android.gms.ads.preload.PreloadConfiguration
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-import com.inmobi.media.th
 import com.snake.squad.adslib.aoa.AppOnResumeAdsManager
 import com.snake.squad.adslib.dialogs.NativeAfterInterDialog
 import com.snake.squad.adslib.facebook.FacebookUtils
@@ -67,6 +66,7 @@ import com.snake.squad.adslib.utils.AdsHelper.isNetworkConnected
 import com.snake.squad.adslib.utils.BannerCollapsibleType
 import com.snake.squad.adslib.utils.BannerType
 import com.snake.squad.adslib.utils.GoogleENative
+import com.snake.squad.adslib.models.nativee.sequence.NativeSequenceAfterInter
 import com.snake.squad.adslib.utils.NativeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -2550,6 +2550,94 @@ object AdmobLib {
             }
         )
     }
+
+    fun loadAndShowInterWithNativeAfter(
+        mActivity: AppCompatActivity,
+        interModel: AdmobInterModel,
+        nativeModel: NativeSequenceAds,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
+        vShowInterAds: View?,
+        showNativeAfter: Boolean = true,
+        showOnTestDevice: Boolean = false,
+        onInterCloseOrFailed: (Boolean) -> Unit = {},
+        navAction: () -> Unit
+    ) = NativeSequenceAfterInter.loadAndShowInterWithNativeAfter(
+        mActivity,
+        interModel,
+        nativeModel,
+        adRequest,
+        timeout,
+        vShowInterAds,
+        showNativeAfter,
+        showOnTestDevice,
+        onInterCloseOrFailed,
+        navAction
+    )
+
+    fun loadAndShowInterSplashWithNativeAfter(
+        mActivity: AppCompatActivity,
+        interModel: AdmobInterModel,
+        nativeModel: NativeSequenceAds,
+        adRequest: AdRequest? = null,
+        timeout: Long = 10000,
+        showNativeAfter: Boolean = true,
+        onInterCloseOrFailed: (Boolean) -> Unit = {},
+        navAction: () -> Unit
+    ) = NativeSequenceAfterInter.loadAndShowInterSplashWithNativeAfter(
+        mActivity,
+        interModel,
+        nativeModel,
+        adRequest,
+        timeout,
+        showNativeAfter,
+        onInterCloseOrFailed,
+        navAction
+    )
+
+    fun showInterNewAPIWithNativeAfter(
+        mActivity: AppCompatActivity,
+        interModel: AdmobInterModel,
+        nativeModel: NativeSequenceAds,
+        vShowInterAds: View?,
+        isPreload: Boolean = true,
+        showNativeAfter: Boolean = true,
+        showOnTestDevice: Boolean = false,
+        onInterCloseOrFailed: (Boolean) -> Unit = {},
+        navAction: () -> Unit
+    ) = NativeSequenceAfterInter.showInterNewAPIWithNativeAfter(
+        mActivity,
+        interModel,
+        nativeModel,
+        vShowInterAds,
+        isPreload,
+        showNativeAfter,
+        showOnTestDevice,
+        onInterCloseOrFailed,
+        navAction
+    )
+
+    fun showInterWithNativeAfter(
+        mActivity: AppCompatActivity,
+        interModel: AdmobInterModel,
+        nativeModel: NativeSequenceAds,
+        vShowInterAds: View?,
+        isPreload: Boolean = true,
+        showNativeAfter: Boolean = true,
+        showOnTestDevice: Boolean = false,
+        onInterCloseOrFailed: (Boolean) -> Unit = {},
+        navAction: () -> Unit
+    ) = NativeSequenceAfterInter.showInterWithNativeAfter(
+        mActivity,
+        interModel,
+        nativeModel,
+        vShowInterAds,
+        isPreload,
+        showNativeAfter,
+        showOnTestDevice,
+        onInterCloseOrFailed,
+        navAction
+    )
 
     // endregion
 
