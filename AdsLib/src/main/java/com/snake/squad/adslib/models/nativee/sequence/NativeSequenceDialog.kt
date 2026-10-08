@@ -19,7 +19,8 @@ import kotlin.math.roundToInt
 class NativeSequenceDialog(
     private val mActivity: AppCompatActivity,
     private var mAds: NativeSequenceAds? = null,
-    private var waiting: Boolean = false,
+    private var waitingInter: Boolean = false,
+    private var waitingNativeDuration: Long,
     private val mLayout: Int = R.layout.admob_ad_template_full_screen,
     private val onDismissed: () -> Unit = {}
 ): Dialog(mActivity, R.style.mTheme_Dialog) {
@@ -54,7 +55,7 @@ class NativeSequenceDialog(
     }
 
     private fun initView() {
-        if (!waiting) showNative00()
+        if (!waitingInter) showNative00()
     }
 
     private fun initActionView() {
@@ -87,8 +88,8 @@ class NativeSequenceDialog(
             viewGroup = binding.lNative00,
             size = GoogleENative.UNIFIED_FULL_SCREEN,
             layout = mLayout,
-            onAdsShowed = { startCountdown(ads.config.waitingDuration * 1_000) },
-            onAdsShowFail = { startCountdown(ads.config.waitingDuration * 1_000) }
+            onAdsShowed = { startCountdown(waitingNativeDuration * 1_000) },
+            onAdsShowFail = { startCountdown(waitingNativeDuration * 1_000) }
         )
     }
 
@@ -119,8 +120,8 @@ class NativeSequenceDialog(
             viewGroup = binding.lNative01,
             size = GoogleENative.UNIFIED_FULL_SCREEN,
             layout = mLayout,
-            onAdsShowed = { startCountdown(ads.config.waitingDuration * 1_000) },
-            onAdsShowFail = { startCountdown(ads.config.waitingDuration * 1_000) }
+            onAdsShowed = { startCountdown(waitingNativeDuration * 1_000) },
+            onAdsShowFail = { startCountdown(waitingNativeDuration * 1_000) }
         )
     }
 
@@ -180,11 +181,11 @@ class NativeSequenceDialog(
     }
 
     fun canShow(can: Boolean) {
-        if (!waiting) return
+        if (!waitingInter) return
 
         if (!can) return
 
-        waiting = false
+        waitingInter = false
         showNative00()
     }
 

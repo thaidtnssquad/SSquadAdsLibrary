@@ -2561,6 +2561,7 @@ object AdmobLib {
         vShowInterAds: View?,
         showNativeAfter: Boolean = true,
         showOnTestDevice: Boolean = false,
+        waitingNativeDuration: Long? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) = NativeSequenceAfterInter.loadAndShowInterWithNativeAfter(
@@ -2572,6 +2573,7 @@ object AdmobLib {
         vShowInterAds,
         showNativeAfter,
         showOnTestDevice,
+        waitingNativeDuration,
         onInterCloseOrFailed,
         navAction
     )
@@ -2583,6 +2585,7 @@ object AdmobLib {
         adRequest: AdRequest? = null,
         timeout: Long = 10000,
         showNativeAfter: Boolean = true,
+        waitingNativeDuration: Long? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) = NativeSequenceAfterInter.loadAndShowInterSplashWithNativeAfter(
@@ -2592,6 +2595,7 @@ object AdmobLib {
         adRequest,
         timeout,
         showNativeAfter,
+        waitingNativeDuration,
         onInterCloseOrFailed,
         navAction
     )
@@ -2604,6 +2608,7 @@ object AdmobLib {
         isPreload: Boolean = true,
         showNativeAfter: Boolean = true,
         showOnTestDevice: Boolean = false,
+        waitingNativeDuration: Long? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) = NativeSequenceAfterInter.showInterNewAPIWithNativeAfter(
@@ -2614,6 +2619,7 @@ object AdmobLib {
         isPreload,
         showNativeAfter,
         showOnTestDevice,
+        waitingNativeDuration,
         onInterCloseOrFailed,
         navAction
     )
@@ -2626,6 +2632,7 @@ object AdmobLib {
         isPreload: Boolean = true,
         showNativeAfter: Boolean = true,
         showOnTestDevice: Boolean = false,
+        waitingNativeDuration: Long? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) = NativeSequenceAfterInter.showInterWithNativeAfter(
@@ -2636,6 +2643,7 @@ object AdmobLib {
         isPreload,
         showNativeAfter,
         showOnTestDevice,
+        waitingNativeDuration,
         onInterCloseOrFailed,
         navAction
     )
@@ -2660,6 +2668,7 @@ object AdmobLib {
         model: NativeSequenceAds,
         layout: Int? = null,
         showOnTestDevice: Boolean = false,
+        waitingNativeDuration: Long? = null,
         onAdsCloseOrFailed: (Boolean, Throwable?) -> Boolean = { _, _ -> false },
         onAdsFail: (error: Throwable?) -> Unit = {},
         onAdsClosed: () -> Unit = {},
@@ -2681,8 +2690,9 @@ object AdmobLib {
 
         model.show(
             activity = activity,
-            waiting = false,
-            layout = layout ?: R.layout.admob_ad_template_full_screen
+            waitingInter = false,
+            layout = layout ?: R.layout.admob_ad_template_full_screen,
+            waitingNativeDuration = waitingNativeDuration,
         ) { showed, th ->
             if (!onAdsCloseOrFailed(showed, th)) {
                 if (showed) onAdsClosed() else onAdsFail(th)
@@ -2693,8 +2703,9 @@ object AdmobLib {
     internal fun show(
         activity: AppCompatActivity,
         model: NativeSequenceAds,
-        waiting: Boolean,
+        waitingInter: Boolean,
         layout: Int? = null,
+        waitingNativeDuration: Long? = null,
         showOnTestDevice: Boolean = false,
         onAdsCloseOrFailed: (Boolean, Throwable?) -> Boolean = { _, _ -> false },
         onAdsFail: (error: Throwable?) -> Unit = {},
@@ -2717,8 +2728,9 @@ object AdmobLib {
 
         return model.show(
             activity = activity,
-            waiting = waiting,
-            layout = layout ?: R.layout.admob_ad_template_full_screen
+            waitingInter = waitingInter,
+            layout = layout ?: R.layout.admob_ad_template_full_screen,
+            waitingNativeDuration = waitingNativeDuration
         ) { showed, th ->
             if (!onAdsCloseOrFailed(showed, th)) {
                 if (showed) onAdsClosed() else onAdsFail(th)
@@ -2731,6 +2743,7 @@ object AdmobLib {
         model: NativeSequenceAds,
         layout: Int? = null,
         showOnTestDevice: Boolean = false,
+        waitingNativeDuration: Long? = null,
         onAdsCloseOrFailed: (Boolean, Throwable?) -> Boolean = { _, _ -> false },
         onAdsFail: (Throwable?) -> Unit = {},
         onAdsClosed: () -> Unit = {},
@@ -2752,7 +2765,8 @@ object AdmobLib {
 
         model.loadAndShow(
             activity = activity,
-            layout = layout ?: R.layout.admob_ad_template_full_screen
+            layout = layout ?: R.layout.admob_ad_template_full_screen,
+            waitingNativeDuration = waitingNativeDuration
         ) { showed, th ->
             if (!onAdsCloseOrFailed(showed, th)) {
                 if (showed) onAdsClosed() else onAdsFail(th)

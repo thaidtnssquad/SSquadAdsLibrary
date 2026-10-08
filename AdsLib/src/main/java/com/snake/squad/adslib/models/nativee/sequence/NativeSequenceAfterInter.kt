@@ -22,6 +22,7 @@ internal object NativeSequenceAfterInter {
         vShowInterAds: View?,
         showNativeAfter: Boolean = true,
         showOnTestDevice: Boolean = false,
+        waitingNativeDuration: Long? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) {
@@ -51,8 +52,9 @@ internal object NativeSequenceAfterInter {
             cachedNativeAfterDialog = AdmobLib.show(
                 mActivity,
                 nativeModel,
-                waiting = !isInterClosedOrFailed,
+                waitingInter = !isInterClosedOrFailed,
                 showOnTestDevice = showOnTestDevice,
+                waitingNativeDuration = waitingNativeDuration,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
                     if (isInterClosedOrFailed) navAction()
@@ -91,6 +93,7 @@ internal object NativeSequenceAfterInter {
         adRequest: AdRequest? = null,
         timeout: Long = 10000,
         showNativeAfter: Boolean = true,
+        waitingNativeDuration: Long? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) {
@@ -120,8 +123,9 @@ internal object NativeSequenceAfterInter {
             cachedNativeAfterDialog = AdmobLib.show(
                 mActivity,
                 nativeModel,
-                waiting = !isInterClosedOrFailed,
+                waitingInter = !isInterClosedOrFailed,
                 showOnTestDevice = true,
+                waitingNativeDuration = waitingNativeDuration,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
                     if (isInterClosedOrFailed) navAction()
@@ -160,6 +164,7 @@ internal object NativeSequenceAfterInter {
         isPreload: Boolean = true,
         showNativeAfter: Boolean = true,
         showOnTestDevice: Boolean = false,
+        waitingNativeDuration: Long? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) {
@@ -189,8 +194,9 @@ internal object NativeSequenceAfterInter {
             cachedNativeAfterDialog = AdmobLib.show(
                 mActivity,
                 nativeModel,
-                waiting = !isInterClosedOrFailed,
+                waitingInter = !isInterClosedOrFailed,
                 showOnTestDevice = showOnTestDevice,
+                waitingNativeDuration = waitingNativeDuration,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
                     if (isInterClosedOrFailed) navAction()
@@ -229,6 +235,7 @@ internal object NativeSequenceAfterInter {
         isPreload: Boolean = true,
         showNativeAfter: Boolean = true,
         showOnTestDevice: Boolean = false,
+        waitingNativeDuration: Long? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) {
@@ -258,8 +265,9 @@ internal object NativeSequenceAfterInter {
             cachedNativeAfterDialog = AdmobLib.show(
                 mActivity,
                 nativeModel,
-                waiting = !isInterClosedOrFailed,
+                waitingInter = !isInterClosedOrFailed,
                 showOnTestDevice = showOnTestDevice,
+                waitingNativeDuration = waitingNativeDuration,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
                     if (isInterClosedOrFailed) navAction()

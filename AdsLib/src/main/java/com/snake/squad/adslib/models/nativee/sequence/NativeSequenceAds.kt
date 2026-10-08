@@ -9,7 +9,7 @@ import com.snake.squad.adslib.utils.GoogleENative
 class NativeSequenceAds(
     native00Id: String,
     native01Id: String,
-    internal val config: NativeSequenceConfig
+    private val config: NativeSequenceConfig
 ) {
 
     internal val native00 = AdmobNativeModel(native00Id)
@@ -46,8 +46,9 @@ class NativeSequenceAds(
 
     internal fun show(
         activity: AppCompatActivity,
-        waiting: Boolean,
+        waitingInter: Boolean,
         layout: Int,
+        waitingNativeDuration: Long?,
         onClosedOrFailed: (Boolean, Throwable?) -> Unit
     ): NativeSequenceDialog? {
         if ((native00.nativeAd.value == null && native00.isLoading.value == false) && (native01.nativeAd.value == null && native01.isLoading.value == false)) {
@@ -58,7 +59,8 @@ class NativeSequenceAds(
         val dialog = NativeSequenceDialog(
             mActivity = activity,
             mAds = this,
-            waiting = waiting,
+            waitingInter = waitingInter,
+            waitingNativeDuration = waitingNativeDuration ?: config.waitingDuration,
             mLayout = layout,
             onDismissed = { onClosedOrFailed(true, null) }
         )
@@ -69,10 +71,11 @@ class NativeSequenceAds(
     internal fun loadAndShow(
         activity: AppCompatActivity,
         layout: Int,
+        waitingNativeDuration: Long? = null,
         onClosedOrFailed: (Boolean, Throwable?) -> Unit
     ) {
         load(activity)
-        show(activity, false, layout, onClosedOrFailed)
+        show(activity, false, layout, waitingNativeDuration, onClosedOrFailed)
     }
 
 }
