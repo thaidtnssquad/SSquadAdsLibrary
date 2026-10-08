@@ -52,11 +52,11 @@ object SolarUtils {
         }?.loadedAdapterResponseInfo
 
         val adFormat: Int = when(adType) {
-            AdType.INTERSTITIAL -> com.reyun.solar.engine.AdType.Interstitial.value
-            AdType.NATIVE -> com.reyun.solar.engine.AdType.Native.value
-            AdType.REWARDED -> com.reyun.solar.engine.AdType.RewardVideo.value
-            AdType.APP_OPEN -> com.reyun.solar.engine.AdType.OTHER.value
-            AdType.BANNER -> com.reyun.solar.engine.AdType.Banner.value
+            AdType.INTERSTITIAL -> com.reyun.solar.engine.AdType.Interstitial.intValue()
+            AdType.NATIVE -> com.reyun.solar.engine.AdType.Native.intValue()
+            AdType.REWARDED -> com.reyun.solar.engine.AdType.RewardVideo.intValue()
+            AdType.APP_OPEN -> com.reyun.solar.engine.AdType.OTHER.intValue()
+            AdType.BANNER -> com.reyun.solar.engine.AdType.Banner.intValue()
         }
 
         val adSourceName = loadedAdapterResponseInfo?.adSourceName ?: "admob"

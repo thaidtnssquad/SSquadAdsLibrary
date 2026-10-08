@@ -2,17 +2,16 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
 }
 
 android {
     namespace = "com.snake.squad.adslibrary"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.snake.squad.adslibrary"
         minSdk = 28
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 100
         versionName = "1.0.0"
 

@@ -2,13 +2,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
     id("maven-publish")
 }
 
 android {
     namespace = "com.snake.squad.adslib"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 28
@@ -38,6 +37,9 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    publishing {
+        singleVariant("release")
+    }
 }
 
 publishing {
@@ -47,7 +49,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.7.1"
+                version = "1.7.2"
             }
         }
     }
@@ -64,7 +66,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     //Ads
-    implementation("com.google.android.gms:play-services-ads:25.4.0")
+    implementation("com.google.android.gms:play-services-ads:25.5.0")
 
     implementation("androidx.lifecycle:lifecycle-process:2.11.0")
     implementation("androidx.lifecycle:lifecycle-runtime:2.11.0")
@@ -85,15 +87,15 @@ dependencies {
     implementation("com.facebook.android:facebook-android-sdk:18.3.0")
 
     //mediation admob
-    implementation("com.google.ads.mediation:pangle:8.1.0.5.0")
-    implementation("com.google.ads.mediation:applovin:13.6.3.0")
-    implementation("com.google.ads.mediation:facebook:6.21.0.4")
-    implementation("com.google.ads.mediation:vungle:7.7.4.2")
-    implementation("com.google.ads.mediation:mintegral:17.1.61.1")
-    implementation("com.google.ads.mediation:ironsource:9.5.0.0")
-    implementation("com.unity3d.ads:unity-ads:4.19.0")
-    implementation("com.google.ads.mediation:unity:4.19.0.0")
-    implementation("com.google.ads.mediation:inmobi:11.3.0.1")
+    implementation("com.google.ads.mediation:pangle:8.3.0.4.0")
+    implementation("com.google.ads.mediation:applovin:13.6.4.2")
+    implementation("com.google.ads.mediation:facebook:6.22.0.1")
+    implementation("com.google.ads.mediation:vungle:7.7.8.1")
+    implementation("com.google.ads.mediation:mintegral:17.1.81.1")
+    implementation("com.google.ads.mediation:ironsource:9.6.1.0")
+    implementation("com.unity3d.ads:unity-ads:4.21.0")
+    implementation("com.google.ads.mediation:unity:4.21.0.0")
+    implementation("com.google.ads.mediation:inmobi:11.5.0.0")
 
     //rating
     implementation("com.github.ome450901:SimpleRatingBar:1.5.1")
@@ -103,9 +105,9 @@ dependencies {
     implementation("com.android.billingclient:billing-ktx:9.1.0")
 
     //Solar Engine
-    implementation("com.reyun.solar.engine.oversea:solar-engine-core:1.3.1.2")
+    implementation("com.reyun.solar.engine.oversea:solar-engine-core:1.3.3")
 
     //Tenjin
-    implementation("com.tenjin:android-sdk:1.21.0")
+    implementation("com.tenjin:android-sdk:2.0.0")
 
 }

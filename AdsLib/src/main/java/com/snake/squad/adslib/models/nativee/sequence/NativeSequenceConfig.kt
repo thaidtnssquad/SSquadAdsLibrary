@@ -7,6 +7,6 @@ data class NativeSequenceConfig(
 ) {
     companion object {
         const val DEFAULT_TIMEOUT: Int = 10_000
-        const val DEFAULT_WAITING_DURATION: Long = 10
+        const val DEFAULT_WAITING_DURATION: Long = 3
     }
 }

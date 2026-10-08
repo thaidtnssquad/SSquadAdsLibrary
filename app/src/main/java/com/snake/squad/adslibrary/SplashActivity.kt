@@ -37,8 +37,8 @@ class SplashActivity : AppCompatActivity() {
 //                type = AppOnResumeAdsManager.AOA
 //            )
 
-//            loadAndShowInter()
-            replaceActivity()
+            loadAndShowInter()
+//            replaceActivity()
         }
 //        ApplovinLib.initialize(
 //            application,
