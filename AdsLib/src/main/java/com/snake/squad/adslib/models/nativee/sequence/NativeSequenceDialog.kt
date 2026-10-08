@@ -19,6 +19,7 @@ import kotlin.math.roundToInt
 class NativeSequenceDialog(
     private val mActivity: AppCompatActivity,
     private var mAds: NativeSequenceAds? = null,
+    private var waiting: Boolean = false,
     private val mLayout: Int = R.layout.admob_ad_template_full_screen,
     private val onDismissed: () -> Unit = {}
 ): Dialog(mActivity, R.style.mTheme_Dialog) {
@@ -53,7 +54,7 @@ class NativeSequenceDialog(
     }
 
     private fun initView() {
-        showNative00()
+        if (!waiting) showNative00()
     }
 
     private fun initActionView() {
@@ -70,7 +71,15 @@ class NativeSequenceDialog(
         binding.btnNext.visibility = View.INVISIBLE
         binding.tvCountdown.visibility = View.INVISIBLE
 
+        binding.lNative00.translationX = binding.lNative00.width.toFloat()
+        binding.lNative00.alpha = 0f
         binding.lNative00.visibility = View.VISIBLE
+        binding.lNative00.animate()
+            .translationX(0f)
+            .alpha(1f)
+            .setDuration(200L)
+            .start()
+
         binding.lNative01.visibility = View.INVISIBLE
         AdmobLib.showNative(
             activity = mActivity,
@@ -168,6 +177,15 @@ class NativeSequenceDialog(
         }
 
         dismiss()
+    }
+
+    fun canShow(can: Boolean) {
+        if (!waiting) return
+
+        if (!can) return
+
+        waiting = false
+        showNative00()
     }
 
 }

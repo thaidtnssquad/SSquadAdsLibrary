@@ -55,6 +55,8 @@ import com.snake.squad.adslib.models.AdmobInterModel
 import com.snake.squad.adslib.models.AdmobNativeModel
 import com.snake.squad.adslib.models.AdmobRewardedModel
 import com.snake.squad.adslib.models.nativee.sequence.NativeSequenceAds
+import com.snake.squad.adslib.models.nativee.sequence.NativeSequenceAfterInter
+import com.snake.squad.adslib.models.nativee.sequence.NativeSequenceDialog
 import com.snake.squad.adslib.solar.SolarUtils
 import com.snake.squad.adslib.tenjin.TenjinUtils
 import com.snake.squad.adslib.tiktok.TiktokUtils
@@ -66,7 +68,6 @@ import com.snake.squad.adslib.utils.AdsHelper.isNetworkConnected
 import com.snake.squad.adslib.utils.BannerCollapsibleType
 import com.snake.squad.adslib.utils.BannerType
 import com.snake.squad.adslib.utils.GoogleENative
-import com.snake.squad.adslib.models.nativee.sequence.NativeSequenceAfterInter
 import com.snake.squad.adslib.utils.NativeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -2680,6 +2681,43 @@ object AdmobLib {
 
         model.show(
             activity = activity,
+            waiting = false,
+            layout = layout ?: R.layout.admob_ad_template_full_screen
+        ) { showed, th ->
+            if (!onAdsCloseOrFailed(showed, th)) {
+                if (showed) onAdsClosed() else onAdsFail(th)
+            }
+        }
+    }
+
+    internal fun show(
+        activity: AppCompatActivity,
+        model: NativeSequenceAds,
+        waiting: Boolean,
+        layout: Int? = null,
+        showOnTestDevice: Boolean = false,
+        onAdsCloseOrFailed: (Boolean, Throwable?) -> Boolean = { _, _ -> false },
+        onAdsFail: (error: Throwable?) -> Unit = {},
+        onAdsClosed: () -> Unit = {},
+    ): NativeSequenceDialog? {
+        if (!isShowAds) {
+            if (!onAdsCloseOrFailed(false, Exception("Ads disabled!"))) onAdsFail(Exception("Ads disabled!"))
+            return null
+        }
+
+        if (!isNetworkConnected(activity)) {
+            if (!onAdsCloseOrFailed(false, Exception("No connection!"))) onAdsFail(Exception("No connection!"))
+            return null
+        }
+
+        if (!showOnTestDevice && isTestDevice) {
+            if (!onAdsCloseOrFailed(false, Exception("Hidden on test device!"))) onAdsFail(Exception("Hidden on test device!"))
+            return null
+        }
+
+        return model.show(
+            activity = activity,
+            waiting = waiting,
             layout = layout ?: R.layout.admob_ad_template_full_screen
         ) { showed, th ->
             if (!onAdsCloseOrFailed(showed, th)) {

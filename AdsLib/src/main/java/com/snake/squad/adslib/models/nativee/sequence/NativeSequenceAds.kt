@@ -46,20 +46,24 @@ class NativeSequenceAds(
 
     internal fun show(
         activity: AppCompatActivity,
+        waiting: Boolean,
         layout: Int,
         onClosedOrFailed: (Boolean, Throwable?) -> Unit
-    ) {
+    ): NativeSequenceDialog? {
         if ((native00.nativeAd.value == null && native00.isLoading.value == false) && (native01.nativeAd.value == null && native01.isLoading.value == false)) {
             onClosedOrFailed(false, Exception("No ads loading or ready!"))
-            return
+            return null
         }
 
-        NativeSequenceDialog(
+        val dialog = NativeSequenceDialog(
             mActivity = activity,
             mAds = this,
+            waiting = waiting,
             mLayout = layout,
             onDismissed = { onClosedOrFailed(true, null) }
-        ).show()
+        )
+        dialog.show()
+        return dialog
     }
 
     internal fun loadAndShow(
@@ -68,7 +72,7 @@ class NativeSequenceAds(
         onClosedOrFailed: (Boolean, Throwable?) -> Unit
     ) {
         load(activity)
-        show(activity, layout, onClosedOrFailed)
+        show(activity, false, layout, onClosedOrFailed)
     }
 
 }

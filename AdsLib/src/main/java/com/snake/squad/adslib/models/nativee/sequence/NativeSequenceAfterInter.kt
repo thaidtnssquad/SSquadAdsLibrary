@@ -5,11 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdRequest
 import com.snake.squad.adslib.AdmobLib
-import com.snake.squad.adslib.AdmobLib.load
-import com.snake.squad.adslib.AdmobLib.loadAndShowInterstitial
-import com.snake.squad.adslib.AdmobLib.show
-import com.snake.squad.adslib.AdmobLib.showInterstitial
-import com.snake.squad.adslib.AdmobLib.showInterstitialNewAPI
 import com.snake.squad.adslib.models.AdmobInterModel
 import com.snake.squad.adslib.utils.AdsHelper.isNetworkConnected
 import kotlinx.coroutines.delay
@@ -37,21 +32,26 @@ internal object NativeSequenceAfterInter {
         }
 
         var isNativeAfterCalled = false
+        var cachedNativeAfterDialog: NativeSequenceDialog? = null
 
         var isInterClosedOrFailed = false
         var isNativeAfterClosed = !showNativeAfter
 
         fun showNativeAfter() {
-            if (isNativeAfterCalled) return
+            if (isNativeAfterCalled) {
+                cachedNativeAfterDialog?.canShow(isInterClosedOrFailed)
+                return
+            }
             isNativeAfterCalled = true
 
             if (!showNativeAfter) return
 
             if (mActivity.isFinishing || mActivity.isDestroyed) return
 
-            show(
+            cachedNativeAfterDialog = AdmobLib.show(
                 mActivity,
                 nativeModel,
+                waiting = !isInterClosedOrFailed,
                 showOnTestDevice = showOnTestDevice,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
@@ -62,8 +62,8 @@ internal object NativeSequenceAfterInter {
         }
 
         vShowInterAds?.visibility = View.VISIBLE
-        load(mActivity, nativeModel, showOnTestDevice)
-        loadAndShowInterstitial(
+        AdmobLib.load(mActivity, nativeModel, showOnTestDevice)
+        AdmobLib.loadAndShowInterstitial(
             activity = mActivity,
             admobInterModel = interModel,
             adRequest = adRequest,
@@ -101,21 +101,26 @@ internal object NativeSequenceAfterInter {
         }
 
         var isNativeAfterCalled = false
+        var cachedNativeAfterDialog: NativeSequenceDialog? = null
 
         var isInterClosedOrFailed = false
         var isNativeAfterClosed = !showNativeAfter
 
         fun showNativeAfter() {
-            if (isNativeAfterCalled) return
+            if (isNativeAfterCalled) {
+                cachedNativeAfterDialog?.canShow(isInterClosedOrFailed)
+                return
+            }
             isNativeAfterCalled = true
 
             if (!showNativeAfter) return
 
             if (mActivity.isFinishing || mActivity.isDestroyed) return
 
-            show(
+            cachedNativeAfterDialog = AdmobLib.show(
                 mActivity,
                 nativeModel,
+                waiting = !isInterClosedOrFailed,
                 showOnTestDevice = true,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
@@ -125,8 +130,8 @@ internal object NativeSequenceAfterInter {
             )
         }
 
-        load(mActivity, nativeModel, true)
-        loadAndShowInterstitial(
+        AdmobLib.load(mActivity, nativeModel, true)
+        AdmobLib.loadAndShowInterstitial(
             activity = mActivity,
             admobInterModel = interModel,
             adRequest = adRequest,
@@ -165,21 +170,26 @@ internal object NativeSequenceAfterInter {
         }
 
         var isNativeAfterCalled = false
+        var cachedNativeAfterDialog: NativeSequenceDialog? = null
 
         var isInterClosedOrFailed = false
         var isNativeAfterClosed = !showNativeAfter
 
         fun showNativeAfter() {
-            if (isNativeAfterCalled) return
+            if (isNativeAfterCalled) {
+                cachedNativeAfterDialog?.canShow(isInterClosedOrFailed)
+                return
+            }
             isNativeAfterCalled = true
 
             if (!showNativeAfter) return
 
             if (mActivity.isFinishing || mActivity.isDestroyed) return
 
-            show(
+            cachedNativeAfterDialog = AdmobLib.show(
                 mActivity,
                 nativeModel,
+                waiting = !isInterClosedOrFailed,
                 showOnTestDevice = showOnTestDevice,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
@@ -190,8 +200,8 @@ internal object NativeSequenceAfterInter {
         }
 
         vShowInterAds?.visibility = View.VISIBLE
-        load(mActivity, nativeModel, showOnTestDevice)
-        showInterstitialNewAPI(
+        AdmobLib.load(mActivity, nativeModel, showOnTestDevice)
+        AdmobLib.showInterstitialNewAPI(
             activity = mActivity,
             admobInterModel = interModel,
             isShowOnTestDevice = showOnTestDevice,
@@ -229,21 +239,26 @@ internal object NativeSequenceAfterInter {
         }
 
         var isNativeAfterCalled = false
+        var cachedNativeAfterDialog: NativeSequenceDialog? = null
 
         var isInterClosedOrFailed = false
         var isNativeAfterClosed = !showNativeAfter
 
         fun showNativeAfter() {
-            if (isNativeAfterCalled) return
+            if (isNativeAfterCalled) {
+                cachedNativeAfterDialog?.canShow(isInterClosedOrFailed)
+                return
+            }
             isNativeAfterCalled = true
 
             if (!showNativeAfter) return
 
             if (mActivity.isFinishing || mActivity.isDestroyed) return
 
-            show(
+            cachedNativeAfterDialog = AdmobLib.show(
                 mActivity,
                 nativeModel,
+                waiting = !isInterClosedOrFailed,
                 showOnTestDevice = showOnTestDevice,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
@@ -254,8 +269,8 @@ internal object NativeSequenceAfterInter {
         }
 
         vShowInterAds?.visibility = View.VISIBLE
-        load(mActivity, nativeModel, showOnTestDevice)
-        showInterstitial(
+        AdmobLib.load(mActivity, nativeModel, showOnTestDevice)
+        AdmobLib.showInterstitial(
             activity = mActivity,
             admobInterModel = interModel,
             isShowOnTestDevice = showOnTestDevice,
