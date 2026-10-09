@@ -1,6 +1,7 @@
 package com.snake.squad.adslib.models.nativee.sequence
 
 import android.view.View
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdRequest
@@ -23,6 +24,7 @@ internal object NativeSequenceAfterInter {
         showNativeAfter: Boolean = true,
         showOnTestDevice: Boolean = false,
         waitingNativeDuration: Long? = null,
+        @LayoutRes nativeLayout: Int? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) {
@@ -55,6 +57,7 @@ internal object NativeSequenceAfterInter {
                 waitingInter = !isInterClosedOrFailed,
                 showOnTestDevice = showOnTestDevice,
                 waitingNativeDuration = waitingNativeDuration,
+                layout = nativeLayout,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
                     if (isInterClosedOrFailed) navAction()
@@ -94,6 +97,7 @@ internal object NativeSequenceAfterInter {
         timeout: Long = 10000,
         showNativeAfter: Boolean = true,
         waitingNativeDuration: Long? = null,
+        @LayoutRes nativeLayout: Int? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) {
@@ -126,6 +130,7 @@ internal object NativeSequenceAfterInter {
                 waitingInter = !isInterClosedOrFailed,
                 showOnTestDevice = true,
                 waitingNativeDuration = waitingNativeDuration,
+                layout = nativeLayout,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
                     if (isInterClosedOrFailed) navAction()
@@ -165,6 +170,7 @@ internal object NativeSequenceAfterInter {
         showNativeAfter: Boolean = true,
         showOnTestDevice: Boolean = false,
         waitingNativeDuration: Long? = null,
+        @LayoutRes nativeLayout: Int? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) {
@@ -197,6 +203,7 @@ internal object NativeSequenceAfterInter {
                 waitingInter = !isInterClosedOrFailed,
                 showOnTestDevice = showOnTestDevice,
                 waitingNativeDuration = waitingNativeDuration,
+                layout = nativeLayout,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
                     if (isInterClosedOrFailed) navAction()
@@ -236,6 +243,7 @@ internal object NativeSequenceAfterInter {
         showNativeAfter: Boolean = true,
         showOnTestDevice: Boolean = false,
         waitingNativeDuration: Long? = null,
+        @LayoutRes nativeLayout: Int? = null,
         onInterCloseOrFailed: (Boolean) -> Unit = {},
         navAction: () -> Unit
     ) {
@@ -268,6 +276,7 @@ internal object NativeSequenceAfterInter {
                 waitingInter = !isInterClosedOrFailed,
                 showOnTestDevice = showOnTestDevice,
                 waitingNativeDuration = waitingNativeDuration,
+                layout = nativeLayout,
                 onAdsCloseOrFailed = { _, _ ->
                     isNativeAfterClosed = true
                     if (isInterClosedOrFailed) navAction()
