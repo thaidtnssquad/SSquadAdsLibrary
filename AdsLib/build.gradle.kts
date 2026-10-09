@@ -49,7 +49,7 @@ publishing {
                 from(components["release"])
                 groupId = "com.snake.squad.adslib"
                 artifactId = "AdsLib"
-                version = "1.7.2"
+                version = "1.7.4"
             }
         }
     }

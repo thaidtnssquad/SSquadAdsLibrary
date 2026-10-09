@@ -2574,8 +2574,8 @@ object AdmobLib {
         showNativeAfter,
         showOnTestDevice,
         waitingNativeDuration,
-        onInterCloseOrFailed,
-        navAction
+        onInterCloseOrFailed = onInterCloseOrFailed,
+        navAction = navAction
     )
 
     fun loadAndShowInterSplashWithNativeAfter(
@@ -2596,8 +2596,8 @@ object AdmobLib {
         timeout,
         showNativeAfter,
         waitingNativeDuration,
-        onInterCloseOrFailed,
-        navAction
+        onInterCloseOrFailed = onInterCloseOrFailed,
+        navAction = navAction
     )
 
     fun showInterNewAPIWithNativeAfter(
@@ -2620,8 +2620,8 @@ object AdmobLib {
         showNativeAfter,
         showOnTestDevice,
         waitingNativeDuration,
-        onInterCloseOrFailed,
-        navAction
+        onInterCloseOrFailed = onInterCloseOrFailed,
+        navAction = navAction
     )
 
     fun showInterWithNativeAfter(
@@ -2644,8 +2644,8 @@ object AdmobLib {
         showNativeAfter,
         showOnTestDevice,
         waitingNativeDuration,
-        onInterCloseOrFailed,
-        navAction
+        onInterCloseOrFailed = onInterCloseOrFailed,
+        navAction = navAction
     )
 
     // endregion
